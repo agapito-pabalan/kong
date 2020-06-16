@@ -1,0 +1,54 @@
+version: 2.1
+
+jobs:
+  build:
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Checkout
+          command: checkout
+      - run:
+          name: Authenticate with GCR
+          command: echo $NONPROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
+      - run:
+          name: Build Images
+          command: docker-compose -f docker-compose.yml -f docker-compose.ci.yml build
+      - run:
+          name: Push Images
+          command: docker-compose -f docker-compose.yml -f docker-compose.ci.yml push
+  deploy-kong:
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Checkout
+          command: checkout
+      - run:
+          name: Deploy
+          command: ./.circleci/bin/deploy-kong
+  promote:
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - run:
+          name: Checkout
+          command: checkout
+      - run:
+          name: Promote Backend
+          command: ./.circleci/bin/promote <<pipeline.git.tag>>
+workflows:
+  version: 2
+  build_and_release:
+    jobs:
+      - build
+      - deploy-kong:
+          filters:
+            branches:
+              only: master
+      - promote:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/

@@ -1,0 +1,11 @@
+# go.yml
+_format_version: "1.1"
+services:
+- url: https://postman-echo.com/get
+  routes:
+  - paths:
+    - "/echo"
+  plugins:
+  - name: bellatrix_bridge
+    config:
+      bellatrixendpoint: https://9c3cb2a7-1e01-4610-b7fe-9ba985a8678f.mock.pstmn.io/v1/jwt/permissions
