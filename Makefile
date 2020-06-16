@@ -10,13 +10,13 @@ shell:
 	docker-compose run --rm ash
 
 up:
-	docker-compose up
+	docker-compose up -d
 
 down:
 	docker-compose down --remove-orphans
 
-attach-backend:
-	docker attach orion_backend_1
+attach:
+	docker attach kong
 
 logs:
 	docker-compose logs -f
