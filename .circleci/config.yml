@@ -44,16 +44,16 @@ jobs:
           name: Push to GCR
           command: ./.circleci/bin/push-to-gcr
 
-  # promote:
-  #   steps:
-  #     - setup_remote_docker:
-  #         docker_layer_caching: false
-  #     - run:
-  #         name: Checkout
-  #         command: checkout
-  #     - run:
-  #         name: Promote Backend
-  #         command: ./.circleci/bin/promote <<pipeline.git.tag>>
+  promote:
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - run:
+          name: Checkout
+          command: checkout
+      - run:
+          name: Promote Backend
+          command: ./.circleci/bin/promote <<pipeline.git.tag>>
 
 workflows:
   version: 2
@@ -63,12 +63,12 @@ workflows:
       - push-to-gcr:
           requires:
             - build
-          # filters:
-          #   branches:
-          #     only: master
-      # - promote:
-      #     filters:
-      #       branches:
-      #         ignore: /.*/
-      #       tags:
-      #         only: /[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/
+          filters:
+            branches:
+              only: master
+      - promote:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/
