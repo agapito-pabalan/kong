@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: docker:stable
+      - image: docker/compose:latest
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
@@ -16,7 +16,7 @@ jobs:
           command: docker save -o /tmp/kong-tagged gcr.io/stord-nonprod/kong:${CIRCLE_WORKFLOW_ID}
   push-to-gcr:
     docker:
-      - image: docker:stable
+      - image: docker/compose:latest
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
