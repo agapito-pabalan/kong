@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 PIPELINE_ID=$1
 
