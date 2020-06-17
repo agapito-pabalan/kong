@@ -7,7 +7,7 @@ RUN mkdir /go-plugins
 COPY /plugins/bellatrix_bridge/bellatrix_bridge.go /go-plugins/bellatrix_bridge.go
 RUN go build -buildmode plugin -o /go-plugins/bellatrix_bridge.so /go-plugins/bellatrix_bridge.go
 
-FROM kong:2.0.4-alpine
+FROM kong:2.0.4-alpine as ci
 
 COPY --from=builder /go/bin/go-pluginserver /usr/local/bin/go-pluginserver
 RUN mkdir /tmp/go-plugins
