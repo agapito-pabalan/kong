@@ -25,6 +25,9 @@ jobs:
           name: Authenticate with GCR
           command: echo $NONPROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
       - run:
+          name: Load Image from CircleCI
+          command: docker load -i /tmp/kong-latest
+      - run:
           name: Push to GCR
           command: docker-compose -f docker-compose.yml -f docker-compose.ci.yml push
   # promote:
