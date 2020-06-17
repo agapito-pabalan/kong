@@ -39,7 +39,7 @@ jobs:
           command: echo $NONPROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
       - run:
           name: Load Latest Image from CircleCI
-          command: docker load -i /tmp/workspace/kong-latest
+          command: docker load -i workspace/kong-latest
       - run:
           name: Push to GCR
           command: ./.circleci/bin/push-to-gcr
