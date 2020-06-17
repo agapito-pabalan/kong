@@ -20,7 +20,7 @@ jobs:
           command: mkdir -p workspace
       - run:
           name: Store Tagged In CircleCI
-          command: docker save -o /workspace/kong-tagged gcr.io/stord-nonprod/kong:${CIRCLE_WORKFLOW_ID}
+          command: docker save -o workspace/kong-tagged gcr.io/stord-nonprod/kong:${CIRCLE_WORKFLOW_ID}
       - persist_to_workspace:
           root: workspace
           paths:
