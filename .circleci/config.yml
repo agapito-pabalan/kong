@@ -49,9 +49,7 @@ jobs:
     steps:
       - setup_remote_docker:
           docker_layer_caching: false
-      - run:
-          name: Checkout
-          command: checkout
+      - checkout
       - run:
           name: Promote Backend
           command: ./.circleci/bin/promote <<pipeline.git.tag>>
