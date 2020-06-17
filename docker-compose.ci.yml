@@ -1,6 +1,0 @@
-version: "3.7"
-services:
-  kong:
-    build:
-      target: ci
-    image: gcr.io/stord-nonprod/kong:${CIRCLE_WORKFLOW_ID}

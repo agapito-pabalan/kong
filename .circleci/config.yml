@@ -1,48 +1,67 @@
 version: 2.1
 
+executors:
+  builder:
+    docker:
+      - image: docker:stable
+
 jobs:
   build:
+    executor: builder
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
+      - checkout
       - run:
-          name: Checkout
-          command: checkout
+          name: Build Image
+          command: ./.circleci/bin/build
+      - run:
+          name: Create Workspace
+          command: mkdir -p workspace
+      - run:
+          name: Store Tagged Artifact In CircleCI Workspace
+          command: docker save -o workspace/kong-tagged-artifact gcr.io/stord-nonprod/kong:${CIRCLE_WORKFLOW_ID}
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - kong-tagged-artifact
+
+  push-to-gcr:
+    executor: builder
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - attach_workspace:
+          at: /tmp/workspace
+      - checkout
       - run:
           name: Authenticate with GCR
           command: echo $NONPROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
       - run:
-          name: Build Images
-          command: docker-compose -f docker-compose.yml -f docker-compose.ci.yml build
+          name: Load Tagged Artifact from CircleCI Workspace
+          command: docker load -i /tmp/workspace/kong-tagged-artifact
       - run:
-          name: Push Images
-          command: docker-compose -f docker-compose.yml -f docker-compose.ci.yml push
-  deploy-kong:
-    steps:
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Checkout
-          command: checkout
-      - run:
-          name: Deploy
-          command: ./.circleci/bin/deploy-kong
+          name: Push to GCR
+          command: ./.circleci/bin/push-to-gcr
+
   promote:
+    executor: builder
     steps:
       - setup_remote_docker:
           docker_layer_caching: false
-      - run:
-          name: Checkout
-          command: checkout
+      - checkout
       - run:
           name: Promote Backend
           command: ./.circleci/bin/promote <<pipeline.git.tag>>
+
 workflows:
   version: 2
   build_and_release:
     jobs:
       - build
-      - deploy-kong:
+      - push-to-gcr:
+          requires:
+            - build
           filters:
             branches:
               only: master

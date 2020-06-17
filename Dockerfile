@@ -7,7 +7,18 @@ RUN mkdir /go-plugins
 COPY /plugins/bellatrix_bridge/bellatrix_bridge.go /go-plugins/bellatrix_bridge.go
 RUN go build -buildmode plugin -o /go-plugins/bellatrix_bridge.so /go-plugins/bellatrix_bridge.go
 
-FROM kong:2.0.4-alpine
+FROM kong:2.0.4-alpine as release
+
+ARG KONG_DATABASE
+ARG KONG_DECLARATIVE_CONFIG
+ARG KONG_ADMIN_LISTEN
+ARG KONG_PLUGINS
+ARG KONG_GO_PLUGINS_DIR
+ARG KONG_PROXY_ACCESS_LOG
+ARG KONG_PROXY_ERROR_LOG
+ARG KONG_ADMIN_ACCESS_LOG
+ARG KONG_ADMIN_ERROR_LOG
+ARG KONG_LOG_LEVEL
 
 COPY --from=builder /go/bin/go-pluginserver /usr/local/bin/go-pluginserver
 RUN mkdir /tmp/go-plugins

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # This authenticates with GCR so that we can push images
 function authenticate_gcr
@@ -6,29 +6,23 @@ function authenticate_gcr
   echo $NONPROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
 }
 
-# This builds and tags images using Docker
-function build_image
+function set_latest_tag
 {
-    docker build \
-      --build-arg APP_NAME=kong \
-      -t gcr.io/stord-nonprod/kong:$CIRCLE_WORKFLOW_ID \
-      -t gcr.io/stord-nonprod/kong:latest-custom \
-      ./
+  docker image tag gcr.io/stord-nonprod/kong:$CIRCLE_WORKFLOW_ID gcr.io/stord-nonprod/kong:latest
 }
 
 # This pushes tagged images to GCR
 function push_image_to_gcr
 {
     docker push gcr.io/stord-nonprod/kong:$CIRCLE_WORKFLOW_ID
-    docker push gcr.io/stord-nonprod/kong:latest-custom
+    docker push gcr.io/stord-nonprod/kong:latest
 }
 
 # Sequencing of Operations
 function run
 {
   authenticate_gcr
-
-  build_image
+  set_latest_tag
   push_image_to_gcr
 }
 
