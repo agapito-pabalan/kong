@@ -14,9 +14,6 @@ jobs:
       - run:
           name: Build Images
           command: docker-compose -f docker-compose.yml -f docker-compose.ci.yml build
-      - run:
-          name: Push Images
-          command: docker-compose -f docker-compose.yml -f docker-compose.ci.yml push
   deploy-kong:
     docker:
       - image: docker:stable
@@ -42,10 +39,10 @@ workflows:
   build_and_release:
     jobs:
       - build
-      - deploy-kong:
-          filters:
-            branches:
-              only: master
+      - deploy-kong
+          # filters:
+          #   branches:
+          #     only: master
       # - promote:
       #     filters:
       #       branches:
