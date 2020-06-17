@@ -39,7 +39,9 @@ workflows:
   build_and_release:
     jobs:
       - build
-      - deploy-kong
+      - deploy-kong:
+          requires:
+            - build
           # filters:
           #   branches:
           #     only: master
