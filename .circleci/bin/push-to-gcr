@@ -10,7 +10,6 @@ function authenticate_gcr
 function push_image_to_gcr
 {
     docker push gcr.io/stord-nonprod/kong:$CIRCLE_WORKFLOW_ID
-    # docker push gcr.io/stord-nonprod/kong:latest
 }
 
 # Sequencing of Operations
