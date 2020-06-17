@@ -1,5 +1,14 @@
 FROM golang:alpine as builder
 
+RUN apk add --no-cache git gcc libc-dev
+RUN go get github.com/Kong/go-pluginserver
+
+RUN mkdir /go-plugins
+COPY /plugins/bellatrix_bridge/bellatrix_bridge.go /go-plugins/bellatrix_bridge.go
+RUN go build -buildmode plugin -o /go-plugins/bellatrix_bridge.so /go-plugins/bellatrix_bridge.go
+
+FROM kong:2.0.4-alpine as release
+
 ARG KONG_DATABASE
 ARG KONG_DECLARATIVE_CONFIG
 ARG KONG_ADMIN_LISTEN
@@ -10,15 +19,6 @@ ARG KONG_PROXY_ERROR_LOG
 ARG KONG_ADMIN_ACCESS_LOG
 ARG KONG_ADMIN_ERROR_LOG
 ARG KONG_LOG_LEVEL
-
-RUN apk add --no-cache git gcc libc-dev
-RUN go get github.com/Kong/go-pluginserver
-
-RUN mkdir /go-plugins
-COPY /plugins/bellatrix_bridge/bellatrix_bridge.go /go-plugins/bellatrix_bridge.go
-RUN go build -buildmode plugin -o /go-plugins/bellatrix_bridge.so /go-plugins/bellatrix_bridge.go
-
-FROM kong:2.0.4-alpine as ci
 
 COPY --from=builder /go/bin/go-pluginserver /usr/local/bin/go-pluginserver
 RUN mkdir /tmp/go-plugins
