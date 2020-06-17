@@ -4,7 +4,7 @@ executors:
   builder:
     docker:
       - image: docker:stable
-    working_directory: /tmp
+    working_directory: /project
 
 jobs:
   build:
