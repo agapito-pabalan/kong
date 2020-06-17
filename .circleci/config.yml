@@ -19,16 +19,16 @@ jobs:
       - run:
           name: Push Images
           command: docker-compose -f docker-compose.yml -f docker-compose.ci.yml push
-  # deploy-kong:
-  #   steps:
-  #     - setup_remote_docker:
-  #         docker_layer_caching: true
-  #     - run:
-  #         name: Checkout
-  #         command: checkout
-  #     - run:
-  #         name: Deploy
-  #         command: ./.circleci/bin/deploy-kong
+  deploy-kong:
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Checkout
+          command: checkout
+      - run:
+          name: Deploy
+          command: ./.circleci/bin/deploy-kong
   # promote:
   #   steps:
   #     - setup_remote_docker:
