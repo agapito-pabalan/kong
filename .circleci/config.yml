@@ -7,9 +7,7 @@ jobs:
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
-      - run:
-          name: Checkout
-          command: checkout
+      - checkout
       - run:
           name: Authenticate with GCR
           command: echo $NONPROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
@@ -25,9 +23,7 @@ jobs:
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
-      - run:
-          name: Checkout
-          command: checkout
+      - checkout
       - run:
           name: Deploy
           command: ./.circleci/bin/deploy-kong
