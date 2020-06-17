@@ -1,9 +1,14 @@
 version: 2.1
 
-jobs:
-  build:
+executors:
+  builder:
     docker:
       - image: docker:stable
+    working_directory: /tmp
+
+jobs:
+  build:
+    executor: builder
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
@@ -12,24 +17,34 @@ jobs:
           name: Build Image
           command: ./.circleci/bin/build
       - run:
+          name: Create Workspace
+          command: mkdir -p workspace
+      - run:
           name: Store Tagged In CircleCI
-          command: docker save -o /tmp/kong-tagged gcr.io/stord-nonprod/kong:${CIRCLE_WORKFLOW_ID}
+          command: docker save -o /workspace/kong-tagged gcr.io/stord-nonprod/kong:${CIRCLE_WORKFLOW_ID}
+      - persist_to_workspace:
+          root: workspace
+          paths:
+            - kong-tagged
+
   push-to-gcr:
-    docker:
-      - image: docker:stable
+    executor: builder
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
+      - attach_workspace:
+          at: /tmp/workspace
       - checkout
       - run:
           name: Authenticate with GCR
           command: echo $NONPROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
       - run:
           name: Load Latest Image from CircleCI
-          command: docker load -i /tmp/kong-latest
+          command: docker load -i /tmp/workspace/kong-latest
       - run:
           name: Push to GCR
           command: ./.circleci/bin/push-to-gcr
+
   # promote:
   #   steps:
   #     - setup_remote_docker:
