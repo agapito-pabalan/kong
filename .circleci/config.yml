@@ -62,9 +62,9 @@ workflows:
       - push-to-gcr:
           requires:
             - build
-          filters:
-            branches:
-              only: master
+          # filters:
+          #   branches:
+          #     only: master
       - promote:
           filters:
             branches:
