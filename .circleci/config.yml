@@ -10,7 +10,7 @@ jobs:
       - checkout
       - run:
           name: Build Image
-          command: ./.circleci/bin/build
+          command: ./project/.circleci/bin/build
       - run:
           name: Store Tagged In CircleCI
           command: docker save -o /tmp/kong-tagged gcr.io/stord-nonprod/kong:${CIRCLE_WORKFLOW_ID}
