@@ -14,7 +14,6 @@ function build_image
       --build-arg KONG_ADMIN_ERROR_LOG=/dev/stderr \
       --build-arg KONG_LOG_LEVEL=info \
       -t gcr.io/stord-nonprod/kong:$CIRCLE_WORKFLOW_ID \
-      -t gcr.io/stord-nonprod/kong:latest \
       ./
 }
 
