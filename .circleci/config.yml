@@ -45,9 +45,9 @@ workflows:
   build_and_release:
     jobs:
       - build
-      # - push-to-gcr:
-      #     requires:
-      #       - build
+      - push-to-gcr:
+          requires:
+            - build
           # filters:
           #   branches:
           #     only: master
