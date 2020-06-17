@@ -45,6 +45,7 @@ jobs:
           command: ./.circleci/bin/push-to-gcr
 
   promote:
+    executor: builder
     steps:
       - setup_remote_docker:
           docker_layer_caching: false
