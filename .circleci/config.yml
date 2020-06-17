@@ -9,18 +9,18 @@ jobs:
           docker_layer_caching: true
       - checkout
       - run:
-          name: Authenticate with GCR
-          command: echo $NONPROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
-      - run:
           name: Build Images
           command: docker-compose -f docker-compose.yml -f docker-compose.ci.yml build
   push-to-gcr:
     docker:
-      - image: docker:stable
+      - image: docker/compose:latest
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
       - checkout
+      - run:
+          name: Authenticate with GCR
+          command: echo $NONPROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
       - run:
           name: Push to GCR
           command: docker-compose -f docker-compose.yml -f docker-compose.ci.yml push
