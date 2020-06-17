@@ -27,7 +27,7 @@ function retag_nonprod_to_prod
     echo " [+] Retagging kong - $PIPELINE_ID - NonProd to Prod"
     docker tag gcr.io/stord-nonprod/kong:$PIPELINE_ID gcr.io/stord-production/kong:$PIPELINE_ID
     echo " [+] Retagging kong - latest - NonProd to Prod"
-    docker tag gcr.io/stord-production/kong:$PIPELINE_ID gcr.io/stord-production/kong:latest-custom
+    docker tag gcr.io/stord-production/kong:$PIPELINE_ID gcr.io/stord-production/kong:latest
 }
 
 # This pushes tagged images to GCR
