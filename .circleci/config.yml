@@ -3,20 +3,20 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: docker/compose:latest
+      - image: docker:stable
     steps:
       - setup_remote_docker:
           docker_layer_caching: true
       - checkout
       - run:
           name: Build Image
-          command: ./project/.circleci/bin/build
+          command: ./.circleci/bin/build
       - run:
           name: Store Tagged In CircleCI
           command: docker save -o /tmp/kong-tagged gcr.io/stord-nonprod/kong:${CIRCLE_WORKFLOW_ID}
   push-to-gcr:
     docker:
-      - image: docker/compose:latest
+      - image: docker:stable
     steps:
       - setup_remote_docker:
           docker_layer_caching: true

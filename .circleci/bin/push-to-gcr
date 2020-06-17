@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # This authenticates with GCR so that we can push images
 function authenticate_gcr
