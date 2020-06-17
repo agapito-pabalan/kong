@@ -6,28 +6,17 @@ function authenticate_gcr
   echo $NONPROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
 }
 
-# This builds and tags images using Docker
-function build_image
-{
-    docker build \
-      -t gcr.io/stord-nonprod/kong:$CIRCLE_WORKFLOW_ID \
-      -t gcr.io/stord-nonprod/kong:latest \
-      ./
-}
-
 # This pushes tagged images to GCR
 function push_image_to_gcr
 {
     docker push gcr.io/stord-nonprod/kong:$CIRCLE_WORKFLOW_ID
-    docker push gcr.io/stord-nonprod/kong:latest
+    # docker push gcr.io/stord-nonprod/kong:latest
 }
 
 # Sequencing of Operations
 function run
 {
   authenticate_gcr
-
-  build_image
   push_image_to_gcr
 }
 
