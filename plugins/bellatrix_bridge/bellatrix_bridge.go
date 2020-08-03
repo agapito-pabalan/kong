@@ -11,6 +11,7 @@ import (
 
 const REQUEST_JWT_TYPE string = "permissions-jwt"
 const REQUEST_JWT_HEADER string = "jwt"
+const REQUIRES_AUTH_HEADER string = "requires-auth"
 
 type BellatrixResponseAttributes struct {
 	PermissionsJwt string `json:"permissions-jwt"`
@@ -54,6 +55,9 @@ func (conf Config) Access(kong *pdk.PDK) {
 	handleError(kong, err, 401)
 
 	err = kong.ServiceRequest.SetHeader(REQUEST_JWT_HEADER, bellatrixJWT)
+	handleError(kong, err, 500)
+
+	err = kong.ServiceRequest.SetHeader(REQUIRES_AUTH_HEADER, true)
 	handleError(kong, err, 500)
 
 	kong.Log.Info(fmt.Sprintf("Success! Called Bellatrix API and swapped [%s] for [%s]", auth0JWT, bellatrixJWT))
