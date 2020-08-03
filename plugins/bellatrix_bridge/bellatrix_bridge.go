@@ -57,7 +57,7 @@ func (conf Config) Access(kong *pdk.PDK) {
 	err = kong.ServiceRequest.SetHeader(REQUEST_JWT_HEADER, bellatrixJWT)
 	handleError(kong, err, 500)
 
-	err = kong.ServiceRequest.SetHeader(REQUIRES_AUTH_HEADER, true)
+	err = kong.ServiceRequest.SetHeader(REQUIRES_AUTH_HEADER, "true")
 	handleError(kong, err, 500)
 
 	kong.Log.Info(fmt.Sprintf("Success! Called Bellatrix API and swapped [%s] for [%s]", auth0JWT, bellatrixJWT))
