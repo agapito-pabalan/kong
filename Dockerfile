@@ -21,7 +21,6 @@ ARG KONG_ADMIN_ERROR_LOG
 ARG KONG_LOG_LEVEL
 
 COPY --from=builder /go/bin/go-pluginserver /usr/local/bin/go-pluginserver
-# RUN mkdir -p /stord/go-plugins
 COPY --from=builder /go-plugins/bellatrix_bridge.so /usr/local/share/go-plugins/bellatrix_bridge.so
 COPY kong.conf.d/config.yml /usr/local/share/config.yml
 
