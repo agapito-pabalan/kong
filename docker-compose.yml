@@ -4,7 +4,7 @@ services:
     build: .
     environment:
       - KONG_DATABASE=off
-      - KONG_DECLARATIVE_CONFIG=/tmp/config.yml
+      - KONG_DECLARATIVE_CONFIG=/usr/local/share/config.yml
       - KONG_ADMIN_LISTEN=0.0.0.0:8001
       - KONG_PLUGINS=bellatrix_bridge
       - KONG_GO_PLUGINS_DIR=/tmp/go-plugins
