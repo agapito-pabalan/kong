@@ -9,12 +9,12 @@ import (
 	"net/http"
 )
 
-const REQUEST_JWT_TYPE string = "permissions-jwt"
+const REQUEST_JWT_TYPE string = "permissionsJwt"
 const REQUEST_JWT_HEADER string = "jwt"
 const REQUIRES_AUTH_HEADER string = "requires-auth"
 
 type BellatrixResponseAttributes struct {
-	PermissionsJwt string `json:"permissions-jwt"`
+	PermissionsJwt string `json:"permissionsJwt"`
 }
 
 type BellatrixResponse struct {
@@ -27,7 +27,7 @@ type ResponseEnvelope struct {
 }
 
 type BellatrixRequestAttributes struct {
-	Auth0Jwt string `json:"auth0_jwt"`
+	Auth0Jwt string `json:"auth0Jwt"`
 }
 
 type BellatrixRequest struct {
@@ -84,7 +84,7 @@ func (conf Config) exchangeJWT(auth0Jwt string) (string, error) {
 		return "", err
 	}
 
-	response, err := http.Post(conf.BellatrixEndpoint, "application/json", bytes.NewBuffer(requestBody))
+	response, err := http.Post(conf.BellatrixEndpoint, "application/vnd.api+json", bytes.NewBuffer(requestBody))
 	if err != nil {
 		return "", err
 	}
