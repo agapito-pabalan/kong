@@ -59,14 +59,14 @@ func (conf Config) Access(kong *pdk.PDK) {
 	handleError(kong, err, 401)
 
 	var tokenHeaderValue strings.Builder
-
-	tokenHeaderValue.WriteString("Bearer ")
+	tokenHeaderValue.WriteString(BEARER_PREFIX)
 	tokenHeaderValue.WriteString(bellatrixJWT)
+	tokenHeaderValueStr := tokenHeaderValue.String()
 
-	err = kong.ServiceRequest.SetHeader(REQUEST_JWT_HEADER, tokenHeaderValue.String())
+	err = kong.ServiceRequest.SetHeader(REQUEST_JWT_HEADER, tokenHeaderValueStr)
 	handleError(kong, err, 500)
 
-	err = kong.ServiceRequest.SetHeader(REQUEST_AUTHORIZATION_HEADER, tokenHeaderValue.String())
+	err = kong.ServiceRequest.SetHeader(REQUEST_AUTHORIZATION_HEADER, tokenHeaderValueStr)
 	handleError(kong, err, 500)
 
 	err = kong.ServiceRequest.SetHeader(REQUIRES_AUTH_HEADER, "true")
@@ -93,7 +93,7 @@ func extractToken(headerValue string) (string, error) {
 	headerValueArr := strings.Split(headerValue, BEARER_PREFIX)
 
 	if len(headerValueArr) != 2 {
-		return "", errors.New("Invalid token format, expected \"Bearer \"")
+		return "", fmt.Errorf("Invalid token format, expected \"%s\"", BEARER_PREFIX)
 	}
 	return headerValueArr[1], nil
 }
@@ -125,7 +125,7 @@ func (conf Config) exchangeJWT(auth0Jwt string) (string, error) {
 	}
 
 	if response.StatusCode < 200 || response.StatusCode > 299 {
-		return "", errors.New(fmt.Sprintf("Unexpected status code from Bellatrix: %d", response.StatusCode))
+		return "", fmt.Errorf("Unexpected status code from Bellatrix: %d", response.StatusCode)
 	}
 
 	var responseEnvelope ResponseEnvelope
