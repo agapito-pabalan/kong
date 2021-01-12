@@ -5,12 +5,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/Kong/go-pdk"
 	"net/http"
+
+	"github.com/Kong/go-pdk"
 )
 
 const REQUEST_JWT_TYPE string = "permissionsJwt"
 const REQUEST_JWT_HEADER string = "jwt"
+const REQUEST_AUTHORIZATION_HEADER string = "authorization"
 const REQUIRES_AUTH_HEADER string = "requires-auth"
 
 type BellatrixResponseAttributes struct {
@@ -48,7 +50,7 @@ func New() interface{} {
 }
 
 func (conf Config) Access(kong *pdk.PDK) {
-	auth0JWT, err := kong.Request.GetHeader(REQUEST_JWT_HEADER)
+	auth0JWT, err := getAuth0Token(kong)
 	handleError(kong, err, 401)
 
 	bellatrixJWT, err := conf.exchangeJWT(auth0JWT)
@@ -57,10 +59,27 @@ func (conf Config) Access(kong *pdk.PDK) {
 	err = kong.ServiceRequest.SetHeader(REQUEST_JWT_HEADER, bellatrixJWT)
 	handleError(kong, err, 500)
 
+	err = kong.ServiceRequest.SetHeader(REQUEST_AUTHORIZATION_HEADER, bellatrixJWT)
+	handleError(kong, err, 500)
+
 	err = kong.ServiceRequest.SetHeader(REQUIRES_AUTH_HEADER, "true")
 	handleError(kong, err, 500)
 
 	kong.Log.Info(fmt.Sprintf("Success! Called Bellatrix API and swapped [%s] for [%s]", auth0JWT, bellatrixJWT))
+}
+
+func getAuth0Token(kong *pdk.PDK) (string, error) {
+	auth0JWT, jwtErr := kong.Request.GetHeader(REQUEST_JWT_HEADER)
+	if jwtErr == nil {
+		return auth0JWT, nil
+	}
+
+	auth0JWT, authErr := kong.Request.GetHeader(REQUEST_AUTHORIZATION_HEADER)
+	if authErr == nil {
+		return auth0JWT, nil
+	}
+
+	return "", errors.New("Unable to find access token in headers")
 }
 
 func handleError(kong *pdk.PDK, err error, statusCode int) {
