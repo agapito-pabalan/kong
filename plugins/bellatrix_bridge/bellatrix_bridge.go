@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/Kong/go-pdk"
 )
@@ -13,6 +14,7 @@ import (
 const REQUEST_JWT_TYPE string = "permissionsJwt"
 const REQUEST_JWT_HEADER string = "jwt"
 const REQUEST_AUTHORIZATION_HEADER string = "authorization"
+const BEARER_PREFIX string = "Bearer "
 const REQUIRES_AUTH_HEADER string = "requires-auth"
 
 type BellatrixResponseAttributes struct {
@@ -56,10 +58,15 @@ func (conf Config) Access(kong *pdk.PDK) {
 	bellatrixJWT, err := conf.exchangeJWT(auth0JWT)
 	handleError(kong, err, 401)
 
-	err = kong.ServiceRequest.SetHeader(REQUEST_JWT_HEADER, bellatrixJWT)
+	var tokenHeaderValue strings.Builder
+
+	tokenHeaderValue.WriteString("Bearer ")
+	tokenHeaderValue.WriteString(bellatrixJWT)
+
+	err = kong.ServiceRequest.SetHeader(REQUEST_JWT_HEADER, tokenHeaderValue.String())
 	handleError(kong, err, 500)
 
-	err = kong.ServiceRequest.SetHeader(REQUEST_AUTHORIZATION_HEADER, bellatrixJWT)
+	err = kong.ServiceRequest.SetHeader(REQUEST_AUTHORIZATION_HEADER, tokenHeaderValue.String())
 	handleError(kong, err, 500)
 
 	err = kong.ServiceRequest.SetHeader(REQUIRES_AUTH_HEADER, "true")
@@ -71,15 +78,24 @@ func (conf Config) Access(kong *pdk.PDK) {
 func getAuth0Token(kong *pdk.PDK) (string, error) {
 	auth0JWT, jwtErr := kong.Request.GetHeader(REQUEST_JWT_HEADER)
 	if jwtErr == nil {
-		return auth0JWT, nil
+		return extractToken(auth0JWT)
 	}
 
 	auth0JWT, authErr := kong.Request.GetHeader(REQUEST_AUTHORIZATION_HEADER)
 	if authErr == nil {
-		return auth0JWT, nil
+		return extractToken(auth0JWT)
 	}
 
 	return "", errors.New("Unable to find access token in headers")
+}
+
+func extractToken(headerValue string) (string, error) {
+	headerValueArr := strings.Split(headerValue, BEARER_PREFIX)
+
+	if len(headerValueArr) != 2 {
+		return "", errors.New("Invalid token format, expected \"Bearer \"")
+	}
+	return headerValueArr[1], nil
 }
 
 func handleError(kong *pdk.PDK, err error, statusCode int) {
