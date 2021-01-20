@@ -53,7 +53,7 @@ func New() interface{} {
 }
 
 func (conf Config) Access(kong *pdk.PDK) {
-	auth0JWT, err := getAuth0Token(kong.Request)
+	auth0JWT, err := getAuth0Token(&kong.Request)
 	handleError(kong, err, 401)
 
 	bellatrixJWT, err := conf.exchangeJWT(auth0JWT)
@@ -76,7 +76,7 @@ func (conf Config) Access(kong *pdk.PDK) {
 	kong.Log.Info(fmt.Sprintf("Success! Called Bellatrix API and swapped [%s] for [%s]", auth0JWT, bellatrixJWT))
 }
 
-func getAuth0Token(request request.Request) (string, error) {
+func getAuth0Token(request *request.Request) (string, error) {
 	auth0JWT, jwtErr := request.GetHeader(REQUEST_JWT_HEADER)
 	if jwtErr == nil {
 		return extractToken(auth0JWT)
