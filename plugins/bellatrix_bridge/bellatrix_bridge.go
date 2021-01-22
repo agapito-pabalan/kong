@@ -119,16 +119,16 @@ func (conf Config) exchangeJWT(auth0Jwt string) (string, bool, error) {
 
 	requestBody, err := json.Marshal(requestEnvelope)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	response, err := http.Post(conf.BellatrixEndpoint, "application/vnd.api+json", bytes.NewBuffer(requestBody))
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	if response.StatusCode < 200 || response.StatusCode > 299 {
-		return "", fmt.Errorf("Unexpected status code from Bellatrix: %d", response.StatusCode)
+		return "", "", fmt.Errorf("Unexpected status code from Bellatrix: %d", response.StatusCode)
 	}
 
 	var responseEnvelope ResponseEnvelope
@@ -136,7 +136,7 @@ func (conf Config) exchangeJWT(auth0Jwt string) (string, bool, error) {
 	err = json.NewDecoder(response.Body).Decode(&responseEnvelope)
 
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	return responseEnvelope.Data.Attributes.PermissionsJwt, responseEnvelope.Data.Attributes.RequiresAuth, nil
