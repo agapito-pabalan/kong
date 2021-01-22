@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/Kong/go-pdk"
@@ -20,6 +21,7 @@ const REQUIRES_AUTH_HEADER string = "requires-auth"
 
 type BellatrixResponseAttributes struct {
 	PermissionsJwt string `json:"permissionsJwt"`
+	RequiresAuth   bool   `json:"requiresAuth"`
 }
 
 type BellatrixResponse struct {
@@ -56,7 +58,7 @@ func (conf Config) Access(kong *pdk.PDK) {
 	auth0JWT, err := getAuth0Token(&kong.Request)
 	handleError(kong, err, 401)
 
-	bellatrixJWT, err := conf.exchangeJWT(auth0JWT)
+	bellatrixJWT, requiresAuth, err := conf.exchangeJWT(auth0JWT)
 	handleError(kong, err, 401)
 
 	var tokenHeaderValue strings.Builder
@@ -70,7 +72,7 @@ func (conf Config) Access(kong *pdk.PDK) {
 	err = kong.ServiceRequest.SetHeader(REQUEST_AUTHORIZATION_HEADER, tokenHeaderValueStr)
 	handleError(kong, err, 500)
 
-	err = kong.ServiceRequest.SetHeader(REQUIRES_AUTH_HEADER, "true")
+	err = kong.ServiceRequest.SetHeader(REQUIRES_AUTH_HEADER, strconv.FormatBool(requiresAuth))
 	handleError(kong, err, 500)
 
 	kong.Log.Info(fmt.Sprintf("Success! Called Bellatrix API and swapped [%s] for [%s]", auth0JWT, bellatrixJWT))
@@ -106,7 +108,7 @@ func handleError(kong *pdk.PDK, err error, statusCode int) {
 	}
 }
 
-func (conf Config) exchangeJWT(auth0Jwt string) (string, error) {
+func (conf Config) exchangeJWT(auth0Jwt string) (string, bool, error) {
 
 	requestEnvelope := RequestEnvelope{Data: BellatrixRequest{
 		Attributes: BellatrixRequestAttributes{
@@ -137,5 +139,5 @@ func (conf Config) exchangeJWT(auth0Jwt string) (string, error) {
 		return "", err
 	}
 
-	return responseEnvelope.Data.Attributes.PermissionsJwt, nil
+	return responseEnvelope.Data.Attributes.PermissionsJwt, responseEnvelope.Data.Attributes.RequiresAuth, nil
 }
