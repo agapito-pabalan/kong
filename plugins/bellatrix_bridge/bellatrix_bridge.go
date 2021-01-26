@@ -56,10 +56,15 @@ func New() interface{} {
 
 func (conf Config) Access(kong *pdk.PDK) {
 	auth0JWT, err := getAuth0Token(&kong.Request)
-	handleError(kong, err, 401)
-
+	if err != nil {
+		kong.Response.Exit(401, "Unauthorized", nil)
+		return
+	}
 	bellatrixJWT, requiresAuth, err := conf.exchangeJWT(auth0JWT)
-	handleError(kong, err, 401)
+	if err != nil {
+		kong.Response.Exit(401, "Unauthorized", nil)
+		return
+	}
 
 	var tokenHeaderValue strings.Builder
 	tokenHeaderValue.WriteString(BEARER_PREFIX)
@@ -67,13 +72,20 @@ func (conf Config) Access(kong *pdk.PDK) {
 	tokenHeaderValueStr := tokenHeaderValue.String()
 
 	err = kong.ServiceRequest.SetHeader(REQUEST_JWT_HEADER, tokenHeaderValueStr)
-	handleError(kong, err, 500)
-
+	if err != nil {
+		kong.Response.Exit(500, err.Error(), nil)
+		return
+	}
 	err = kong.ServiceRequest.SetHeader(REQUEST_AUTHORIZATION_HEADER, tokenHeaderValueStr)
-	handleError(kong, err, 500)
-
+	if err != nil {
+		kong.Response.Exit(500, err.Error(), nil)
+		return
+	}
 	err = kong.ServiceRequest.SetHeader(REQUIRES_AUTH_HEADER, strconv.FormatBool(requiresAuth))
-	handleError(kong, err, 500)
+	if err != nil {
+		kong.Response.Exit(500, err.Error(), nil)
+		return
+	}
 
 	kong.Log.Info(fmt.Sprintf("Success! Called Bellatrix API and swapped [%s] for [%s]", auth0JWT, bellatrixJWT))
 }
@@ -99,13 +111,6 @@ func extractToken(headerValue string) (string, error) {
 		return "", fmt.Errorf("invalid token format, expected \"%s\"", BEARER_PREFIX)
 	}
 	return headerValueArr[1], nil
-}
-
-func handleError(kong *pdk.PDK, err error, statusCode int) {
-	if err != nil {
-		kong.Log.Err(err)
-		kong.Response.ExitStatus(statusCode)
-	}
 }
 
 func (conf Config) exchangeJWT(auth0Jwt string) (string, bool, error) {
