@@ -6,11 +6,13 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
 	"github.com/Kong/go-pdk"
 	"github.com/Kong/go-pdk/request"
+	"github.com/rs/zerolog"
 )
 
 const REQUEST_JWT_TYPE string = "permissionsJwt"
@@ -47,11 +49,16 @@ type RequestEnvelope struct {
 }
 
 type Config struct {
+	Logger            zerolog.Logger
 	BellatrixEndpoint string
 }
 
 func New() interface{} {
-	return &Config{}
+	logLevel := convertLogLevel(os.Getenv("PLUGIN_LOG_LEVEL"))
+	zerolog.SetGlobalLevel(logLevel)
+	return &Config{
+		Logger: zerolog.New(os.Stderr).With().Timestamp().Logger(),
+	}
 }
 
 func (conf Config) Access(kong *pdk.PDK) {
@@ -87,7 +94,7 @@ func (conf Config) Access(kong *pdk.PDK) {
 		return
 	}
 
-	kong.Log.Info(fmt.Sprintf("Success! Called Bellatrix API and swapped [%s] for [%s]", auth0JWT, bellatrixJWT))
+	conf.Logger.Info().Msg(fmt.Sprintf("Success! Called Bellatrix API and swapped [%s] for [%s]", auth0JWT, bellatrixJWT))
 }
 
 func getAuth0Token(request *request.Request) (string, error) {
@@ -133,7 +140,7 @@ func (conf Config) exchangeJWT(auth0Jwt string) (string, bool, error) {
 	}
 
 	if response.StatusCode < 200 || response.StatusCode > 299 {
-		return "", true, fmt.Errorf("Unexpected status code from Bellatrix: %d", response.StatusCode)
+		return "", true, fmt.Errorf("unexpected status code from Bellatrix: %d", response.StatusCode)
 	}
 
 	var responseEnvelope ResponseEnvelope
@@ -145,4 +152,25 @@ func (conf Config) exchangeJWT(auth0Jwt string) (string, bool, error) {
 	}
 
 	return responseEnvelope.Data.Attributes.PermissionsJwt, responseEnvelope.Data.Attributes.RequiresAuth, nil
+}
+
+func convertLogLevel(level string) zerolog.Level {
+	switch level {
+	case "TRACE":
+		return zerolog.TraceLevel
+	case "DEBUG":
+		return zerolog.DebugLevel
+	case "INFO":
+		return zerolog.InfoLevel
+	case "WARN":
+		return zerolog.WarnLevel
+	case "ERROR":
+		return zerolog.ErrorLevel
+	case "FATAL":
+		return zerolog.FatalLevel
+	case "PANIC":
+		return zerolog.PanicLevel
+	default:
+		return zerolog.WarnLevel
+	}
 }
