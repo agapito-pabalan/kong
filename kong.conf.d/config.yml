@@ -88,5 +88,5 @@ plugins:
       bellatrixendpoint: http://bellatrix:4003/v1/jwt/permissions
   - name: request-size-limiting
     config:
-      allowed_payload_size: 23
+      allowed_payload_size: 128
       size_unit: megabytes

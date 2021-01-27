@@ -13,6 +13,7 @@ FROM kong:2.0.4-alpine as release
 ARG KONG_DATABASE
 ARG KONG_DECLARATIVE_CONFIG
 ARG KONG_ADMIN_LISTEN
+ARG KONG_PROXY_LISTEN
 ARG KONG_PLUGINS
 ARG KONG_GO_PLUGINS_DIR
 ARG KONG_PROXY_ACCESS_LOG
@@ -25,6 +26,4 @@ COPY --from=builder /go/bin/go-pluginserver /usr/local/bin/go-pluginserver
 COPY --from=builder /go-plugins/bellatrix_bridge.so /usr/local/share/go-plugins/bellatrix_bridge.so
 COPY kong.conf.d/config.yml /usr/local/share/config.yml
 
-USER root
-RUN chmod -R 777 /tmp
 USER kong
