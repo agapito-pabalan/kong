@@ -6,14 +6,11 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 
 	"github.com/Kong/go-pdk"
 	"github.com/Kong/go-pdk/request"
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 )
 
 const REQUEST_JWT_TYPE string = "permissionsJwt"
@@ -50,29 +47,23 @@ type RequestEnvelope struct {
 }
 
 type Config struct {
-	Logger            zerolog.Logger
 	BellatrixEndpoint string
 }
 
 func New() interface{} {
-	zerolog.SetGlobalLevel(convertLogLevel(os.Getenv("PLUGIN_LOG_LEVEL")))
 	return &Config{}
 }
 
 func (conf Config) Access(kong *pdk.PDK) {
 	auth0JWT, err := getAuth0Token(&kong.Request)
 	if err != nil {
-		log.Warn().
-			Str("err", err.Error()).
-			Msg("unable to retrieve token from request headers")
+		kong.Log.Warn("warning: ", err.Error(), " unable to retrieve token from request headers")
 		kong.Response.Exit(401, "Unauthorized", nil)
 		return
 	}
 	bellatrixJWT, requiresAuth, err := conf.exchangeJWT(auth0JWT)
 	if err != nil {
-		log.Warn().
-			Str("err", err.Error()).
-			Msg("unable to exchange Auth0 JWT for Bellatrix JWT")
+		kong.Log.Warn("warning: ", err.Error(), " unable to exchange Auth0 JWT for Bellatrix JWT")
 		kong.Response.Exit(401, "Unauthorized", nil)
 		return
 	}
@@ -84,19 +75,19 @@ func (conf Config) Access(kong *pdk.PDK) {
 
 	err = kong.ServiceRequest.SetHeader(REQUEST_JWT_HEADER, tokenHeaderValueStr)
 	if err != nil {
-		log.Error().Msg(err.Error())
+		kong.Log.Err("error: ", err.Error(), " unable to insert bellatrix jwt header")
 		kong.Response.Exit(500, err.Error(), nil)
 		return
 	}
 
 	err = kong.ServiceRequest.SetHeader(REQUIRES_AUTH_HEADER, strconv.FormatBool(requiresAuth))
 	if err != nil {
-		log.Error().Msg(err.Error())
+		kong.Log.Err("error: ", err.Error(), " unable to insert \"requires-auth\" header")
 		kong.Response.Exit(500, err.Error(), nil)
 		return
 	}
 
-	log.Debug().Msg(fmt.Sprintf("Success! Called Bellatrix API and swapped [%s] for [%s]", auth0JWT, bellatrixJWT))
+	kong.Log.Debug("Success! Called Bellatrix API and swapped [", auth0JWT, "] for [", bellatrixJWT, "]")
 }
 
 func getAuth0Token(request *request.Request) (string, error) {
@@ -154,25 +145,4 @@ func (conf Config) exchangeJWT(auth0Jwt string) (string, bool, error) {
 	}
 
 	return responseEnvelope.Data.Attributes.PermissionsJwt, responseEnvelope.Data.Attributes.RequiresAuth, nil
-}
-
-func convertLogLevel(level string) zerolog.Level {
-	switch level {
-	case "TRACE":
-		return zerolog.TraceLevel
-	case "DEBUG":
-		return zerolog.DebugLevel
-	case "INFO":
-		return zerolog.InfoLevel
-	case "WARN":
-		return zerolog.WarnLevel
-	case "ERROR":
-		return zerolog.ErrorLevel
-	case "FATAL":
-		return zerolog.FatalLevel
-	case "PANIC":
-		return zerolog.PanicLevel
-	default:
-		return zerolog.WarnLevel
-	}
 }
