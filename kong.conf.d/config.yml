@@ -1,11 +1,92 @@
-# go.yml
+
+
 _format_version: "1.1"
 services:
-- url: https://postman-echo.com/get
-  routes:
-  - paths:
-    - "/echo"
-  plugins:
+  - name: saiph
+    url: http://saiph:4001
+    routes:
+      - name: saiph_root
+        strip_path: false
+        paths:
+          - /companies
+          - /countries
+          - /countries/([^\/]+)/subdivisions
+          - /distribution_networks
+          - /items
+          - /warehouses
+          - /addresses
+          - /trade_connections
+  - name: rigel
+    url: http://rigel:4002
+    routes:
+      - name: rigel_root
+        strip_path: false
+        paths:
+          - /shipping_orders
+          - /shipping_orders/([^\/]+)/documents
+          - /shipments
+          - /shipment_receipts
+          - /distribution_networks/([^\/]+)/shipping_orders
+          - /distribution_networks/([^\/]+)/shipments
+          - /distribution_networks/([^\/]+)/dashboard/overview
+          - /distribution_networks/([^\/]+)/dashboard/calendar
+          - /distribution_networks/([^\/]+)/dashboard/open_orders
+          - /warehouses/([^\/]+)/inbound_shipping_orders
+          - /warehouses/([^\/]+)/outbound_shipping_orders
+          - /warehouses/([^\/]+)/orders
+  - name: bellatrix
+    url: http://bellatrix:4003
+    routes:
+    - name: bellatrix_root
+      strip_path: false
+      paths:
+        - /v1/users
+        - /v1/roles
+        - /v1/permissions
+        - /v1/integrations/identity/auth0/users
+        - /v1/jwt/permissions
+        - /v1/userdetails
+        - /v1/utils/headers
+  - name: mintaka
+    url: http://mintaka:4004
+    routes:
+      - name: mintaka_root
+        strip_path: false
+        paths:
+          - /inventory_ledger_entries/([^\/]+)
+          - /inventory_adjustments/([^\/]+)/inventory_ledger_entries
+          - /shipping_orders/([^\/]+)/inventory_adjustment
+          - /shipments/([^\/]+)/inventory_adjustment
+          - /distribution_networks/([^\/]+)/inventory_adjustments
+          - /distribution_networks/([^\/]+)/inventory_adjustment_activity
+          - /inventory_advices
+          - /trade_connections/([^\/]+)/inventory_advices
+          - /manual_adjustments
+          - /trade_connections/([^\/]+)/manual_adjustments
+          - /item_counts
+          - /shipment_receipts/([^\/]+)/inventory_adjustment
+          - /inventory/([^\/]+)
+          - /cancellations/([^\/]+)/inventory_adjustment
+          - /warehouses/([^\/]+)/items
+          - /distribution_networks/([^\/]+)/inventory_lookup
+  - name: meissa
+    url: http://meissa:4005
+    routes:
+      - name: meissa_root
+        strip_path: false
+        paths:
+          - /v1/documents
+plugins:
+  - name: cors
+    config:
+      origins:
+        - http://localhost:3001
+        - http://localhost:3002
+        - http://localhost:3003
   - name: bellatrix_bridge
     config:
-      bellatrixendpoint: https://9c3cb2a7-1e01-4610-b7fe-9ba985a8678f.mock.pstmn.io/v1/jwt/permissions
+      bellatrixendpoint: http://bellatrix:4003/v1/jwt/permissions
+  - name: request-size-limiting
+    config:
+      allowed_payload_size: 23
+      size_unit: megabytes

@@ -6,8 +6,8 @@ services:
       - KONG_DATABASE=off
       - KONG_DECLARATIVE_CONFIG=/usr/local/share/config.yml
       - KONG_ADMIN_LISTEN=0.0.0.0:8001
-      - KONG_PLUGINS=bellatrix_bridge
-      - KONG_GO_PLUGINS_DIR=/tmp/go-plugins
+      - KONG_PLUGINS=bellatrix_bridge,cors,request-size-limiting
+      - KONG_GO_PLUGINS_DIR=/usr/local/share/go-plugins
       - KONG_PROXY_ACCESS_LOG=/dev/stdout
       - KONG_PROXY_ERROR_LOG=/dev/stderr
       - KONG_ADMIN_ACCESS_LOG=/dev/stdout
