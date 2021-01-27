@@ -21,6 +21,7 @@ ARG KONG_PROXY_ERROR_LOG
 ARG KONG_ADMIN_ACCESS_LOG
 ARG KONG_ADMIN_ERROR_LOG
 ARG KONG_LOG_LEVEL
+ARG PLUGIN_LOG_LEVEL
 
 COPY --from=builder /go/bin/go-pluginserver /usr/local/bin/go-pluginserver
 COPY --from=builder /go-plugins/bellatrix_bridge.so /usr/local/share/go-plugins/bellatrix_bridge.so

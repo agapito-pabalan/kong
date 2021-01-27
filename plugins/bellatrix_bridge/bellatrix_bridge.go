@@ -13,6 +13,7 @@ import (
 	"github.com/Kong/go-pdk"
 	"github.com/Kong/go-pdk/request"
 	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
 const REQUEST_JWT_TYPE string = "permissionsJwt"
@@ -54,21 +55,24 @@ type Config struct {
 }
 
 func New() interface{} {
-	logLevel := convertLogLevel(os.Getenv("PLUGIN_LOG_LEVEL"))
-	zerolog.SetGlobalLevel(logLevel)
-	return &Config{
-		Logger: zerolog.New(os.Stderr).With().Timestamp().Logger(),
-	}
+	zerolog.SetGlobalLevel(convertLogLevel(os.Getenv("PLUGIN_LOG_LEVEL")))
+	return &Config{}
 }
 
 func (conf Config) Access(kong *pdk.PDK) {
 	auth0JWT, err := getAuth0Token(&kong.Request)
 	if err != nil {
+		log.Warn().
+			Str("err", err.Error()).
+			Msg("unable to retrieve token from request headers")
 		kong.Response.Exit(401, "Unauthorized", nil)
 		return
 	}
 	bellatrixJWT, requiresAuth, err := conf.exchangeJWT(auth0JWT)
 	if err != nil {
+		log.Warn().
+			Str("err", err.Error()).
+			Msg("unable to exchange Auth0 JWT for Bellatrix JWT")
 		kong.Response.Exit(401, "Unauthorized", nil)
 		return
 	}
@@ -80,21 +84,19 @@ func (conf Config) Access(kong *pdk.PDK) {
 
 	err = kong.ServiceRequest.SetHeader(REQUEST_JWT_HEADER, tokenHeaderValueStr)
 	if err != nil {
-		kong.Response.Exit(500, err.Error(), nil)
-		return
-	}
-	err = kong.ServiceRequest.SetHeader(REQUEST_AUTHORIZATION_HEADER, tokenHeaderValueStr)
-	if err != nil {
-		kong.Response.Exit(500, err.Error(), nil)
-		return
-	}
-	err = kong.ServiceRequest.SetHeader(REQUIRES_AUTH_HEADER, strconv.FormatBool(requiresAuth))
-	if err != nil {
+		log.Error().Msg(err.Error())
 		kong.Response.Exit(500, err.Error(), nil)
 		return
 	}
 
-	conf.Logger.Info().Msg(fmt.Sprintf("Success! Called Bellatrix API and swapped [%s] for [%s]", auth0JWT, bellatrixJWT))
+	err = kong.ServiceRequest.SetHeader(REQUIRES_AUTH_HEADER, strconv.FormatBool(requiresAuth))
+	if err != nil {
+		log.Error().Msg(err.Error())
+		kong.Response.Exit(500, err.Error(), nil)
+		return
+	}
+
+	log.Debug().Msg(fmt.Sprintf("Success! Called Bellatrix API and swapped [%s] for [%s]", auth0JWT, bellatrixJWT))
 }
 
 func getAuth0Token(request *request.Request) (string, error) {
