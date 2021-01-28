@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/Kong/go-pdk"
-	"github.com/Kong/go-pdk/request"
 )
 
 const REQUEST_JWT_TYPE string = "permissionsJwt"
@@ -55,12 +54,14 @@ func New() interface{} {
 }
 
 func (conf Config) Access(kong *pdk.PDK) {
-	auth0JWT, err := getAuth0Token(&kong.Request)
+	kong.Log.Debug(fmt.Sprintf("begin access"))
+	auth0JWT, err := getAuth0Token(kong)
 	if err != nil {
-		kong.Log.Warn("warning: ", err.Error(), " unable to retrieve token from request headers")
+		kong.Log.Warn("warning: ", err.Error())
 		kong.Response.Exit(401, "Unauthorized", nil)
 		return
 	}
+
 	bellatrixJWT, requiresAuth, err := conf.exchangeJWT(auth0JWT)
 	if err != nil {
 		kong.Log.Warn("warning: ", err.Error(), " unable to exchange Auth0 JWT for Bellatrix JWT")
@@ -88,16 +89,17 @@ func (conf Config) Access(kong *pdk.PDK) {
 	}
 
 	kong.Log.Debug("Success! Called Bellatrix API and swapped [", auth0JWT, "] for [", bellatrixJWT, "]")
+	return
 }
 
-func getAuth0Token(request *request.Request) (string, error) {
-	auth0JWT, jwtErr := request.GetHeader(REQUEST_JWT_HEADER)
-	if jwtErr == nil {
+func getAuth0Token(kong *pdk.PDK) (string, error) {
+	auth0JWT, _ := kong.Request.GetHeader(REQUEST_JWT_HEADER)
+	if strings.Compare("", auth0JWT) != 0 {
 		return extractToken(auth0JWT)
 	}
 
-	auth0JWT, authErr := request.GetHeader(REQUEST_AUTHORIZATION_HEADER)
-	if authErr == nil {
+	auth0JWT, _ = kong.Request.GetHeader(REQUEST_AUTHORIZATION_HEADER)
+	if strings.Compare("", auth0JWT) != 0 {
 		return extractToken(auth0JWT)
 	}
 
