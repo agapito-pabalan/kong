@@ -76,7 +76,14 @@ func (conf Config) Access(kong *pdk.PDK) {
 
 	err = kong.ServiceRequest.SetHeader(REQUEST_JWT_HEADER, tokenHeaderValueStr)
 	if err != nil {
-		kong.Log.Err("error: ", err.Error(), " unable to insert bellatrix jwt header")
+		kong.Log.Err("error: ", err.Error(), " unable to insert bellatrix token in jwt header")
+		kong.Response.Exit(500, err.Error(), nil)
+		return
+	}
+
+	err = kong.ServiceRequest.SetHeader(REQUEST_AUTHORIZATION_HEADER, tokenHeaderValueStr)
+	if err != nil {
+		kong.Log.Err("error: ", err.Error(), " unable to insert bellatrix token in authorization header")
 		kong.Response.Exit(500, err.Error(), nil)
 		return
 	}
