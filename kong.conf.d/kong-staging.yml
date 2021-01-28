@@ -101,6 +101,14 @@ services:
         strip_path: false
         paths:
           - /v1/documents
+  - name: legacy_auth
+    protocol: http
+    host: rigel.default.svc.cluster.local
+    routes:
+      - name: auth
+        strip_path: true
+        paths:
+          - /auth
 plugins:
   - name: cors
     config:
