@@ -1,0 +1,131 @@
+
+
+_format_version: "1.1"
+services:
+  - name: saiph
+    url: http://saiph
+    routes:
+      - name: saiph_root
+        strip_path: false
+        paths:
+          - /addresses
+          - /companies
+          - /countries
+          - /countries/([^\/]+)/subdivisions
+          - /distribution_networks
+          - /distribution_networks/([^\/]+)/items
+          - /distribution_networks/([^\/]+)/items_search
+          - /health/saiph
+          - /item_unit_conversions
+          - /items
+          - /items/([^\/]+)/item_unit_conversions
+          - /items_lookup
+          - /trade_connections
+          - /warehouses
+          - /warehouses/([^\/]+)
+          - /warehouses/([^\/]+)/distribution_networks
+          - /warehouses/([^\/]+)/trade_connections
+  - name: rigel
+    url: http://rigel
+    routes:
+      - name: rigel_root
+        strip_path: false
+        paths:
+          - /cancellations/([^\/]+)
+          - /distribution_networks/([^\/]+)/dashboard/calendar
+          - /distribution_networks/([^\/]+)/dashboard/open_orders
+          - /distribution_networks/([^\/]+)/dashboard/overview
+          - /distribution_networks/([^\/]+)/shipments
+          - /distribution_networks/([^\/]+)/shipping_orders
+          - /health/rigel
+          - /shipment_receipts
+          - /shipment_receipts/([^\/]+)/documents
+          - /shipments
+          - /shipments/([^\/]+)/documents
+          - /shipping_orders
+          - /shipping_orders/([^\/]+)/documents
+          - /shipping_orders/([^\/]+)/inbound
+          - /shipping_orders/([^\/]+)/outbound
+          - /warehouses/([^\/]+)/inbound_shipping_orders
+          - /warehouses/([^\/]+)/orders
+          - /warehouses/([^\/]+)/outbound_shipping_orders
+  - name: bellatrix
+    url: http://bellatrix
+    routes:
+    - name: bellatrix_root
+      strip_path: false
+      paths:
+        - /v1/integrations/identity/auth0/users
+        - /v1/jwt/permissions
+        - /v1/permissions
+        - /v1/roles
+        - /v1/userdetails
+        - /v1/users
+        - /v1/users/([^\/]+)/contexts
+        - /v1/users/([^\/]+)/roles
+        - /v1/utils/headers
+  - name: mintaka
+    url: http://mintaka
+    routes:
+      - name: mintaka_root
+        strip_path: false
+        paths:
+          - /cancellations/([^\/]+)/inventory_adjustment
+          - /distribution_networks/([^\/]+)/inventory_adjustment_activity
+          - /distribution_networks/([^\/]+)/inventory_adjustments
+          - /distribution_networks/([^\/]+)/inventory_lookup
+          - /inventory/([^\/]+)
+          - /inventory/csv_download
+          - /inventory/view
+          - /inventory_adjustments/([^\/]+)/inventory_ledger_entries
+          - /inventory_advices
+          - /inventory_advices/([^\/]+)
+          - /inventory_advices/([^\/]+)/inventory_adjustment
+          - /inventory_advices/([^\/]+)/item_counts
+          - /inventory_ledger_entries/([^\/]+)
+          - /inventory_ledger_entries/([^\/]+)/inventory_balance
+          - /item_counts
+          - /item_counts/([^\/]+)
+          - /manual_adjustments
+          - /manual_adjustments/([^\/]+)
+          - /shipment_receipts/([^\/]+)/inventory_adjustment
+          - /shipments/([^\/]+)/inventory_adjustment
+          - /shipping_orders/([^\/]+)/inventory_adjustment
+          - /trade_connections/([^\/]+)/inventory_advices
+          - /trade_connections/([^\/]+)/manual_adjustments
+          - /warehouses/([^\/]+)/items
+  - name: meissa
+    url: http://meissa
+    routes:
+      - name: meissa_root
+        strip_path: false
+        paths:
+          - /v1/documents
+  - name: legacy_auth
+    protocol: http
+    host: rigel.default.svc.cluster.local
+    routes:
+      - name: auth
+        strip_path: true
+        paths:
+          - /auth
+  - name: acme_dummy
+    host: 10.4.15.145
+    routes:
+      - name: LetsEncrypt_ACME_Challenge
+        strip_path: false
+        paths:
+          - /.well-known/acme-challenge
+plugins:
+  - name: cors
+    config:
+      origins:
+        - "*"
+  - name: bellatrix_bridge
+    config:
+      bellatrixendpoint: http://bellatrix/v1/jwt/permissions
+  - name: request-size-limiting
+    config:
+      allowed_payload_size: 128
+      size_unit: megabytes
+  - name: prometheus
