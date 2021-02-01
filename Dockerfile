@@ -29,17 +29,17 @@ ARG PROD_PRIV_KEY
 
 COPY --from=builder /go/bin/go-pluginserver /usr/local/bin/go-pluginserver
 COPY --from=builder /go-plugins/bellatrix_bridge.so /usr/local/share/go-plugins/bellatrix_bridge.so
-COPY kong.conf.d/kong.dev.template.yml /usr/local/share/kong.yml
+COPY kong.conf.d/kong.template.yml /usr/local/share/kong.yml
 
-# USER root
+USER root
 
-# RUN sed -i "s/STAGING_CERT_1/$STAGING_CERT_1/g" /usr/local/share/kong.yml
-# RUN sed -i "s/STAGING_CERT_2/$STAGING_CERT_2/g" /usr/local/share/kong.yml
-# RUN sed -i "s/STAGING_PRIV_KEY/$STAGING_PRIV_KEY/g" /usr/local/share/kong.yml
-# RUN sed -i "s/PROD_CERT_1/$PROD_CERT_1/g" /usr/local/share/kong.yml
-# RUN sed -i "s/PROD_CERT_2/$PROD_CERT_2/g" /usr/local/share/kong.yml
-# RUN sed -i "s/PROD_PRIV_KEY/$PROD_PRIV_KEY/g" /usr/local/share/kong.yml
+RUN sed -i "s/STAGING_CERT_1/$STAGING_CERT_1/g" /usr/local/share/kong.yml
+RUN sed -i "s/STAGING_CERT_2/$STAGING_CERT_2/g" /usr/local/share/kong.yml
+RUN sed -i "s/STAGING_PRIV_KEY/$STAGING_PRIV_KEY/g" /usr/local/share/kong.yml
+RUN sed -i "s/PROD_CERT_1/$PROD_CERT_1/g" /usr/local/share/kong.yml
+RUN sed -i "s/PROD_CERT_2/$PROD_CERT_2/g" /usr/local/share/kong.yml
+RUN sed -i "s/PROD_PRIV_KEY/$PROD_PRIV_KEY/g" /usr/local/share/kong.yml
 
-# RUN chmod +r /usr/local/share/kong.yml
+RUN chmod +r /usr/local/share/kong.yml
 
 USER kong 
