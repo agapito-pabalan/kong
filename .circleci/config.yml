@@ -28,7 +28,7 @@ jobs:
             echo 'export SSL_CERTIFICATE_1=${NONPROD_SSL_CERTIFICATE_1}' >> $BASH_ENV
             echo 'export SSL_CERTIFICATE_2=${NONPROD_SSL_CERTIFICATE_2}' >> $BASH_ENV
             echo 'export SSL_CERTIFICATE_PRIVATE_KEY=${NONPROD_SSL_CERTIFICATE_PRIVATE_KEY}' >> $BASH_ENV
-            echo 'export SNI_NAME=${NONPROD_SNI_NAME} >> $BASH_ENV
+            echo 'export SNI_NAME=${NONPROD_SNI_NAME}' >> $BASH_ENV
             source $BASH_ENV
       - run:
           name: Build Image  
