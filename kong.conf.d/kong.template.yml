@@ -132,27 +132,14 @@ plugins:
 certificates:
   - cert: |
       -----BEGIN CERTIFICATE-----
-      STAGING_CERT_1
+      SSL_CERTIFICATE_1
       -----END CERTIFICATE-----
       -----BEGIN CERTIFICATE-----
-      STAGING_CERT_2
+      SSL_CERTIFICATE_1
       -----END CERTIFICATE-----
     key: |
       -----BEGIN PRIVATE KEY-----
-      STAGING_PRIV_KEY
+      SSL_CERTIFICATE_PRIVATE_KEY
       -----END PRIVATE KEY-----
     snis:
-      - name: api.staging.stord.com
-  - cert: |
-      -----BEGIN CERTIFICATE-----
-      PROD_CERT_1
-      -----END CERTIFICATE-----
-      -----BEGIN CERTIFICATE-----
-      PROD_CERT_2
-      -----END CERTIFICATE-----
-    key: |
-      -----BEGIN PRIVATE KEY-----
-      PROD_PRIV_KEY
-      -----END PRIVATE KEY-----
-    snis:
-      - name: api.stord.com
+      - name: SNI_NAME
