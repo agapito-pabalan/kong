@@ -19,6 +19,9 @@ jobs:
           name: Build Image  
           command: docker-compose build
       - run:
+          name: Authenticate with GCR
+          command: echo $NONPROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
+      - run:
           name: Push Image
           command: docker-compose push
 
