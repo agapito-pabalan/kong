@@ -37,9 +37,9 @@ workflows:
   build_and_release:
     jobs:
       - build-and-push:
-          filters:
-            branches:
-              only: master
+          # filters:
+          #   branches:
+          #     only: master
       - promote:
           filters:
             branches:
