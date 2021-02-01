@@ -1,7 +1,7 @@
 version: "3.7"
 services:
   kong:
-    image: gcr.io/stord-nonprod/kong:latest
+    image: gcr.io/stord-nonprod/kong:${CIRCLE_WORKFLOW_ID}
     build:
       context: .
       args:
