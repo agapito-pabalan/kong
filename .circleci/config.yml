@@ -3,7 +3,10 @@ version: 2.1
 executors:
   builder:
     docker:
-      - image: docker:stable
+      - image: gcr.io/stord-nonprod/builder:latest
+        auth:
+          username: _json_key
+          password: ${NONPROD_GCLOUD_SERVICE_KEY}
 
 jobs:
   build:
