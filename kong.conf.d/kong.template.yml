@@ -135,7 +135,7 @@ certificates:
       SSL_CERTIFICATE_1
       -----END CERTIFICATE-----
       -----BEGIN CERTIFICATE-----
-      SSL_CERTIFICATE_1
+      SSL_CERTIFICATE_2
       -----END CERTIFICATE-----
     key: |
       -----BEGIN PRIVATE KEY-----
