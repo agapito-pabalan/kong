@@ -13,26 +13,8 @@ jobs:
           docker_layer_caching: true
       - checkout
       - run:
-          name: Set ENV
-          command: |
-            echo 'export KONG_DATABASE=off' >> $BASH_ENV
-            echo 'export KONG_DECLARATIVE_CONFIG=/tmp/config.yml' >> $BASH_ENV
-            echo 'export KONG_ADMIN_LISTEN=0.0.0.0:8001' >> $BASH_ENV
-            echo 'export KONG_PLUGINS=bellatrix_bridge' >> $BASH_ENV
-            echo 'export KONG_GO_PLUGINS_DIR=/tmp/go-plugins' >> $BASH_ENV
-            echo 'export KONG_PROXY_ACCESS_LOG=/dev/stdout' >> $BASH_ENV
-            echo 'export KONG_PROXY_ERROR_LOG=/dev/stderr' >> $BASH_ENV
-            echo 'export KONG_ADMIN_ACCESS_LOG=/dev/stdout' >> $BASH_ENV
-            echo 'export KONG_ADMIN_ERROR_LOG=/dev/stderr' >> $BASH_ENV
-            echo 'export KONG_LOG_LEVEL=info' >> $BASH_ENV
-            echo 'export SSL_CERTIFICATE_1=${NONPROD_SSL_CERTIFICATE_1}' >> $BASH_ENV
-            echo 'export SSL_CERTIFICATE_2=${NONPROD_SSL_CERTIFICATE_2}' >> $BASH_ENV
-            echo 'export SSL_CERTIFICATE_PRIVATE_KEY=${NONPROD_SSL_CERTIFICATE_PRIVATE_KEY}' >> $BASH_ENV
-            echo 'export SNI_NAME=${NONPROD_SNI_NAME}' >> $BASH_ENV
-            source $BASH_ENV
-      - run:
           name: Build Image  
-          command: ./.circleci/bin/build
+          command: docker-compose build
       - run:
           name: Create Workspace
           command: mkdir -p workspace
