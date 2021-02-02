@@ -17,13 +17,13 @@ jobs:
       - checkout
       - run:
           name: Build Image  
-          command: docker-compose -f docker-compose.nonprod.yaml build
+          command: docker-compose -f docker-compose.nonprod.yml build
       - run:
           name: Authenticate with GCR
           command: echo $NONPROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
       - run:
           name: Push Image
-          command: docker-compose -f docker-compose.nonprod.yaml push
+          command: docker-compose -f docker-compose.nonprod.yml push
 
   build-and-push-prod:
     executor: builder
@@ -33,13 +33,13 @@ jobs:
       - checkout
       - run:
           name: Build Image  
-          command: docker-compose -f docker-compose.prod.yaml build
+          command: docker-compose -f docker-compose.prod.yml build
       - run:
           name: Authenticate with GCR
           command: echo $PROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
       - run:
           name: Push Image
-          command: docker-compose -f docker-compose.prod.yaml push
+          command: docker-compose -f docker-compose.prod.yml push
 
 workflows:
   version: 2
