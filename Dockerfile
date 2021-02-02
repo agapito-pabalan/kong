@@ -18,7 +18,7 @@ COPY --from=builder /go/bin/go-pluginserver /usr/local/bin/go-pluginserver
 COPY --from=builder /go-plugins/bellatrix_bridge.so /usr/local/share/go-plugins/bellatrix_bridge.so
 # COPY kong.conf.d/kong.template.yml /usr/local/share/kong.yml
 
-USER root
+# USER root
 
 # RUN sed -i "s~SSL_CERTIFICATE_1~$SSL_CERTIFICATE_1~g" /usr/local/share/kong.yml
 # RUN sed -i "s~SSL_CERTIFICATE_2~$SSL_CERTIFICATE_2~g" /usr/local/share/kong.yml
