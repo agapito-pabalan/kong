@@ -36,7 +36,7 @@ jobs:
           command: docker-compose -f docker-compose.prod.yaml build
       - run:
           name: Authenticate with GCR
-          command: echo $NONPROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
+          command: echo $PROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
       - run:
           name: Push Image
           command: docker-compose -f docker-compose.prod.yaml push
