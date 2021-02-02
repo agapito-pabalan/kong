@@ -9,7 +9,7 @@ executors:
           password: ${NONPROD_GCLOUD_SERVICE_KEY}
 
 jobs:
-  build-and-push:
+  build-and-push-nonprod:
     executor: builder
     steps:
       - setup_remote_docker:
@@ -17,23 +17,29 @@ jobs:
       - checkout
       - run:
           name: Build Image  
-          command: docker-compose build
+          command: docker-compose -f docker-compose.nonprod.yaml build
       - run:
           name: Authenticate with GCR
           command: echo $NONPROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
       - run:
           name: Push Image
-          command: docker-compose push
+          command: docker-compose -f docker-compose.nonprod.yaml push
 
-  promote:
+  build-and-push-prod:
     executor: builder
     steps:
       - setup_remote_docker:
           docker_layer_caching: false
       - checkout
       - run:
-          name: Promote Backend
-          command: ./.circleci/bin/promote <<pipeline.git.tag>>
+          name: Build Image  
+          command: docker-compose -f docker-compose.prod.yaml build
+      - run:
+          name: Authenticate with GCR
+          command: echo $NONPROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
+      - run:
+          name: Push Image
+          command: docker-compose -f docker-compose.prod.yaml push
 
 workflows:
   version: 2
