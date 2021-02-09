@@ -188,32 +188,101 @@ services:
   - name: mintaka
     url: http://mintaka
     routes:
-      - name: mintaka_root
+      - name: mintaka_cancellations_inventory_adjustment
         strip_path: false
         paths:
           - /cancellations/([^\/]+)/inventory_adjustment
+      - name: mintaka_distribution_networks_inventory_adjustment_activity
+        strip_path: false
+        paths:
           - /distribution_networks/([^\/]+)/inventory_adjustment_activity
+      - name: mintaka_distribution_networks_inventory_adjustments
+        strip_path: false
+        paths:
           - /distribution_networks/([^\/]+)/inventory_adjustments
+      - name: mintaka_distribution_networks_inventory_lookup
+        strip_path: false
+        paths:
           - /distribution_networks/([^\/]+)/inventory_lookup
+      - name: mintaka_inventory
+        strip_path: false
+        paths:
           - /inventory/([^\/]+)
+      - name: mintaka_inventory_csv_download
+        strip_path: false
+        paths:
           - /inventory/csv_download
+      - name: mintaka_inventory_view
+        strip_path: false
+        paths:
           - /inventory/view
+      - name: mintaka_inventory_adjustments_inventory_ledger_entries
+        strip_path: false
+        paths:
           - /inventory_adjustments/([^\/]+)/inventory_ledger_entries
+      - name: mintaka_inventory_advices
+        strip_path: false
+        paths:
           - /inventory_advices
+      - name: mintaka_inventory_advices_by_id
+        strip_path: false
+        paths:
           - /inventory_advices/([^\/]+)
+      - name: mintaka_inventory_advices_inventory_adjustment
+        strip_path: false
+        paths:
           - /inventory_advices/([^\/]+)/inventory_adjustment
+      - name: mintaka_inventory_advices_item_counts
+        strip_path: false
+        paths:
           - /inventory_advices/([^\/]+)/item_counts
+      - name: mintaka_inventory_ledger_entries
+        strip_path: false
+        paths:
           - /inventory_ledger_entries/([^\/]+)
+      - name: mintaka_inventory_ledger_entries_inventory_balance
+        strip_path: false
+        paths:
           - /inventory_ledger_entries/([^\/]+)/inventory_balance
+      - name: mintaka_item_counts
+        strip_path: false
+        paths:
           - /item_counts
+      - name: mintaka_item_counts_by_id
+        strip_path: false
+        paths:
           - /item_counts/([^\/]+)
+      - name: mintaka_manual_adjustments
+        strip_path: false
+        paths:
           - /manual_adjustments
+      - name: mintaka_manual_adjustments_by_id
+        strip_path: false
+        paths:
           - /manual_adjustments/([^\/]+)
+      - name: mintaka_shipment_receipts_inventory_adjustment
+        strip_path: false
+        paths:
           - /shipment_receipts/([^\/]+)/inventory_adjustment
+      - name: mintaka_shipments_inventory_adjustment
+        strip_path: false
+        paths:
           - /shipments/([^\/]+)/inventory_adjustment
+      - name: mintaka_shipping_orders_inventory_adjustment
+        strip_path: false
+        paths:
           - /shipping_orders/([^\/]+)/inventory_adjustment
+      - name: mintaka_trade_connections_inventory_advices
+        strip_path: false
+        paths:
           - /trade_connections/([^\/]+)/inventory_advices
+      - name: mintaka_trade_connections_manual_adjustments
+        strip_path: false
+        paths:
           - /trade_connections/([^\/]+)/manual_adjustments
+      - name: mintaka_warehouses_items
+        strip_path: false
+        paths:
           - /warehouses/([^\/]+)/items
   - name: meissa
     url: http://meissa
