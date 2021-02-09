@@ -287,7 +287,7 @@ services:
   - name: meissa
     url: http://meissa
     routes:
-      - name: meissa_root
+      - name: meissa_v1_documents
         strip_path: false
         paths:
           - /v1/documents
