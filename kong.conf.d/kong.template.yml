@@ -3,25 +3,73 @@ services:
   - name: saiph
     url: http://saiph
     routes:
-      - name: saiph_root
+      - name: saiph_addresses
         strip_path: false
         paths:
           - /addresses
+      - name: saiph_companies
+        strip_path: false
+        paths:
           - /companies
+      - name: saiph_countries
+        strip_path: false
+        paths:
           - /countries
+      - name: saiph_countries_subdivisions
+        strip_path: false
+        paths:
           - /countries/([^\/]+)/subdivisions
+      - name: saiph_distribution_networks
+        strip_path: false
+        paths:
           - /distribution_networks
+      - name: saiph_distribution_networks_items
+        strip_path: false
+        paths:
           - /distribution_networks/([^\/]+)/items
+      - name: saiph_distribution_networks_items_search
+        strip_path: false
+        paths:
           - /distribution_networks/([^\/]+)/items_search
+      - name: saiph_health
+        strip_path: false
+        paths:
           - /health/saiph
+      - name: saiph_item_unit_conversions
+        strip_path: false
+        paths:
           - /item_unit_conversions
+      - name: saiph_items
+        strip_path: false
+        paths:
           - /items
+      - name: saiph_items_item_unit_conversions
+        strip_path: false
+        paths:
           - /items/([^\/]+)/item_unit_conversions
+      - name: saiph_items_lookup
+        strip_path: false
+        paths:
           - /items_lookup
+      - name: saiph_trade_connections
+        strip_path: false
+        paths:
           - /trade_connections
+      - name: saiph_warehouses
+        strip_path: false
+        paths:
           - /warehouses
+      - name: saiph_warehouse
+        strip_path: false
+        paths:
           - /warehouses/([^\/]+)
+      - name: saiph_warehouse_distribution_networks
+        strip_path: false
+        paths:
           - /warehouses/([^\/]+)/distribution_networks
+      - name: saiph_warehouse_trade_connections
+        strip_path: false
+        paths:
           - /warehouses/([^\/]+)/trade_connections
   - name: rigel
     url: http://rigel
