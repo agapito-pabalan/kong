@@ -149,18 +149,42 @@ services:
   - name: bellatrix
     url: http://bellatrix
     routes:
-    - name: bellatrix_root
-      strip_path: false
-      paths:
-        - /v1/integrations/identity/auth0/users
-        - /v1/jwt/permissions
-        - /v1/permissions
-        - /v1/roles
-        - /v1/userdetails
-        - /v1/users
-        - /v1/users/([^\/]+)/contexts
-        - /v1/users/([^\/]+)/roles
-        - /v1/utils/headers
+      - name: bellatrix_auth0_user_identity
+        strip_path: false
+        paths:
+          - /v1/integrations/identity/auth0/users
+      - name: bellatrix_v1_jwt_permissions
+        strip_path: false
+        paths:
+          - /v1/jwt/permissions
+      - name: bellatrix_v1_permissions
+        strip_path: false
+        paths:
+          - /v1/permissions
+      - name: bellatrix_v1_roles
+        strip_path: false
+        paths:
+          - /v1/roles
+      - name: bellatrix_v1_user_details
+        strip_path: false
+        paths:
+          - /v1/userdetails
+      - name: bellatrix_v1_users
+        strip_path: false
+        paths:
+          - /v1/users
+      - name: bellatrix_v1_users_contexts
+        strip_path: false
+        paths:
+          - /v1/users/([^\/]+)/contexts
+      - name: bellatrix_v1_users_roles
+        strip_path: false
+        paths:
+          - /v1/users/([^\/]+)/roles
+      - name: bellatrix_v1_utils_headers
+        strip_path: false
+        paths:
+          - /v1/utils/headers
   - name: mintaka
     url: http://mintaka
     routes:
