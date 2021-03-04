@@ -98,7 +98,10 @@ func (conf Config) Access(kong *pdk.PDK) {
 }
 
 func requiresAuthBackdoor(kong *pdk.PDK) string {
-	requiresAuthValue, _ := kong.Request.GetHeader(REQUIRES_AUTH_HEADER)
+	requiresAuthValue, err := kong.Request.GetHeader(REQUIRES_AUTH_HEADER)
+	if err != nil {
+		return "true"
+	}
 
 	if strings.Compare("false", requiresAuthValue) == 0 {
 		return "false"
