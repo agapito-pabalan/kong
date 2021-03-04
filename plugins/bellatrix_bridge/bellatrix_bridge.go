@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/Kong/go-pdk"
@@ -20,7 +19,6 @@ const REQUIRES_AUTH_HEADER string = "requires-auth"
 
 type BellatrixResponseAttributes struct {
 	PermissionsJwt string `json:"permissionsJwt"`
-	RequiresAuth   bool   `json:"requiresAuth"`
 }
 
 type BellatrixResponse struct {
@@ -62,7 +60,7 @@ func (conf Config) Access(kong *pdk.PDK) {
 		return
 	}
 
-	bellatrixJWT, requiresAuth, err := conf.exchangeJWT(auth0JWT)
+	bellatrixJWT, err := conf.exchangeJWT(auth0JWT)
 	if err != nil {
 		kong.Log.Warn("warning: ", err.Error(), " unable to exchange Auth0 JWT for Bellatrix JWT")
 		kong.Response.Exit(401, "Unauthorized", nil)
@@ -88,7 +86,7 @@ func (conf Config) Access(kong *pdk.PDK) {
 		return
 	}
 
-	err = kong.ServiceRequest.SetHeader(REQUIRES_AUTH_HEADER, strconv.FormatBool(requiresAuth))
+	err = kong.ServiceRequest.SetHeader(REQUIRES_AUTH_HEADER, requiresAuthBackdoor(kong))
 	if err != nil {
 		kong.Log.Err("error: ", err.Error(), " unable to insert \"requires-auth\" header")
 		kong.Response.Exit(500, err.Error(), nil)
@@ -97,6 +95,16 @@ func (conf Config) Access(kong *pdk.PDK) {
 
 	kong.Log.Debug("Success! Called Bellatrix API and swapped [", auth0JWT, "] for [", bellatrixJWT, "]")
 	return
+}
+
+func requiresAuthBackdoor(kong *pdk.PDK) string {
+	requiresAuthValue, _ := kong.Request.GetHeader(REQUIRES_AUTH_HEADER)
+
+	if strings.Compare("false", requiresAuthValue) == 0 {
+		return "false"
+	}
+
+	return "true"
 }
 
 func getAuth0Token(kong *pdk.PDK) (string, error) {
@@ -122,7 +130,7 @@ func extractToken(headerValue string) (string, error) {
 	return headerValueArr[1], nil
 }
 
-func (conf Config) exchangeJWT(auth0Jwt string) (string, bool, error) {
+func (conf Config) exchangeJWT(auth0Jwt string) (string, error) {
 
 	requestEnvelope := RequestEnvelope{Data: BellatrixRequest{
 		Attributes: BellatrixRequestAttributes{
@@ -133,16 +141,16 @@ func (conf Config) exchangeJWT(auth0Jwt string) (string, bool, error) {
 
 	requestBody, err := json.Marshal(requestEnvelope)
 	if err != nil {
-		return "", true, err
+		return "", err
 	}
 
 	response, err := http.Post(conf.BellatrixEndpoint, "application/vnd.api+json", bytes.NewBuffer(requestBody))
 	if err != nil {
-		return "", true, err
+		return "", err
 	}
 
 	if response.StatusCode < 200 || response.StatusCode > 299 {
-		return "", true, fmt.Errorf("unexpected status code from Bellatrix: %d", response.StatusCode)
+		return "", fmt.Errorf("unexpected status code from Bellatrix: %d", response.StatusCode)
 	}
 
 	var responseEnvelope ResponseEnvelope
@@ -150,8 +158,8 @@ func (conf Config) exchangeJWT(auth0Jwt string) (string, bool, error) {
 	err = json.NewDecoder(response.Body).Decode(&responseEnvelope)
 
 	if err != nil {
-		return "", true, err
+		return "", err
 	}
 
-	return responseEnvelope.Data.Attributes.PermissionsJwt, responseEnvelope.Data.Attributes.RequiresAuth, nil
+	return responseEnvelope.Data.Attributes.PermissionsJwt, nil
 }
