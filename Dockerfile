@@ -2,6 +2,8 @@ FROM golang:1.15-alpine as builder
 
 RUN apk add --no-cache git gcc libc-dev
 RUN go get github.com/Kong/go-pluginserver
+RUN go get github.com/lestrrat-go/jwx/jwt
+RUN go get github.com/lestrrat-go/jwx/jwk
 
 RUN mkdir /go-plugins
 COPY /plugins/bellatrix_bridge/bellatrix_bridge.go /go-plugins/bellatrix_bridge.go

@@ -2,13 +2,17 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/Kong/go-pdk"
+	"github.com/lestrrat-go/jwx/jwk"
+	"github.com/lestrrat-go/jwx/jwt"
 )
 
 const REQUEST_JWT_TYPE string = "permissionsJwt"
@@ -43,12 +47,23 @@ type RequestEnvelope struct {
 	Data BellatrixRequest `json:"data"`
 }
 
+type Response struct {
+	Message string `json:"message"`
+}
+
 type Config struct {
-	BellatrixEndpoint string
+	BellatrixEndpoint   string `json:"bellatrix_endpoint"`
+	Auth0Url            string `json:"auth0_url"`
+	JwksRefreshInterval int    `json:"jwks_refresh_interval"`
+	AutoRefresh         *jwk.AutoRefresh
+	Ctx                 context.Context
 }
 
 func New() interface{} {
-	return &Config{}
+	conf := Config{}
+	conf.Ctx = context.Background()
+	conf.AutoRefresh = jwk.NewAutoRefresh(conf.Ctx)
+	return &conf
 }
 
 func (conf Config) Access(kong *pdk.PDK) {
@@ -60,7 +75,23 @@ func (conf Config) Access(kong *pdk.PDK) {
 		return
 	}
 
-	bellatrixJWT, err := conf.exchangeJWT(auth0JWT)
+	conf.AutoRefresh.Configure(conf.Auth0Url, jwk.WithMinRefreshInterval(time.Duration(conf.JwksRefreshInterval)*time.Minute))
+
+	keyset, err := conf.AutoRefresh.Fetch(conf.Ctx, conf.Auth0Url)
+	if err != nil {
+		kong.Log.Err("failed to fetch Auth0 JWKS: ", err)
+		kong.Response.Exit(500, err.Error(), nil)
+		return
+	}
+
+	_, err = jwt.Parse(auth0JWT, jwt.WithKeySet(keyset), jwt.WithValidate(true))
+	if err != nil {
+		kong.Log.Warn("warning: invalid Auth0 JWT - ", err.Error())
+		kong.Response.Exit(401, "Unauthorized", nil)
+		return
+	}
+
+	bellatrixJWT, err := conf.exchangeJWT(string(auth0JWT))
 	if err != nil {
 		kong.Log.Warn("warning: ", err.Error(), " unable to exchange Auth0 JWT for Bellatrix JWT")
 		kong.Response.Exit(401, "Unauthorized", nil)
@@ -110,27 +141,28 @@ func requiresAuthBackdoor(kong *pdk.PDK) string {
 	return "true"
 }
 
-func getAuth0Token(kong *pdk.PDK) (string, error) {
-	auth0JWT, _ := kong.Request.GetHeader(REQUEST_JWT_HEADER)
+func getAuth0Token(kong *pdk.PDK) ([]byte, error) {
+	auth0JWT := ""
+	auth0JWT, _ = kong.Request.GetHeader(REQUEST_JWT_HEADER)
 	if strings.Compare("", auth0JWT) != 0 {
-		return extractToken(auth0JWT)
+		return extractToken(&auth0JWT)
 	}
 
 	auth0JWT, _ = kong.Request.GetHeader(REQUEST_AUTHORIZATION_HEADER)
 	if strings.Compare("", auth0JWT) != 0 {
-		return extractToken(auth0JWT)
+		return extractToken(&auth0JWT)
 	}
 
-	return "", errors.New("unable to find access token in headers")
+	return nil, errors.New("unable to find access token in headers")
 }
 
-func extractToken(headerValue string) (string, error) {
-	headerValueArr := strings.Split(headerValue, BEARER_PREFIX)
+func extractToken(headerValue *string) ([]byte, error) {
+	headerValueArr := strings.Split(*headerValue, BEARER_PREFIX)
 
 	if len(headerValueArr) != 2 {
-		return "", fmt.Errorf("invalid token format, expected \"%s\"", BEARER_PREFIX)
+		return nil, fmt.Errorf("invalid token format, expected \"%s\"", BEARER_PREFIX)
 	}
-	return headerValueArr[1], nil
+	return []byte(headerValueArr[1]), nil
 }
 
 func (conf Config) exchangeJWT(auth0Jwt string) (string, error) {
