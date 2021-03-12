@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/Kong/go-pdk"
+	"github.com/go-redis/redis"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/lestrrat-go/jwx/jwt"
 )
@@ -54,15 +55,20 @@ type Response struct {
 type Config struct {
 	BellatrixEndpoint   string `json:"bellatrix_endpoint"`
 	Auth0Url            string `json:"auth0_url"`
+	CacheUrl            string `json:"cache_url"`
 	JwksRefreshInterval int    `json:"jwks_refresh_interval"`
 	AutoRefresh         *jwk.AutoRefresh
-	Ctx                 context.Context
+	CacheClient         *redis.Client
+	JwkCtx              context.Context
+	CacheCtx            context.Context
 }
 
 func New() interface{} {
 	conf := Config{}
-	conf.Ctx = context.Background()
-	conf.AutoRefresh = jwk.NewAutoRefresh(conf.Ctx)
+	conf.JwkCtx = context.Background()
+	conf.CacheCtx = context.Background()
+	conf.AutoRefresh = jwk.NewAutoRefresh(conf.JwkCtx)
+	conf.CacheClient = nil
 	return &conf
 }
 
@@ -77,21 +83,21 @@ func (conf Config) Access(kong *pdk.PDK) {
 
 	conf.AutoRefresh.Configure(conf.Auth0Url, jwk.WithMinRefreshInterval(time.Duration(conf.JwksRefreshInterval)*time.Minute))
 
-	keyset, err := conf.AutoRefresh.Fetch(conf.Ctx, conf.Auth0Url)
+	keyset, err := conf.AutoRefresh.Fetch(conf.JwkCtx, conf.Auth0Url)
 	if err != nil {
 		kong.Log.Err("failed to fetch Auth0 JWKS: ", err)
 		kong.Response.Exit(500, err.Error(), nil)
 		return
 	}
 
-	_, err = jwt.Parse(auth0JWT, jwt.WithKeySet(keyset), jwt.WithValidate(true))
+	auth0Token, err := jwt.Parse(auth0JWT, jwt.WithKeySet(keyset), jwt.WithValidate(true))
 	if err != nil {
 		kong.Log.Warn("warning: invalid Auth0 JWT - ", err.Error())
 		kong.Response.Exit(401, "Unauthorized", nil)
 		return
 	}
 
-	bellatrixJWT, err := conf.exchangeJWT(string(auth0JWT))
+	bellatrixJWT, err := conf.memoInternalToken(auth0Token, string(auth0JWT), kong)
 	if err != nil {
 		kong.Log.Warn("warning: ", err.Error(), " unable to exchange Auth0 JWT for Bellatrix JWT")
 		kong.Response.Exit(401, "Unauthorized", nil)
@@ -126,6 +132,15 @@ func (conf Config) Access(kong *pdk.PDK) {
 
 	kong.Log.Debug("Success! Called Bellatrix API and swapped [", auth0JWT, "] for [", bellatrixJWT, "]")
 	return
+}
+
+func (conf Config) RedisClient() *redis.Client {
+	if conf.CacheClient != nil {
+		return conf.CacheClient
+	}
+	opts, _ := redis.ParseURL(conf.CacheUrl)
+	conf.CacheClient = redis.NewClient(opts)
+	return conf.CacheClient
 }
 
 func requiresAuthBackdoor(kong *pdk.PDK) string {
@@ -163,6 +178,30 @@ func extractToken(headerValue *string) ([]byte, error) {
 		return nil, fmt.Errorf("invalid token format, expected \"%s\"", BEARER_PREFIX)
 	}
 	return []byte(headerValueArr[1]), nil
+}
+
+func (conf Config) memoInternalToken(auth0Token jwt.Token, auth0Jwt string, kong *pdk.PDK) (string, error) {
+	internalJwt := ""
+	auth0UserID := auth0Token.Subject()
+	cacheClient := conf.RedisClient()
+
+	internalJwt, err := cacheClient.Get(conf.CacheCtx, auth0UserID).Result()
+	if err == nil {
+		return internalJwt, nil
+	}
+
+	internalJwt, err = conf.exchangeJWT(auth0Jwt)
+	if err != nil {
+		return "", err
+	}
+
+	cachedTokenTTL := auth0Token.Expiration().Sub(auth0Token.IssuedAt())
+	err = cacheClient.SetEX(conf.CacheCtx, auth0UserID, internalJwt, cachedTokenTTL).Err()
+	if err != nil {
+		kong.Log.Warn("warning: ", err.Error(), " unable to store internal token in cache")
+	}
+
+	return internalJwt, nil
 }
 
 func (conf Config) exchangeJWT(auth0Jwt string) (string, error) {
