@@ -123,7 +123,7 @@ func (conf Config) Access(kong *pdk.PDK) {
 		return
 	}
 
-	err = kong.ServiceRequest.SetHeader(REQUIRES_AUTH_HEADER, requiresAuthBackdoor(kong))
+	err = kong.ServiceRequest.SetHeader(REQUIRES_AUTH_HEADER, "true")
 	if err != nil {
 		kong.Log.Err("error: ", err.Error(), " unable to insert \"requires-auth\" header")
 		kong.Response.Exit(500, err.Error(), nil)
@@ -141,19 +141,6 @@ func (conf Config) RedisClient() *redis.Client {
 	opts, _ := redis.ParseURL(conf.CacheUrl)
 	conf.CacheClient = redis.NewClient(opts)
 	return conf.CacheClient
-}
-
-func requiresAuthBackdoor(kong *pdk.PDK) string {
-	requiresAuthValue, err := kong.Request.GetHeader(REQUIRES_AUTH_HEADER)
-	if err != nil {
-		return "true"
-	}
-
-	if strings.Compare("false", requiresAuthValue) == 0 {
-		return "false"
-	}
-
-	return "true"
 }
 
 func getAuth0Token(kong *pdk.PDK) ([]byte, error) {
