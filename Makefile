@@ -4,16 +4,16 @@ clean:
 	docker-compose down --volumes --remove-orphans
 
 shell:
-	docker-compose -f docker-compose.local.yml run --rm ash
+	docker-compose -f docker-compose.yml run --rm ash
 
 up:
-	docker-compose -f docker-compose.local.yml up -d
+	docker-compose -f docker-compose.yml up -d
 
 down:
-	docker-compose -f docker-compose.local.yml down --remove-orphans
+	docker-compose -f docker-compose.yml down --remove-orphans
 
 attach:
 	docker attach kong
 
 logs:
-	docker-compose -f docker-compose.local.yml logs -f
+	docker-compose -f docker-compose.yml logs -f

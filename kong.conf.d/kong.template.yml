@@ -317,7 +317,10 @@ plugins:
         - "*"
   - name: bellatrix_bridge
     config:
-      bellatrixendpoint: http://bellatrix/v1/jwt/permissions
+      bellatrix_endpoint: http://bellatrix/v1/jwt/permissions
+      auth0_url: https://stord.auth0.com/.well-known/jwks.json
+      cache_url: REDIS_CACHE_URL
+      jwks_refresh_interval: 15
   - name: request-size-limiting
     config:
       allowed_payload_size: 128
