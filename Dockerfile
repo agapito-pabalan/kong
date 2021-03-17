@@ -12,6 +12,7 @@ RUN go build -buildmode plugin -o /go-plugins/bellatrix_bridge.so /go-plugins/be
 
 FROM kong:2.2.1-alpine as release
 
+ARG AUTH0_JWKS_URL
 ARG REDIS_CACHE_URL
 ARG SSL_CERTIFICATE_1
 ARG SSL_CERTIFICATE_2
