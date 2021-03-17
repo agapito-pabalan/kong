@@ -5,6 +5,7 @@ services:
     build:
       context: .
       args:
+        AUTH0_JWKS_URL: https://stord.auth0.com/.well-known/jwks.json
         REDIS_CACHE_URL: $PROD_REDIS_CACHE_URL
         SSL_CERTIFICATE_1: $PROD_SSL_CERTIFICATE_1
         SSL_CERTIFICATE_2: $PROD_SSL_CERTIFICATE_2
