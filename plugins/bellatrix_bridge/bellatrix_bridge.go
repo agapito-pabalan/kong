@@ -21,6 +21,7 @@ const REQUEST_JWT_HEADER string = "jwt"
 const REQUEST_AUTHORIZATION_HEADER string = "authorization"
 const BEARER_PREFIX string = "Bearer "
 const REQUIRES_AUTH_HEADER string = "requires-auth"
+const PROCESSING_PERIOD int = 1
 
 type BellatrixResponseAttributes struct {
 	PermissionsJwt string `json:"permissionsJwt"`
@@ -35,6 +36,10 @@ type ResponseEnvelope struct {
 	Data BellatrixResponse `json:"data"`
 }
 
+type Response struct {
+	Message string `json:"message"`
+}
+
 type BellatrixRequestAttributes struct {
 	Auth0Jwt string `json:"auth0Jwt"`
 }
@@ -47,9 +52,17 @@ type BellatrixRequest struct {
 type RequestEnvelope struct {
 	Data BellatrixRequest `json:"data"`
 }
+type BellatrixRequestAttributesV2 struct {
+	Auth0UserID string `json:"auth0UserId"`
+}
 
-type Response struct {
-	Message string `json:"message"`
+type BellatrixRequestV2 struct {
+	Attributes BellatrixRequestAttributesV2 `json:"attributes"`
+	Type       string                       `json:"type"`
+}
+
+type RequestEnvelopeV2 struct {
+	Data BellatrixRequestV2 `json:"data"`
 }
 
 type Config struct {
@@ -177,12 +190,13 @@ func (conf Config) memoInternalToken(auth0Token jwt.Token, auth0Jwt string, kong
 		return internalJwt, nil
 	}
 
-	internalJwt, err = conf.exchangeJWT(auth0Jwt)
+	internalJwt, err = conf.exchangeJWT(auth0Jwt, auth0UserID)
 	if err != nil {
 		return "", err
 	}
 
-	cachedTokenTTL := auth0Token.Expiration().Sub(auth0Token.IssuedAt())
+	processing_period := time.Duration(PROCESSING_PERIOD) * time.Minute
+	cachedTokenTTL := auth0Token.Expiration().Sub(auth0Token.IssuedAt().Add(processing_period))
 	err = cacheClient.SetEX(conf.CacheCtx, auth0UserID, internalJwt, cachedTokenTTL).Err()
 	if err != nil {
 		kong.Log.Warn("warning: ", err.Error(), " unable to store internal token in cache")
@@ -191,7 +205,12 @@ func (conf Config) memoInternalToken(auth0Token jwt.Token, auth0Jwt string, kong
 	return internalJwt, nil
 }
 
-func (conf Config) exchangeJWT(auth0Jwt string) (string, error) {
+func (conf Config) exchangeJWT(auth0Jwt string, auth0UserID string) (string, error) {
+
+	permissionsJWT, err := conf.exchangeJWTV2(auth0UserID)
+	if err == nil {
+		return permissionsJWT, nil
+	}
 
 	requestEnvelope := RequestEnvelope{Data: BellatrixRequest{
 		Attributes: BellatrixRequestAttributes{
@@ -206,6 +225,40 @@ func (conf Config) exchangeJWT(auth0Jwt string) (string, error) {
 	}
 
 	response, err := http.Post(conf.BellatrixEndpoint, "application/vnd.api+json", bytes.NewBuffer(requestBody))
+	if err != nil {
+		return "", err
+	}
+
+	if response.StatusCode < 200 || response.StatusCode > 299 {
+		return "", fmt.Errorf("unexpected status code from Bellatrix: %d", response.StatusCode)
+	}
+
+	var responseEnvelope ResponseEnvelope
+
+	err = json.NewDecoder(response.Body).Decode(&responseEnvelope)
+
+	if err != nil {
+		return "", err
+	}
+
+	return responseEnvelope.Data.Attributes.PermissionsJwt, nil
+}
+
+func (conf Config) exchangeJWTV2(auth0UserID string) (string, error) {
+
+	requestEnvelopeV2 := RequestEnvelopeV2{Data: BellatrixRequestV2{
+		Attributes: BellatrixRequestAttributesV2{
+			Auth0UserID: auth0UserID,
+		},
+		Type: REQUEST_JWT_TYPE,
+	}}
+
+	requestBodyV2, err := json.Marshal(requestEnvelopeV2)
+	if err != nil {
+		return "", err
+	}
+
+	response, err := http.Post(conf.BellatrixEndpoint, "application/vnd.api+json", bytes.NewBuffer(requestBodyV2))
 	if err != nil {
 		return "", err
 	}
