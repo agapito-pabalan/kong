@@ -314,7 +314,12 @@ plugins:
   - name: cors
     config:
       origins:
-        - "*"
+        - https://admin.staging.stord.com
+        - https://shipper.staging.stord.com
+        - https://warehouse.staging.stord.com
+        - https://admin.stord.com
+        - https://shipper.stord.com
+        - https://warehouse.stord.com
   - name: bellatrix_bridge
     config:
       bellatrix_endpoint: http://bellatrix/v1/jwt/permissions
