@@ -295,6 +295,49 @@ services:
         strip_path: false
         paths:
           - /v1/documents
+  - name: orders-service
+    url: http://orders-service
+    routes:
+      - name: channels
+        strip_path: false
+        paths:
+          - /v1/channels
+      - name: channels_by_id
+        strip_path: false
+        paths:
+          - /v1/channels/([^\/]+)
+      - name: orders
+        strip_path: false
+        paths:
+          - /v1/orders
+      - name: orders_by_id
+        strip_path: false
+        paths:
+          - /v1/orders/([^\/]+)
+      - name: orders_sales_order_lines
+        strip_path: false
+        paths:
+          - /v1/orders/([^\/]+)/sales_order_lines
+      - name: orders_purchase_order_lines
+        strip_path: false
+        paths:
+          - /v1/orders/([^\/]+)/purchase_order_lines
+      - name: purchase_order_lines
+        strip_path: false
+        paths:
+          - /v1/purchase_order_lines
+      - name: purchase_order_lines_by_id
+        strip_path: false
+        paths:
+          - /v1/purchase_order_lines/([^\/]+)
+      - name: sales_order_lines
+        strip_path: false
+        paths:
+          - /v1/sales_order_lines
+      - name: sales_order_lines_by_id
+        strip_path: false
+        paths:
+          - /v1/sales_order_lines/([^\/]+)
   - name: legacy_auth
     protocol: http
     host: rigel.default.svc.cluster.local
