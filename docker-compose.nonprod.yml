@@ -5,6 +5,7 @@ services:
     build:
       context: .
       args:
+        KONG_TEMPLATE: kong.template.yml
         AUTH0_JWKS_URL: https://stord-staging.auth0.com/.well-known/jwks.json
         REDIS_CACHE_URL: $NONPROD_REDIS_CACHE_URL
         SSL_CERTIFICATE_1: $NONPROD_SSL_CERTIFICATE_1
@@ -14,10 +15,3 @@ services:
     ports:
       - "8000:8000/tcp"
       - "8444:8444/tcp"
-  konga:
-    image: pantsel/konga:next
-    restart: always
-    environment:
-      NODE_ENV: production
-    ports:
-      - "1337:1337"

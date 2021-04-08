@@ -9,6 +9,22 @@ executors:
           password: ${NONPROD_GCLOUD_SERVICE_KEY}
 
 jobs:
+  build-and-push-local:
+    executor: builder
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - checkout
+      - run:
+          name: Build Image  
+          command: docker-compose -f docker-compose.local.yml build
+      - run:
+          name: Authenticate with GCR
+          command: echo $NONPROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
+      - run:
+          name: Push Image
+          command: docker-compose -f docker-compose.local.yml push
+
   build-and-push-nonprod:
     executor: builder
     steps:
@@ -45,6 +61,10 @@ workflows:
   version: 2
   build_and_release:
     jobs:
+      - build-and-push-local:
+            filters:
+              branches:
+                only: master
       - build-and-push-nonprod:
           filters:
             branches:

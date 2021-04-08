@@ -1,0 +1,11 @@
+version: "3.7"
+services:
+  kong:
+    image: gcr.io/stord-nonprod/kong-local
+    build:
+      context: .
+      args:
+        KONG_TEMPLATE: kong.local.template.yml
+    ports:
+      - "8000:8000/tcp"
+      - "8444:8444/tcp"

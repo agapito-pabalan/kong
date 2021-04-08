@@ -1,0 +1,315 @@
+services:
+  - name: saiph
+    url: http://saiph
+    routes:
+      - name: saiph_addresses
+        strip_path: false
+        paths:
+          - /addresses
+      - name: saiph_companies
+        strip_path: false
+        paths:
+          - /companies
+      - name: saiph_countries
+        strip_path: false
+        paths:
+          - /countries
+      - name: saiph_countries_subdivisions
+        strip_path: false
+        paths:
+          - /countries/([^\/]+)/subdivisions
+      - name: saiph_distribution_networks
+        strip_path: false
+        paths:
+          - /distribution_networks
+      - name: saiph_distribution_networks_items
+        strip_path: false
+        paths:
+          - /distribution_networks/([^\/]+)/items
+      - name: saiph_distribution_networks_items_search
+        strip_path: false
+        paths:
+          - /distribution_networks/([^\/]+)/items_search
+      - name: saiph_health
+        strip_path: false
+        paths:
+          - /health/saiph
+      - name: saiph_item_unit_conversions
+        strip_path: false
+        paths:
+          - /item_unit_conversions
+      - name: saiph_items
+        strip_path: false
+        paths:
+          - /items
+      - name: saiph_items_item_unit_conversions
+        strip_path: false
+        paths:
+          - /items/([^\/]+)/item_unit_conversions
+      - name: saiph_items_lookup
+        strip_path: false
+        paths:
+          - /items_lookup
+      - name: saiph_trade_connections
+        strip_path: false
+        paths:
+          - /trade_connections
+      - name: saiph_warehouses
+        strip_path: false
+        paths:
+          - /warehouses
+      - name: saiph_warehouse
+        strip_path: false
+        paths:
+          - /warehouses/([^\/]+)
+      - name: saiph_warehouse_distribution_networks
+        strip_path: false
+        paths:
+          - /warehouses/([^\/]+)/distribution_networks
+      - name: saiph_warehouse_trade_connections
+        strip_path: false
+        paths:
+          - /warehouses/([^\/]+)/trade_connections
+  - name: rigel
+    url: http://rigel
+    routes:
+      - name: rigel_cancellation
+        strip_path: false
+        paths:
+          - /cancellations/([^\/]+)
+      - name: rigel_distribution_network_dashboard_calendar
+        strip_path: false
+        paths:
+          - /distribution_networks/([^\/]+)/dashboard/calendar
+      - name: rigel_distribution_network_dashboard_open_orders
+        strip_path: false
+        paths:
+          - /distribution_networks/([^\/]+)/dashboard/open_orders
+      - name: rigel_distribution_network_dashboard_overview
+        strip_path: false
+        paths:
+          - /distribution_networks/([^\/]+)/dashboard/overview
+      - name: rigel_distribution_network_dashboard_top_warehouses
+        strip_path: false
+        paths:
+          - /distribution_networks/([^\/]+)/dashboard/top_warehouses
+      - name: rigel_distribution_network_shipments
+        strip_path: false
+        paths:
+          - /distribution_networks/([^\/]+)/shipments
+      - name: rigel_distribution_network_shipping_orders
+        strip_path: false
+        paths:
+          - /distribution_networks/([^\/]+)/shipping_orders
+      - name: rigel_health
+        strip_path: false
+        paths:
+          - /health/rigel
+      - name: rigel_shipments_receipts
+        strip_path: false
+        paths:
+          - /shipment_receipts
+      - name: rigel_shipments_receipt_documents
+        strip_path: false
+        paths:
+          - /shipment_receipts/([^\/]+)/documents
+      - name: rigel_shipments
+        strip_path: false
+        paths:
+          - /shipments
+      - name: rigel_shipments_documents
+        strip_path: false
+        paths:
+          - /shipments/([^\/]+)/documents
+      - name: rigel_shippings_orders
+        strip_path: false
+        paths:
+          - /shipping_orders
+      - name: rigel_shipping_orders_documents
+        strip_path: false
+        paths:
+          - /shipping_orders/([^\/]+)/documents
+      - name: rigel_shipping_orders_inbound
+        strip_path: false
+        paths:
+          - /shipping_orders/([^\/]+)/inbound
+      - name: rigel_shipping_orders_outbound
+        strip_path: false
+        paths:
+          - /shipping_orders/([^\/]+)/outbound
+      - name: rigel_warehouses_inbound_shipping_orders
+        strip_path: false
+        paths:
+          - /warehouses/([^\/]+)/inbound_shipping_orders
+      - name: rigel_warehouses_orders
+        strip_path: false
+        paths:
+          - /warehouses/([^\/]+)/orders
+      - name: rigel_warehouses_outbound_shipping_orders
+        strip_path: false
+        paths:
+          - /warehouses/([^\/]+)/outbound_shipping_orders
+  - name: bellatrix
+    url: http://bellatrix
+    routes:
+      - name: bellatrix_auth0_user_identity
+        strip_path: false
+        paths:
+          - /v1/integrations/identity/auth0/users
+      - name: bellatrix_v1_jwt_permissions
+        strip_path: false
+        paths:
+          - /v1/jwt/permissions
+      - name: bellatrix_v1_permissions
+        strip_path: false
+        paths:
+          - /v1/permissions
+      - name: bellatrix_v1_roles
+        strip_path: false
+        paths:
+          - /v1/roles
+      - name: bellatrix_v1_user_details
+        strip_path: false
+        paths:
+          - /v1/userdetails
+      - name: bellatrix_v1_users
+        strip_path: false
+        paths:
+          - /v1/users
+      - name: bellatrix_v1_users_contexts
+        strip_path: false
+        paths:
+          - /v1/users/([^\/]+)/contexts
+      - name: bellatrix_v1_users_roles
+        strip_path: false
+        paths:
+          - /v1/users/([^\/]+)/roles
+      - name: bellatrix_v1_utils_headers
+        strip_path: false
+        paths:
+          - /v1/utils/headers
+  - name: mintaka
+    url: http://mintaka
+    routes:
+      - name: mintaka_cancellations_inventory_adjustment
+        strip_path: false
+        paths:
+          - /cancellations/([^\/]+)/inventory_adjustment
+      - name: mintaka_distribution_networks_inventory_adjustment_activity
+        strip_path: false
+        paths:
+          - /distribution_networks/([^\/]+)/inventory_adjustment_activity
+      - name: mintaka_distribution_networks_inventory_adjustments
+        strip_path: false
+        paths:
+          - /distribution_networks/([^\/]+)/inventory_adjustments
+      - name: mintaka_distribution_networks_inventory_lookup
+        strip_path: false
+        paths:
+          - /distribution_networks/([^\/]+)/inventory_lookup
+      - name: mintaka_inventory
+        strip_path: false
+        paths:
+          - /inventory/([^\/]+)
+      - name: mintaka_inventory_csv_download
+        strip_path: false
+        paths:
+          - /inventory/csv_download
+      - name: mintaka_inventory_view
+        strip_path: false
+        paths:
+          - /inventory/view
+      - name: mintaka_inventory_adjustments_inventory_ledger_entries
+        strip_path: false
+        paths:
+          - /inventory_adjustments/([^\/]+)/inventory_ledger_entries
+      - name: mintaka_inventory_advices
+        strip_path: false
+        paths:
+          - /inventory_advices
+      - name: mintaka_inventory_advices_by_id
+        strip_path: false
+        paths:
+          - /inventory_advices/([^\/]+)
+      - name: mintaka_inventory_advices_inventory_adjustment
+        strip_path: false
+        paths:
+          - /inventory_advices/([^\/]+)/inventory_adjustment
+      - name: mintaka_inventory_advices_item_counts
+        strip_path: false
+        paths:
+          - /inventory_advices/([^\/]+)/item_counts
+      - name: mintaka_inventory_ledger_entries
+        strip_path: false
+        paths:
+          - /inventory_ledger_entries/([^\/]+)
+      - name: mintaka_inventory_ledger_entries_inventory_balance
+        strip_path: false
+        paths:
+          - /inventory_ledger_entries/([^\/]+)/inventory_balance
+      - name: mintaka_item_counts
+        strip_path: false
+        paths:
+          - /item_counts
+      - name: mintaka_item_counts_by_id
+        strip_path: false
+        paths:
+          - /item_counts/([^\/]+)
+      - name: mintaka_manual_adjustments
+        strip_path: false
+        paths:
+          - /manual_adjustments
+      - name: mintaka_manual_adjustments_by_id
+        strip_path: false
+        paths:
+          - /manual_adjustments/([^\/]+)
+      - name: mintaka_shipment_receipts_inventory_adjustment
+        strip_path: false
+        paths:
+          - /shipment_receipts/([^\/]+)/inventory_adjustment
+      - name: mintaka_shipments_inventory_adjustment
+        strip_path: false
+        paths:
+          - /shipments/([^\/]+)/inventory_adjustment
+      - name: mintaka_shipping_orders_inventory_adjustment
+        strip_path: false
+        paths:
+          - /shipping_orders/([^\/]+)/inventory_adjustment
+      - name: mintaka_trade_connections_inventory_advices
+        strip_path: false
+        paths:
+          - /trade_connections/([^\/]+)/inventory_advices
+      - name: mintaka_trade_connections_manual_adjustments
+        strip_path: false
+        paths:
+          - /trade_connections/([^\/]+)/manual_adjustments
+      - name: mintaka_warehouses_items
+        strip_path: false
+        paths:
+          - /warehouses/([^\/]+)/items
+  - name: meissa
+    url: http://meissa
+    routes:
+      - name: meissa_v1_documents
+        strip_path: false
+        paths:
+          - /v1/documents
+  - name: orders-service
+    url: http://orders-service
+    routes:
+      - name: orders-root
+        strip_path: false
+        paths:
+          - /v1/channels
+          - /v1/orders
+          - /v1/purchase_order_lines
+          - /v1/sales_order_lines
+          - /v1/orders/([^\/]+)/purchase_order_lines
+          - /v1/orders/([^\/]+)/sales_order_lines
+  - name: acme_dummy
+    host: 10.4.15.145
+    routes:
+      - name: LetsEncrypt_ACME_Challenge
+        strip_path: false
+        paths:
+          - /.well-known/acme-challenge

@@ -18,12 +18,16 @@ ARG SSL_CERTIFICATE_1
 ARG SSL_CERTIFICATE_2
 ARG SSL_CERTIFICATE_PRIVATE_KEY
 ARG SNI_NAME
+ARG KONG_TEMPLATE
 
 COPY --from=builder /go/bin/go-pluginserver /usr/local/bin/go-pluginserver
 COPY --from=builder /go-plugins/bellatrix_bridge.so /usr/local/share/go-plugins/bellatrix_bridge.so
-COPY kong.conf.d/kong.template.yml /usr/local/share/kong.yml
 
 USER root
+
+COPY kong.conf.d/$KONG_TEMPLATE /usr/local/share/kong.yml
+COPY kong.conf.d/kong.services.yml /usr/local/share/kong.services.yml
+RUN cat /usr/local/share/kong.services.yml >> /usr/local/share/kong.yml
 
 RUN sed -i "s~AUTH0_JWKS_URL~$AUTH0_JWKS_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~REDIS_CACHE_URL~$REDIS_CACHE_URL~g" /usr/local/share/kong.yml
