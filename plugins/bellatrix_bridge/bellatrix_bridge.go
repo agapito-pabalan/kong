@@ -17,7 +17,6 @@ import (
 )
 
 const REQUEST_JWT_TYPE string = "permissionsJwt"
-const REQUEST_JWT_HEADER string = "jwt"
 const REQUEST_AUTHORIZATION_HEADER string = "authorization"
 const BEARER_PREFIX string = "Bearer "
 const REQUIRES_AUTH_HEADER string = "requires-auth"
@@ -41,7 +40,7 @@ type Response struct {
 }
 
 type BellatrixRequestAttributes struct {
-	Auth0Jwt string `json:"auth0Jwt"`
+	Auth0UserID string `json:"auth0UserId"`
 }
 
 type BellatrixRequest struct {
@@ -51,18 +50,6 @@ type BellatrixRequest struct {
 
 type RequestEnvelope struct {
 	Data BellatrixRequest `json:"data"`
-}
-type BellatrixRequestAttributesV2 struct {
-	Auth0UserID string `json:"auth0UserId"`
-}
-
-type BellatrixRequestV2 struct {
-	Attributes BellatrixRequestAttributesV2 `json:"attributes"`
-	Type       string                       `json:"type"`
-}
-
-type RequestEnvelopeV2 struct {
-	Data BellatrixRequestV2 `json:"data"`
 }
 
 type Config struct {
@@ -87,7 +74,7 @@ func New() interface{} {
 
 func (conf Config) Access(kong *pdk.PDK) {
 	kong.Log.Debug(fmt.Sprintf("begin access"))
-	auth0JWT, err := getAuth0Token(kong)
+	auth0Token, err := getAuth0Token(kong)
 	if err != nil {
 		kong.Log.Warn("warning: ", err.Error())
 		kong.Response.Exit(401, "Unauthorized", nil)
@@ -98,36 +85,29 @@ func (conf Config) Access(kong *pdk.PDK) {
 
 	keyset, err := conf.AutoRefresh.Fetch(conf.JwkCtx, conf.Auth0Url)
 	if err != nil {
-		kong.Log.Err("failed to fetch Auth0 JWKS: ", err)
+		kong.Log.Err("failed to fetch Auth0 JWKS keys: ", err)
 		kong.Response.Exit(500, err.Error(), nil)
 		return
 	}
 
-	auth0Token, err := jwt.Parse(auth0JWT, jwt.WithKeySet(keyset), jwt.WithValidate(true))
+	parsedAuth0Token, err := jwt.Parse(auth0Token, jwt.WithKeySet(keyset), jwt.WithValidate(true))
 	if err != nil {
-		kong.Log.Warn("warning: invalid Auth0 JWT - ", err.Error())
+		kong.Log.Warn("warning: invalid Auth0 token - ", err.Error())
 		kong.Response.Exit(401, "Unauthorized", nil)
 		return
 	}
 
-	bellatrixJWT, err := conf.memoInternalToken(auth0Token, string(auth0JWT), kong)
+	permissionsToken, err := conf.memoPermissionsToken(parsedAuth0Token, kong)
 	if err != nil {
-		kong.Log.Warn("warning: ", err.Error(), " unable to exchange Auth0 JWT for Bellatrix JWT")
+		kong.Log.Warn("warning: ", err.Error(), " unable to exchange Auth0 token for permissions token")
 		kong.Response.Exit(401, "Unauthorized", nil)
 		return
 	}
 
 	var tokenHeaderValue strings.Builder
 	tokenHeaderValue.WriteString(BEARER_PREFIX)
-	tokenHeaderValue.WriteString(bellatrixJWT)
+	tokenHeaderValue.WriteString(permissionsToken)
 	tokenHeaderValueStr := tokenHeaderValue.String()
-
-	err = kong.ServiceRequest.SetHeader(REQUEST_JWT_HEADER, tokenHeaderValueStr)
-	if err != nil {
-		kong.Log.Err("error: ", err.Error(), " unable to insert bellatrix token in jwt header")
-		kong.Response.Exit(500, err.Error(), nil)
-		return
-	}
 
 	err = kong.ServiceRequest.SetHeader(REQUEST_AUTHORIZATION_HEADER, tokenHeaderValueStr)
 	if err != nil {
@@ -157,64 +137,49 @@ func (conf Config) RedisClient() *redis.Client {
 }
 
 func getAuth0Token(kong *pdk.PDK) ([]byte, error) {
-	auth0JWT := ""
-	auth0JWT, _ = kong.Request.GetHeader(REQUEST_JWT_HEADER)
-	if strings.Compare("", auth0JWT) != 0 {
-		return extractToken(&auth0JWT)
+	auth0Token, err := kong.Request.GetHeader(REQUEST_AUTHORIZATION_HEADER)
+	if err != nil {
+		return nil, err
 	}
 
-	auth0JWT, _ = kong.Request.GetHeader(REQUEST_AUTHORIZATION_HEADER)
-	if strings.Compare("", auth0JWT) != 0 {
-		return extractToken(&auth0JWT)
-	}
-
-	return nil, errors.New("unable to find access token in headers")
-}
-
-func extractToken(headerValue *string) ([]byte, error) {
-	headerValueArr := strings.Split(*headerValue, BEARER_PREFIX)
+	headerValueArr := strings.Split(auth0Token, BEARER_PREFIX)
 
 	if len(headerValueArr) != 2 {
 		return nil, fmt.Errorf("invalid token format, expected \"%s\"", BEARER_PREFIX)
 	}
+
 	return []byte(headerValueArr[1]), nil
 }
 
-func (conf Config) memoInternalToken(auth0Token jwt.Token, auth0Jwt string, kong *pdk.PDK) (string, error) {
-	internalJwt := ""
+func (conf Config) memoPermissionsToken(auth0Token jwt.Token, kong *pdk.PDK) (string, error) {
+	permissionsToken := ""
 	auth0UserID := auth0Token.Subject()
 	cacheClient := conf.RedisClient()
 
-	internalJwt, err := cacheClient.Get(conf.CacheCtx, auth0UserID).Result()
+	permissionsToken, err := cacheClient.Get(conf.CacheCtx, auth0UserID).Result()
 	if err == nil {
-		return internalJwt, nil
+		return permissionsToken, nil
 	}
 
-	internalJwt, err = conf.exchangeJWT(auth0Jwt, auth0UserID)
+	permissionsToken, err = conf.exchangeAuth0ForPermissionsToken(auth0UserID)
 	if err != nil {
 		return "", err
 	}
 
 	processing_period := time.Duration(PROCESSING_PERIOD) * time.Minute
 	cachedTokenTTL := auth0Token.Expiration().Sub(auth0Token.IssuedAt().Add(processing_period))
-	err = cacheClient.SetEX(conf.CacheCtx, auth0UserID, internalJwt, cachedTokenTTL).Err()
+	err = cacheClient.SetEX(conf.CacheCtx, auth0UserID, permissionsToken, cachedTokenTTL).Err()
 	if err != nil {
 		kong.Log.Warn("warning: ", err.Error(), " unable to store internal token in cache")
 	}
 
-	return internalJwt, nil
+	return permissionsToken, nil
 }
 
-func (conf Config) exchangeJWT(auth0Jwt string, auth0UserID string) (string, error) {
-
-	permissionsJWT, err := conf.exchangeJWTV2(auth0UserID)
-	if err == nil {
-		return permissionsJWT, nil
-	}
-
+func (conf Config) exchangeAuth0ForPermissionsToken(auth0UserID string) (string, error) {
 	requestEnvelope := RequestEnvelope{Data: BellatrixRequest{
 		Attributes: BellatrixRequestAttributes{
-			Auth0Jwt: auth0Jwt,
+			Auth0UserID: auth0UserID,
 		},
 		Type: REQUEST_JWT_TYPE,
 	}}
@@ -225,40 +190,6 @@ func (conf Config) exchangeJWT(auth0Jwt string, auth0UserID string) (string, err
 	}
 
 	response, err := http.Post(conf.BellatrixEndpoint, "application/vnd.api+json", bytes.NewBuffer(requestBody))
-	if err != nil {
-		return "", err
-	}
-
-	if response.StatusCode < 200 || response.StatusCode > 299 {
-		return "", fmt.Errorf("unexpected status code from Bellatrix: %d", response.StatusCode)
-	}
-
-	var responseEnvelope ResponseEnvelope
-
-	err = json.NewDecoder(response.Body).Decode(&responseEnvelope)
-
-	if err != nil {
-		return "", err
-	}
-
-	return responseEnvelope.Data.Attributes.PermissionsJwt, nil
-}
-
-func (conf Config) exchangeJWTV2(auth0UserID string) (string, error) {
-
-	requestEnvelopeV2 := RequestEnvelopeV2{Data: BellatrixRequestV2{
-		Attributes: BellatrixRequestAttributesV2{
-			Auth0UserID: auth0UserID,
-		},
-		Type: REQUEST_JWT_TYPE,
-	}}
-
-	requestBodyV2, err := json.Marshal(requestEnvelopeV2)
-	if err != nil {
-		return "", err
-	}
-
-	response, err := http.Post(conf.BellatrixEndpoint, "application/vnd.api+json", bytes.NewBuffer(requestBodyV2))
 	if err != nil {
 		return "", err
 	}
