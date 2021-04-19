@@ -6,6 +6,12 @@ services:
       context: .
       args:
         KONG_TEMPLATE: kong.local.template.yml
+        SAIPH_URL: http://saiph:4001
+        RIGEL_URL: http://rigel:4002
+        BELLATRIX_URL: http://bellatrix:4003
+        MINTAKA_URL: http://mintaka:4004
+        MEISSA_URL: http://meissa:4005
+        ORDERS_SERVICE_URL: http://orders-service:4000
     ports:
       - "8000:8000/tcp"
       - "8444:8444/tcp"

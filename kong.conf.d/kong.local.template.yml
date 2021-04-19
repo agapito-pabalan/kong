@@ -10,7 +10,7 @@ plugins:
       size_unit: megabytes
   - name: bellatrix_bridge
     config:
-      bellatrix_endpoint: http://bellatrix/v1/jwt/permissions
+      bellatrix_endpoint: http://bellatrix:4003/v1/jwt/permissions
       auth0_url: https://stord-staging.auth0.com/.well-known/jwks.json
       cache_url: "redis://cache:6379"
       jwks_refresh_interval: 15

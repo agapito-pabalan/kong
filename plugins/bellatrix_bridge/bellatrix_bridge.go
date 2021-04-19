@@ -4,14 +4,13 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
 	"strings"
 	"time"
 
 	"github.com/Kong/go-pdk"
-	"github.com/go-redis/redis"
+	"github.com/go-redis/redis/v8"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/lestrrat-go/jwx/jwt"
 )
@@ -123,16 +122,15 @@ func (conf Config) Access(kong *pdk.PDK) {
 		return
 	}
 
-	kong.Log.Debug("Success! Called Bellatrix API and swapped [", auth0JWT, "] for [", bellatrixJWT, "]")
+	kong.Log.Debug("Success! Called Bellatrix API and swapped [", auth0Token, "] for [", permissionsToken, "]")
 	return
 }
 
 func (conf Config) RedisClient() *redis.Client {
-	if conf.CacheClient != nil {
-		return conf.CacheClient
+	if conf.CacheClient == nil {
+		opts, _ := redis.ParseURL(conf.CacheUrl)
+		conf.CacheClient = redis.NewClient(opts)
 	}
-	opts, _ := redis.ParseURL(conf.CacheUrl)
-	conf.CacheClient = redis.NewClient(opts)
 	return conf.CacheClient
 }
 

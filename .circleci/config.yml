@@ -9,7 +9,7 @@ executors:
           password: ${NONPROD_GCLOUD_SERVICE_KEY}
 
 jobs:
-  build-and-push-local:
+  build-local:
     executor: builder
     steps:
       - setup_remote_docker:
@@ -18,14 +18,8 @@ jobs:
       - run:
           name: Build Image  
           command: docker-compose -f docker-compose.local.yml build
-      - run:
-          name: Authenticate with GCR
-          command: echo $NONPROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
-      - run:
-          name: Push Image
-          command: docker-compose -f docker-compose.local.yml push
 
-  build-and-push-nonprod:
+  build-nonprod:
     executor: builder
     steps:
       - setup_remote_docker:
@@ -34,6 +28,36 @@ jobs:
       - run:
           name: Build Image  
           command: docker-compose -f docker-compose.nonprod.yml build
+
+  build-prod:
+    executor: builder
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - checkout
+      - run:
+          name: Build Image  
+          command: docker-compose -f docker-compose.prod.yml build
+
+  push-local:
+    executor: builder
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - checkout
+      - run:
+          name: Authenticate with GCR
+          command: echo $NONPROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
+      - run:
+          name: Push Image
+          command: docker-compose -f docker-compose.local.yml push
+
+  push-nonprod:
+    executor: builder
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - checkout
       - run:
           name: Authenticate with GCR
           command: echo $NONPROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
@@ -41,15 +65,12 @@ jobs:
           name: Push Image
           command: docker-compose -f docker-compose.nonprod.yml push
 
-  build-and-push-prod:
+  push-prod:
     executor: builder
     steps:
       - setup_remote_docker:
           docker_layer_caching: false
       - checkout
-      - run:
-          name: Build Image  
-          command: docker-compose -f docker-compose.prod.yml build
       - run:
           name: Authenticate with GCR
           command: echo $PROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
@@ -61,15 +82,24 @@ workflows:
   version: 2
   build_and_release:
     jobs:
-      - build-and-push-local:
-            filters:
-              branches:
-                only: master
-      - build-and-push-nonprod:
+      - build-local
+      - build-nonprod
+      - build-prod
+      - push-local:
+          requires:
+            - build-local
           filters:
             branches:
               only: master
-      - build-and-push-prod:
+      - push-nonprod:
+          requires:
+            - build-nonprod
+          filters:
+            branches:
+              only: master
+      - push-prod:
+          requires:
+            - build-prod
           filters:
             branches:
               ignore: /.*/

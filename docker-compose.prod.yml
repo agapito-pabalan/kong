@@ -12,6 +12,12 @@ services:
         SSL_CERTIFICATE_2: $PROD_SSL_CERTIFICATE_2
         SSL_CERTIFICATE_PRIVATE_KEY: $PROD_SSL_CERTIFICATE_PRIVATE_KEY
         SNI_NAME: $PROD_SNI_NAME
+        SAIPH_URL: http://saiph
+        RIGEL_URL: http://rigel
+        BELLATRIX_URL: http://bellatrix
+        MINTAKA_URL: http://mintaka
+        MEISSA_URL: http://meissa
+        ORDERS_SERVICE_URL: http://orders-service
     ports:
       - "8000:8000/tcp"
       - "8444:8444/tcp"
