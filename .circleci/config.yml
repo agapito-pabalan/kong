@@ -145,6 +145,4 @@ workflows:
             - build-prod
           filters:
             branches:
-              ignore: /.*/
-            tags:
-              only: /[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/
+              only: master
