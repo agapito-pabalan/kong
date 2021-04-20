@@ -7,6 +7,7 @@ executors:
         auth:
           username: _json_key
           password: ${NONPROD_GCLOUD_SERVICE_KEY}
+    working_directory: /workspace
 
 jobs:
   build-local:
@@ -18,6 +19,14 @@ jobs:
       - run:
           name: Build Image  
           command: docker-compose -f docker-compose.local.yml build
+      - run: mkdir -p images
+      - run:
+          name: Save Image
+          command: docker save -o images/kong-local.tar gcr.io/stord-nonprod/kong-local
+      - persist_to_workspace:
+          root: images
+          paths:
+            - kong-local.tar
 
   build-nonprod:
     executor: builder
@@ -28,6 +37,14 @@ jobs:
       - run:
           name: Build Image  
           command: docker-compose -f docker-compose.nonprod.yml build
+      - run: mkdir -p images
+      - run:
+          name: Save Image
+          command: docker save -o images/kong-nonprod.tar gcr.io/stord-nonprod/kong
+      - persist_to_workspace:
+          root: images
+          paths:
+            - kong-nonprod.tar
 
   build-prod:
     executor: builder
@@ -38,16 +55,23 @@ jobs:
       - run:
           name: Build Image  
           command: docker-compose -f docker-compose.prod.yml build
+      - run: mkdir -p images
+      - run:
+          name: Save Image
+          command: docker save -o images/kong-prod.tar gcr.io/stord-production/kong
+      - persist_to_workspace:
+          root: images
+          paths:
+            - kong-prod.tar
 
   push-local:
     executor: builder
     steps:
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - checkout
+      - attach_workspace:
+          at: images
       - run:
-          name: Authenticate with GCR
-          command: echo $NONPROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
+          name: Load Image
+          command: docker load -i images/kong-local.tar
       - run:
           name: Push Image
           command: docker-compose -f docker-compose.local.yml push
@@ -55,12 +79,11 @@ jobs:
   push-nonprod:
     executor: builder
     steps:
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - checkout
+      - attach_workspace:
+          at: images
       - run:
-          name: Authenticate with GCR
-          command: echo $NONPROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
+          name: Load Image
+          command: docker load -i images/kong-nonprod.tar
       - run:
           name: Push Image
           command: docker-compose -f docker-compose.nonprod.yml push
@@ -68,12 +91,11 @@ jobs:
   push-prod:
     executor: builder
     steps:
-      - setup_remote_docker:
-          docker_layer_caching: false
-      - checkout
+      - attach_workspace:
+          at: images
       - run:
-          name: Authenticate with GCR
-          command: echo $PROD_GCLOUD_SERVICE_KEY | docker login -u _json_key --password-stdin https://gcr.io
+          name: Load Image
+          command: docker load -i images/kong-prod.tar
       - run:
           name: Push Image
           command: docker-compose -f docker-compose.prod.yml push
