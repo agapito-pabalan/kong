@@ -20,6 +20,7 @@ jobs:
           name: Build Image  
           command: docker-compose -f docker-compose.local.yml build
       - run: mkdir -p images
+      - run: cp -p docker-compose.local.yml images
       - run:
           name: Save Image
           command: docker save -o images/kong-local.tar gcr.io/stord-nonprod/kong-local
@@ -27,6 +28,7 @@ jobs:
           root: images
           paths:
             - kong-local.tar
+            - docker-compose.local.yml
 
   build-nonprod:
     executor: builder
@@ -38,6 +40,7 @@ jobs:
           name: Build Image  
           command: docker-compose -f docker-compose.nonprod.yml build
       - run: mkdir -p images
+      - run: cp -p docker-compose.nonprod.yml images
       - run:
           name: Save Image
           command: docker save -o images/kong-nonprod.tar gcr.io/stord-nonprod/kong
@@ -45,6 +48,7 @@ jobs:
           root: images
           paths:
             - kong-nonprod.tar
+            - docker-compose.nonprod.yml
 
   build-prod:
     executor: builder
@@ -56,6 +60,7 @@ jobs:
           name: Build Image  
           command: docker-compose -f docker-compose.prod.yml build
       - run: mkdir -p images
+      - run: cp -p docker-compose.prod.yml images
       - run:
           name: Save Image
           command: docker save -o images/kong-prod.tar gcr.io/stord-production/kong
@@ -63,10 +68,13 @@ jobs:
           root: images
           paths:
             - kong-prod.tar
+            - docker-compose.prod.yml
 
   push-local:
     executor: builder
     steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
       - attach_workspace:
           at: images
       - run:
@@ -74,11 +82,13 @@ jobs:
           command: docker load -i images/kong-local.tar
       - run:
           name: Push Image
-          command: docker-compose -f docker-compose.local.yml push
+          command: docker-compose -f images/docker-compose.local.yml push
 
   push-nonprod:
     executor: builder
     steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
       - attach_workspace:
           at: images
       - run:
@@ -86,11 +96,13 @@ jobs:
           command: docker load -i images/kong-nonprod.tar
       - run:
           name: Push Image
-          command: docker-compose -f docker-compose.nonprod.yml push
+          command: docker-compose -f images/docker-compose.nonprod.yml push
 
   push-prod:
     executor: builder
     steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
       - attach_workspace:
           at: images
       - run:
@@ -98,7 +110,7 @@ jobs:
           command: docker load -i images/kong-prod.tar
       - run:
           name: Push Image
-          command: docker-compose -f docker-compose.prod.yml push
+          command: docker-compose -f images/docker-compose.prod.yml push
 
 workflows:
   version: 2
