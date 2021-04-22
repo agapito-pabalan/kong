@@ -287,6 +287,10 @@ services:
         strip_path: false
         paths:
           - /warehouses/([^\/]+)/items
+      - name: mintaka_warehouses_item_qualifier
+        strip_path: false
+        paths:
+          - /warehouses/([^\/]+)/items/([^\/]+)
   - name: meissa
     url: MEISSA_URL
     routes:
