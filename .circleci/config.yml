@@ -127,7 +127,10 @@ workflows:
     jobs:
       - build-local
       - build-nonprod
-      - build-prod
+      - build-prod:
+          filters:
+            tags:
+              only: /[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/
       - push-local:
           requires:
             - build-local
@@ -145,4 +148,6 @@ workflows:
             - build-prod
           filters:
             branches:
-              only: master
+              ignore: /.*/
+            tags:
+              only: /[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/
