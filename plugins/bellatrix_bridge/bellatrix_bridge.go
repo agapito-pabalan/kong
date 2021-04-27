@@ -89,7 +89,7 @@ func (conf Config) Access(kong *pdk.PDK) {
 		return
 	}
 
-	parsedAuth0Token, err := jwt.Parse(auth0Token, jwt.WithKeySet(keyset), jwt.WithValidate(true))
+	parsedAuth0Token, err := jwt.Parse(auth0Token, jwt.WithKeySet(keyset), jwt.WithValidate(true), jwt.WithAcceptableSkew(2*time.Minute))
 	if err != nil {
 		kong.Log.Warn("warning: invalid Auth0 token - ", err.Error())
 		kong.Response.Exit(401, "Unauthorized", nil)
