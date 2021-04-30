@@ -180,6 +180,10 @@ services:
         strip_path: false
         paths:
           - /v1/users/([^\/]+)/roles
+      - name: bellatrix_v1_users_tenant_assignment
+        strip_path: false
+        paths:
+          - /v1/users/([^\/]+)/tenant_assignment
       - name: bellatrix_v1_utils_headers
         strip_path: false
         paths:
