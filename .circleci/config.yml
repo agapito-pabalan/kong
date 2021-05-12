@@ -8,6 +8,15 @@ executors:
           username: _json_key
           password: ${NONPROD_GCLOUD_SERVICE_KEY}
     working_directory: /workspace
+  
+  kong-builder:
+    docker:
+      - image: kong
+        user: root
+    working_directory: /workspace
+    environment:
+      KONG_DATABASE: "off"
+
 
 jobs:
   build-local:
@@ -29,6 +38,17 @@ jobs:
           paths:
             - kong-local.tar
             - docker-compose.local.yml
+  lint:
+    executor: kong-builder
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - checkout
+      - run:
+          name: Check Config
+          command: |
+            check=$(kong config parse kong.conf.d/kong.services.yml)
+            if [ "$check" != "parse successful" ]; then exit 1; fi
 
   build-nonprod:
     executor: builder
@@ -125,9 +145,17 @@ workflows:
   version: 2
   build_and_release:
     jobs:
-      - build-local
-      - build-nonprod
+    
+      - lint
+      - build-local:
+          requires:
+            - lint
+      - build-nonprod:
+          requires:
+            - lint
       - build-prod:
+          requires:
+            - lint
           filters:
             tags:
               only: /[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}/

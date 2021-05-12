@@ -48,12 +48,12 @@ RUN sed -i "s~SSL_CERTIFICATE_2~$SSL_CERTIFICATE_2~g" /usr/local/share/kong.yml
 RUN sed -i "s~SSL_CERTIFICATE_PRIVATE_KEY~$SSL_CERTIFICATE_PRIVATE_KEY~g" /usr/local/share/kong.yml
 RUN sed -i "s~SNI_NAME~$SNI_NAME~g" /usr/local/share/kong.yml
 
-RUN sed -i "s~SAIPH_URL~$SAIPH_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~RIGEL_URL~$RIGEL_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~BELLATRIX_URL~$BELLATRIX_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~MINTAKA_URL~$MINTAKA_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~MEISSA_URL~$MEISSA_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~ORDERS_SERVICE_URL~$ORDERS_SERVICE_URL~g" /usr/local/share/kong.yml
+RUN sed -i "s~http://SAIPH_URL~$SAIPH_URL~g" /usr/local/share/kong.yml
+RUN sed -i "s~http://RIGEL_URL~$RIGEL_URL~g" /usr/local/share/kong.yml
+RUN sed -i "s~http://BELLATRIX_URL~$BELLATRIX_URL~g" /usr/local/share/kong.yml
+RUN sed -i "s~http://MINTAKA_URL~$MINTAKA_URL~g" /usr/local/share/kong.yml
+RUN sed -i "s~http://MEISSA_URL~$MEISSA_URL~g" /usr/local/share/kong.yml
+RUN sed -i "s~http://ORDERS_SERVICE_URL~$ORDERS_SERVICE_URL~g" /usr/local/share/kong.yml
 
 RUN chmod +r /usr/local/share/kong.yml
 

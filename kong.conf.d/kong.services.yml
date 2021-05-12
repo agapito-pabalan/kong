@@ -1,6 +1,7 @@
+_format_version: "1.1"
 services:
   - name: saiph
-    url: SAIPH_URL
+    url: http://SAIPH_URL
     routes:
       - name: saiph_addresses
         strip_path: false
@@ -71,7 +72,7 @@ services:
         paths:
           - /warehouses/([^\/]+)/trade_connections
   - name: rigel
-    url: RIGEL_URL
+    url: http://RIGEL_URL
     routes:
       - name: rigel_cancellation
         strip_path: false
@@ -150,7 +151,7 @@ services:
         paths:
           - /warehouses/([^\/]+)/outbound_shipping_orders
   - name: bellatrix
-    url: BELLATRIX_URL
+    url: http://BELLATRIX_URL
     routes:
       - name: bellatrix_auth0_user_identity
         strip_path: false
@@ -189,7 +190,7 @@ services:
         paths:
           - /v1/utils/headers
   - name: mintaka
-    url: MINTAKA_URL
+    url: http://MINTAKA_URL
     routes:
       - name: mintaka_cancellations_inventory_adjustment
         strip_path: false
@@ -292,14 +293,14 @@ services:
         paths:
           - /warehouses/([^\/]+)/items/([^\/]+)
   - name: meissa
-    url: MEISSA_URL
+    url: http://MEISSA_URL
     routes:
       - name: meissa_v1_documents
         strip_path: false
         paths:
           - /v1/documents
   - name: orders-service
-    url: ORDERS_SERVICE_URL
+    url: http://ORDERS_SERVICE_URL
     routes:
       - name: orders-root
         strip_path: false
