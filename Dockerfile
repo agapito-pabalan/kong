@@ -10,9 +10,9 @@ RUN go get -d -v github.com/lestrrat-go/jwx/jwt
 RUN go get -d -v github.com/lestrrat-go/jwx/jwk
 RUN go get -d -v github.com/go-redis/redis/v8
 
-COPY /plugins/bellatrix_bridge/bellatrix_bridge.go .
+COPY /plugins/user_management_bridge/user_management_bridge.go .
 RUN go build github.com/Kong/go-pluginserver
-RUN go build -buildmode plugin -o /go-plugins/bellatrix_bridge.so /go-plugins/bellatrix_bridge.go
+RUN go build -buildmode plugin -o /go-plugins/user_management_bridge.so /go-plugins/user_management_bridge.go
 
 FROM kong:2.2.1-alpine as release
 
@@ -26,13 +26,13 @@ ARG KONG_TEMPLATE
 
 ARG SAIPH_URL
 ARG RIGEL_URL
-ARG BELLATRIX_URL
+ARG USER_MANAGEMENT_URL
 ARG MINTAKA_URL
 ARG MEISSA_URL
 ARG ORDERS_SERVICE_URL
 
 COPY --from=builder /go-plugins/go-pluginserver /usr/local/bin/
-COPY --from=builder /go-plugins/bellatrix_bridge.so /usr/local/share/go-plugins/bellatrix_bridge.so
+COPY --from=builder /go-plugins/user_management_bridge.so /usr/local/share/go-plugins/user_management_bridge.so
 
 USER root
 
@@ -50,7 +50,7 @@ RUN sed -i "s~SNI_NAME~$SNI_NAME~g" /usr/local/share/kong.yml
 
 RUN sed -i "s~http://SAIPH_URL~$SAIPH_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://RIGEL_URL~$RIGEL_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~http://BELLATRIX_URL~$BELLATRIX_URL~g" /usr/local/share/kong.yml
+RUN sed -i "s~http://USER_MANAGEMENT_URL~$USER_MANAGEMENT_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://MINTAKA_URL~$MINTAKA_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://MEISSA_URL~$MEISSA_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://ORDERS_SERVICE_URL~$ORDERS_SERVICE_URL~g" /usr/local/share/kong.yml

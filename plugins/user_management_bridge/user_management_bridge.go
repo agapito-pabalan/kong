@@ -21,38 +21,38 @@ const BEARER_PREFIX string = "Bearer "
 const REQUIRES_AUTH_HEADER string = "requires-auth"
 const PROCESSING_PERIOD int = 1
 
-type BellatrixResponseAttributes struct {
+type UserManagementResponseAttributes struct {
 	PermissionsJwt string `json:"permissionsJwt"`
 }
 
-type BellatrixResponse struct {
-	Attributes BellatrixResponseAttributes `json:"attributes"`
+type UserManagementResponse struct {
+	Attributes UserManagementResponseAttributes `json:"attributes"`
 	Type       string                      `json:"type"`
 }
 
 type ResponseEnvelope struct {
-	Data BellatrixResponse `json:"data"`
+	Data UserManagementResponse `json:"data"`
 }
 
 type Response struct {
 	Message string `json:"message"`
 }
 
-type BellatrixRequestAttributes struct {
+type UserManagementRequestAttributes struct {
 	Auth0UserID string `json:"auth0UserId"`
 }
 
-type BellatrixRequest struct {
-	Attributes BellatrixRequestAttributes `json:"attributes"`
+type UserManagementRequest struct {
+	Attributes UserManagementRequestAttributes `json:"attributes"`
 	Type       string                     `json:"type"`
 }
 
 type RequestEnvelope struct {
-	Data BellatrixRequest `json:"data"`
+	Data UserManagementRequest `json:"data"`
 }
 
 type Config struct {
-	BellatrixEndpoint   string `json:"bellatrix_endpoint"`
+	UserManagementEndpoint   string `json:"user_management_endpoint"`
 	Auth0Url            string `json:"auth0_url"`
 	CacheUrl            string `json:"cache_url"`
 	JwksRefreshInterval int    `json:"jwks_refresh_interval"`
@@ -110,7 +110,7 @@ func (conf Config) Access(kong *pdk.PDK) {
 
 	err = kong.ServiceRequest.SetHeader(REQUEST_AUTHORIZATION_HEADER, tokenHeaderValueStr)
 	if err != nil {
-		kong.Log.Err("error: ", err.Error(), " unable to insert bellatrix token in authorization header")
+		kong.Log.Err("error: ", err.Error(), " unable to insert user_management token in authorization header")
 		kong.Response.Exit(500, err.Error(), nil)
 		return
 	}
@@ -122,7 +122,7 @@ func (conf Config) Access(kong *pdk.PDK) {
 		return
 	}
 
-	kong.Log.Debug("Success! Called Bellatrix API and swapped [", auth0Token, "] for [", permissionsToken, "]")
+	kong.Log.Debug("Success! Called UserManagement API and swapped [", auth0Token, "] for [", permissionsToken, "]")
 	return
 }
 
@@ -175,8 +175,8 @@ func (conf Config) memoPermissionsToken(auth0Token jwt.Token, kong *pdk.PDK) (st
 }
 
 func (conf Config) exchangeAuth0ForPermissionsToken(auth0UserID string) (string, error) {
-	requestEnvelope := RequestEnvelope{Data: BellatrixRequest{
-		Attributes: BellatrixRequestAttributes{
+	requestEnvelope := RequestEnvelope{Data: UserManagementRequest{
+		Attributes: UserManagementRequestAttributes{
 			Auth0UserID: auth0UserID,
 		},
 		Type: REQUEST_JWT_TYPE,
@@ -187,13 +187,13 @@ func (conf Config) exchangeAuth0ForPermissionsToken(auth0UserID string) (string,
 		return "", err
 	}
 
-	response, err := http.Post(conf.BellatrixEndpoint, "application/vnd.api+json", bytes.NewBuffer(requestBody))
+	response, err := http.Post(conf.UserManagementEndpoint, "application/vnd.api+json", bytes.NewBuffer(requestBody))
 	if err != nil {
 		return "", err
 	}
 
 	if response.StatusCode < 200 || response.StatusCode > 299 {
-		return "", fmt.Errorf("unexpected status code from Bellatrix: %d", response.StatusCode)
+		return "", fmt.Errorf("unexpected status code from UserManagement: %d", response.StatusCode)
 	}
 
 	var responseEnvelope ResponseEnvelope

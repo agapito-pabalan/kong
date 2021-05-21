@@ -14,7 +14,7 @@ services:
         SNI_NAME: $NONPROD_SNI_NAME
         SAIPH_URL: http://saiph
         RIGEL_URL: http://rigel
-        BELLATRIX_URL: http://bellatrix
+        USER_MANAGEMENT_URL: http://user-management
         MINTAKA_URL: http://mintaka
         MEISSA_URL: http://meissa
         ORDERS_SERVICE_URL: http://orders-service

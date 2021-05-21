@@ -150,42 +150,42 @@ services:
         strip_path: false
         paths:
           - /warehouses/([^\/]+)/outbound_shipping_orders
-  - name: bellatrix
-    url: http://BELLATRIX_URL
+  - name: user-management
+    url: http://USER_MANAGEMENT_URL
     routes:
-      - name: bellatrix_auth0_user_identity
+      - name: user_management_auth0_user_identity
         strip_path: false
         paths:
           - /v1/integrations/identity/auth0/users
-      - name: bellatrix_v1_permissions
+      - name: user_management_v1_permissions
         strip_path: false
         paths:
           - /v1/permissions
-      - name: bellatrix_v1_roles
+      - name: user_management_v1_roles
         strip_path: false
         paths:
           - /v1/roles
-      - name: bellatrix_v1_user_details
+      - name: user_management_v1_user_details
         strip_path: false
         paths:
           - /v1/userdetails
-      - name: bellatrix_v1_users
+      - name: user_management_v1_users
         strip_path: false
         paths:
           - /v1/users
-      - name: bellatrix_v1_users_contexts
+      - name: user_management_v1_users_contexts
         strip_path: false
         paths:
           - /v1/users/([^\/]+)/contexts
-      - name: bellatrix_v1_users_roles
+      - name: user_management_v1_users_roles
         strip_path: false
         paths:
           - /v1/users/([^\/]+)/roles
-      - name: bellatrix_v1_users_tenant_assignment
+      - name: user_management_v1_users_tenant_assignment
         strip_path: false
         paths:
           - /v1/users/([^\/]+)/tenant_assignment
-      - name: bellatrix_v1_utils_headers
+      - name: user_management_v1_utils_headers
         strip_path: false
         paths:
           - /v1/utils/headers

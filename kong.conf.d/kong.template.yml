@@ -9,9 +9,9 @@ plugins:
         - https://admin.stord.com
         - https://shipper.stord.com
         - https://warehouse.stord.com
-  - name: bellatrix_bridge
+  - name: user_management_bridge
     config:
-      bellatrix_endpoint: http://bellatrix/v1/jwt/permissions
+      user_management_endpoint: http://user-management/v1/jwt/permissions
       auth0_url: AUTH0_JWKS_URL
       cache_url: REDIS_CACHE_URL
       jwks_refresh_interval: 15
