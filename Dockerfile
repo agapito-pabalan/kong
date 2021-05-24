@@ -30,6 +30,7 @@ ARG USER_MANAGEMENT_URL
 ARG MINTAKA_URL
 ARG MEISSA_URL
 ARG ORDERS_SERVICE_URL
+ARG FACILITY_ACTIVITY_SERVICE_URL
 
 COPY --from=builder /go-plugins/go-pluginserver /usr/local/bin/
 COPY --from=builder /go-plugins/user_management_bridge.so /usr/local/share/go-plugins/user_management_bridge.so
@@ -54,6 +55,7 @@ RUN sed -i "s~http://USER_MANAGEMENT_URL~$USER_MANAGEMENT_URL~g" /usr/local/shar
 RUN sed -i "s~http://MINTAKA_URL~$MINTAKA_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://MEISSA_URL~$MEISSA_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://ORDERS_SERVICE_URL~$ORDERS_SERVICE_URL~g" /usr/local/share/kong.yml
+RUN sed -i "s~http://FACILITY_ACTIVITY_SERVICE_URL~$FACILITY_ACTIVITY_SERVICE_URL~g" /usr/local/share/kong.yml
 
 RUN chmod +r /usr/local/share/kong.yml
 
