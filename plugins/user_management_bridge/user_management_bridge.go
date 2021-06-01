@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
@@ -27,7 +28,7 @@ type UserManagementResponseAttributes struct {
 
 type UserManagementResponse struct {
 	Attributes UserManagementResponseAttributes `json:"attributes"`
-	Type       string                      `json:"type"`
+	Type       string                           `json:"type"`
 }
 
 type ResponseEnvelope struct {
@@ -44,7 +45,7 @@ type UserManagementRequestAttributes struct {
 
 type UserManagementRequest struct {
 	Attributes UserManagementRequestAttributes `json:"attributes"`
-	Type       string                     `json:"type"`
+	Type       string                          `json:"type"`
 }
 
 type RequestEnvelope struct {
@@ -52,14 +53,14 @@ type RequestEnvelope struct {
 }
 
 type Config struct {
-	UserManagementEndpoint   string `json:"user_management_endpoint"`
-	Auth0Url            string `json:"auth0_url"`
-	CacheUrl            string `json:"cache_url"`
-	JwksRefreshInterval int    `json:"jwks_refresh_interval"`
-	AutoRefresh         *jwk.AutoRefresh
-	CacheClient         *redis.Client
-	JwkCtx              context.Context
-	CacheCtx            context.Context
+	UserManagementEndpoint string `json:"user_management_endpoint"`
+	Auth0Url               string `json:"auth0_url"`
+	CacheUrl               string `json:"cache_url"`
+	JwksRefreshInterval    int    `json:"jwks_refresh_interval"`
+	AutoRefresh            *jwk.AutoRefresh
+	CacheClient            *redis.Client
+	JwkCtx                 context.Context
+	CacheCtx               context.Context
 }
 
 func New() interface{} {
@@ -73,6 +74,13 @@ func New() interface{} {
 
 func (conf Config) Access(kong *pdk.PDK) {
 	kong.Log.Debug(fmt.Sprintf("begin access"))
+
+	path, _ := kong.Request.GetPath()
+	match, _ := regexp.MatchString("/.well-known/acme-challenge", path)
+	if match {
+		return
+	}
+
 	auth0Token, err := getAuth0Token(kong)
 	if err != nil {
 		kong.Log.Warn("warning: ", err.Error())
