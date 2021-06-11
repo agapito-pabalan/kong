@@ -338,6 +338,13 @@ services:
         strip_path: false
         paths:
           - /v1/shipment_confirmations$
+  - name: documents-service
+    url: http://DOCUMENTS_SERVICE_URL
+    routes:
+      - name: documents_service_v2_documents
+        strip_path: false
+        paths:
+          - /v2/documents$
   - name: acme_dummy
     host: 10.4.15.145
     routes:
