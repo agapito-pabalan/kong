@@ -58,6 +58,7 @@ RUN sed -i "s~http://MEISSA_URL~$MEISSA_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://ORDERS_SERVICE_URL~$ORDERS_SERVICE_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://FACILITY_ACTIVITY_SERVICE_URL~$FACILITY_ACTIVITY_SERVICE_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://DOCUMENTS_SERVICE_URL~$DOCUMENTS_SERVICE_URL~g" /usr/local/share/kong.yml
+RUN sed -i "s~http://TRADE_PARTNERSHIPS_SERVICE_URL~$TRADE_PARTNERSHIPS_SERVICE_URL~g" /usr/local/share/kong.yml
 
 RUN chmod +r /usr/local/share/kong.yml
 

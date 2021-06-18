@@ -349,6 +349,16 @@ services:
         strip_path: false
         paths:
           - /v2/documents$
+  
+  - name: trade-partnerships-service
+    url: http://TRADE_PARTNERSHIPS_SERVICE_URL
+    routes:
+      - name: trade-partnerships-root
+        strip_path: false
+        paths:
+          - /v1/networks
+          - /v1/facilities
+       
   - name: acme_dummy
     host: 10.4.15.145
     routes:

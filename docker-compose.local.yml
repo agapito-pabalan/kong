@@ -13,7 +13,8 @@ services:
         MEISSA_URL: http://meissa:4005
         ORDERS_SERVICE_URL: http://orders-service:4000
         FACILITY_ACTIVITY_SERVICE_URL: http://facility-activity-service:4000
-        DOCUMENTS_SERVICE_URL: http://documents-service:4000  
+        DOCUMENTS_SERVICE_URL: http://documents-service:4000
+        TRADE_PARTNERSHIPS_SERVICE_URL: http://trade-partnerships-service:4000 
     ports:
       - "8000:8000/tcp"
       - "8444:8444/tcp"
