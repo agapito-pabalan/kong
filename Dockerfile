@@ -32,6 +32,7 @@ ARG MEISSA_URL
 ARG ORDERS_SERVICE_URL
 ARG FACILITY_ACTIVITY_SERVICE_URL
 ARG DOCUMENTS_SERVICE_URL
+ARG TRADE_PARTNERSHIPS_SERVICE_URL
 
 COPY --from=builder /go-plugins/go-pluginserver /usr/local/bin/
 COPY --from=builder /go-plugins/user_management_bridge.so /usr/local/share/go-plugins/user_management_bridge.so
@@ -66,4 +67,4 @@ RUN apk add --update nodejs npm
 RUN npm install --global yaml-validator
 RUN yaml-validator /usr/local/share/kong.yml
 
-USER kong 
+USER kong

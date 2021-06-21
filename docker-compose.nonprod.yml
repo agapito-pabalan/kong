@@ -20,7 +20,7 @@ services:
         ORDERS_SERVICE_URL: http://orders-service
         FACILITY_ACTIVITY_SERVICE_URL: http://facility-activity-service
         DOCUMENTS_SERVICE_URL: http://documents-service
-        TRADE_PARTNERSHIPS_SERVICE_URL: http://trade-partnerships-service
+        TRADE_PARTNERSHIPS_SERVICE_URL: http://trade-partnerships
     ports:
       - "8000:8000/tcp"
       - "8444:8444/tcp"
