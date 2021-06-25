@@ -367,6 +367,7 @@ services:
         paths:
           - /v1/networks
           - /v1/facilities
+          - /integrations/v1/facilities
        
   - name: acme_dummy
     host: 10.4.15.145
