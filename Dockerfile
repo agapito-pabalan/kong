@@ -32,6 +32,7 @@ ARG MEISSA_URL
 ARG ORDERS_SERVICE_URL
 ARG FACILITY_ACTIVITY_SERVICE_URL
 ARG DOCUMENTS_SERVICE_URL
+ARG ITEMS_SERVICE_URL
 ARG TRADE_PARTNERSHIPS_SERVICE_URL
 
 COPY --from=builder /go-plugins/go-pluginserver /usr/local/bin/
@@ -59,6 +60,7 @@ RUN sed -i "s~http://MEISSA_URL~$MEISSA_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://ORDERS_SERVICE_URL~$ORDERS_SERVICE_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://FACILITY_ACTIVITY_SERVICE_URL~$FACILITY_ACTIVITY_SERVICE_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://DOCUMENTS_SERVICE_URL~$DOCUMENTS_SERVICE_URL~g" /usr/local/share/kong.yml
+RUN sed -i "s~http://ITEMS_SERVICE_URL~$ITEMS_SERVICE_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://TRADE_PARTNERSHIPS_SERVICE_URL~$TRADE_PARTNERSHIPS_SERVICE_URL~g" /usr/local/share/kong.yml
 
 RUN chmod +r /usr/local/share/kong.yml
