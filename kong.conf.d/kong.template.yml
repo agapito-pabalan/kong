@@ -9,6 +9,7 @@ plugins:
         - https://admin.stord.com
         - https://shipper.stord.com
         - https://warehouse.stord.com
+        - https://*.review.stord.com
   - name: user_management_bridge
     config:
       user_management_endpoint: http://user-management/v1/jwt/permissions
