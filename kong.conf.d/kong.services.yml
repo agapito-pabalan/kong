@@ -373,6 +373,9 @@ services:
         strip_path: false
         paths:
           - /integrations/v1/items$
+          - /v1/items$
+          - /v1/items_bulk
+          - /v1/unit_conversions
   - name: trade-partnerships-service
     url: http://TRADE_PARTNERSHIPS_SERVICE_URL
     routes:
