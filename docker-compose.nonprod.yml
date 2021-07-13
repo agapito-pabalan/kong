@@ -21,6 +21,7 @@ services:
         FACILITY_ACTIVITY_SERVICE_URL: http://facility-activity-service
         DOCUMENTS_SERVICE_URL: http://documents-service
         ITEM_SERVICE_URL: http://item-service
+        INVENTORY_SERVICE_URL: http://inventory
         TRADE_PARTNERSHIPS_SERVICE_URL: http://trade-partnerships
         PRODUCT_CATALOG_SERVICE_URL: http://product-catalog
     ports:

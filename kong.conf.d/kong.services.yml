@@ -379,6 +379,14 @@ services:
           - /v1/items/([^\/]+)$
           - /v1/items_bulk
           - /v1/unit_conversions
+  - name: inventory-service
+    url: http://INVENTORY_SERVICE_URL
+    routes:
+      - name: inventory-bff-v1
+        strip_path: false
+        paths:
+          - /bff/v1/inventory
+          - /bff/v1/qualifiers/facilities/([^\/]+)/items/([^\/]+)$
   - name: trade-partnerships-service
     url: http://TRADE_PARTNERSHIPS_SERVICE_URL
     routes:
