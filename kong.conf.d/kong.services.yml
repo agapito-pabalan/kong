@@ -408,6 +408,8 @@ services:
           - /v1/trade_connections/([^\/]+)$
           - /v1/trade_connections/([^\/]+)/configurations$
           - /v1/trade_connections/rank$
+          - /v1/facility_connections
+          - /v1/facility_connections/([^\/]+)$
   - name: product-catalog-service
     url: http://PRODUCT_CATALOG_SERVICE_URL
     routes:
