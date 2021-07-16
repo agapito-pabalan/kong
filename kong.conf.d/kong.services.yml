@@ -386,6 +386,7 @@ services:
         strip_path: false
         paths:
           - /bff/v1/inventory
+          - /bff/v1/cancel_order_lines
           - /bff/v1/qualifiers/facilities/([^\/]+)/items/([^\/]+)$
   - name: trade-partnerships-service
     url: http://TRADE_PARTNERSHIPS_SERVICE_URL
