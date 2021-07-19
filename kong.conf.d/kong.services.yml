@@ -311,6 +311,7 @@ services:
           - /v1/sales_order_lines
           - /v1/orders/([^\/]+)/purchase_order_lines
           - /v1/orders/([^\/]+)/sales_order_lines
+          - /bff/v1/cancel_order_lines
           - /bff/v1/facility_activities/([^\/]+)/documents/([^\/]+)$
           - /bff/v1/order_details
           - /bff/v1/facility_activities/([^\/]+)$
@@ -386,7 +387,6 @@ services:
         strip_path: false
         paths:
           - /bff/v1/inventory
-          - /bff/v1/cancel_order_lines
           - /bff/v1/qualifiers/facilities/([^\/]+)/items/([^\/]+)$
   - name: trade-partnerships-service
     url: http://TRADE_PARTNERSHIPS_SERVICE_URL
