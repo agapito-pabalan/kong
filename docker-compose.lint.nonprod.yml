@@ -1,0 +1,12 @@
+version: "3.7"
+services:
+  kong:
+    image: gcr.io/stord-nonprod/kong:${CIRCLE_WORKFLOW_ID}
+    environment:
+      - KONG_DATABASE=off
+      - KONG_DECLARATIVE_CONFIG=/usr/local/share/kong.yml
+      - KONG_PLUGINS=user_management_bridge,cors,request-size-limiting,prometheus
+      - KONG_GO_PLUGINS_DIR=/usr/local/share/go-plugins
+    ports:
+      - "8000:8000/tcp"
+      - "8444:8444/tcp"

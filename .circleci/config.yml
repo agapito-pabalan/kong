@@ -33,6 +33,11 @@ jobs:
       - run:
           name: Save Image
           command: docker save -o images/kong-local.tar gcr.io/stord-nonprod/kong-local
+      - run:
+          name: Lint Kong config
+          command: |
+            check=$(docker-compose -f docker-compose.lint.local.yml run --rm kong kong config parse /usr/local/share/kong.yml)
+            if ! [[ "$check" =~ "parse successful" ]]; then exit 1; fi
       - persist_to_workspace:
           root: images
           paths:
@@ -64,6 +69,11 @@ jobs:
       - run:
           name: Save Image
           command: docker save -o images/kong-nonprod.tar gcr.io/stord-nonprod/kong
+      - run:
+          name: Lint Kong config
+          command: |
+            check=$(docker-compose -f docker-compose.lint.nonprod.yml run --rm kong kong config parse /usr/local/share/kong.yml)
+            if ! [[ "$check" =~ "parse successful" ]]; then exit 1; fi
       - persist_to_workspace:
           root: images
           paths:
@@ -84,6 +94,11 @@ jobs:
       - run:
           name: Save Image
           command: docker save -o images/kong-prod.tar gcr.io/stord-production/kong
+      - run:
+          name: Lint Kong config
+          command: |
+            check=$(docker-compose -f docker-compose.lint.prod.yml run --rm kong kong config parse /usr/local/share/kong.yml)
+            if ! [[ "$check" =~ "parse successful" ]]; then exit 1; fi
       - persist_to_workspace:
           root: images
           paths:
