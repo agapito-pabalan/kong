@@ -389,6 +389,7 @@ services:
           - /bff/v1/inventory_advice
           - /bff/v1/inventory
           - /bff/v1/qualifiers/facilities/([^\/]+)/items/([^\/]+)$
+          - /bff/v1/manual_adjustment
   - name: trade-partnerships-service
     url: http://TRADE_PARTNERSHIPS_SERVICE_URL
     routes:
