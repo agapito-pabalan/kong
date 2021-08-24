@@ -169,6 +169,10 @@ services:
         strip_path: false
         paths:
           - /v1/userdetails
+      - name: user_management_v1_logout
+        strip_path: false
+        paths:
+          - /v1/logout
       - name: user_management_v1_users
         strip_path: false
         paths:
