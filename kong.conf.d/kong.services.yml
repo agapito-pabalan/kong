@@ -446,6 +446,9 @@ services:
         paths:
           - /bff/v1/catalogs(|\?[^\/]+)$
           - /bff/v1/products_search$
+          - /bff/v1/product_inventory/([^\/]+)$
+          - /bff/v1/product_inventory/sku/([^\/]+)$
+          - /bff/v1/catalogs/([^\/]+)/products$
   - name: acme_dummy
     host: 10.4.15.145
     routes:
