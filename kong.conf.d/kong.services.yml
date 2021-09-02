@@ -415,6 +415,8 @@ services:
           - /bff/v1/facilities/([^\/]+)$
           - /bff/v1/companies/([^\/]+)$
           - /bff/v1/networks/([^\/]+)/trade_connections
+          - /bff/v1/networks/([^\/]+)/suppliers(|\?[^\/]+)$
+          - /bff/v1/networks/([^\/]+)/customers(|\?[^\/]+)$
           - /v1/networks/([^\/]+)/configurations$
           - /v1/trade_connections$
           - /v1/trade_connections/([^\/]+)$
