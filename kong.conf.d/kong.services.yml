@@ -384,6 +384,7 @@ services:
           - /v1/items/([^\/]+)$
           - /v1/items_bulk
           - /v1/unit_conversions
+          - /bff/v1/items_search(|\?[^\/]+)$
   - name: inventory-service
     url: http://INVENTORY_SERVICE_URL
     routes:
