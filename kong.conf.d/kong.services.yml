@@ -326,6 +326,7 @@ services:
           - /bff/v1/orders/([^\/]+)/documents$
           - /bff/v1/orders/([^\/]+)/documents/([^\/]+)$
           - /bff/v1/facility_activities/([^\/]+)/signed_download_urls
+          - /bff/v1/orders/([^\/]+)/signed_download_urls
           - /integrations/v1/orders/([^\/]+)$
   - name: facility-activity-service
     url: http://FACILITY_ACTIVITY_SERVICE_URL
