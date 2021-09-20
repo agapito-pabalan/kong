@@ -197,6 +197,10 @@ services:
         strip_path: false
         paths:
           - /bff/v1/users(|\?[^\/]+)$
+      - name: user_management_v1_bff_deactivate_user
+        strip_path: false 
+        paths:
+          - /bff/v1/users/([^\/]+)/deactivate$
   - name: mintaka
     url: http://MINTAKA_URL
     routes:
