@@ -196,7 +196,8 @@ services:
       - name: bff_users
         strip_path: false
         paths:
-          - /bff/v1/users(|\?[^\/]+)$
+          - /bff/v1/users/([^\/]+)
+          - /bff/v1/users/invite$
       - name: user_management_v1_bff_deactivate_user
         strip_path: false 
         paths:
