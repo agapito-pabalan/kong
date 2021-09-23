@@ -193,10 +193,17 @@ services:
         strip_path: false
         paths:
           - /v1/utils/headers
-      - name: bff_users
+      - name: user_management_v1_bff_users
         strip_path: false
         paths:
-          - /bff/v1/users/([^\/]+)
+          - /bff/v1/users$
+      - name: user_management_v1_bff_user_details
+        strip_path: false
+        paths:
+          - /bff/v1/users/([^\/]+)$
+      - name: user_management_v1_bff_invite_user
+        strip_path: false
+        paths:
           - /bff/v1/users/invite$
       - name: user_management_v1_bff_deactivate_user
         strip_path: false 
