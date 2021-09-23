@@ -58,11 +58,11 @@ services:
       - name: saiph_warehouses
         strip_path: false
         paths:
-          - /warehouses
+          - /warehouses(|\?[^\/]+)$
       - name: saiph_warehouse
         strip_path: false
         paths:
-          - /warehouses/([^\/]+)
+          - /warehouses/([^\/]+)$
       - name: saiph_warehouse_distribution_networks
         strip_path: false
         paths:
