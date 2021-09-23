@@ -438,6 +438,8 @@ services:
           - /bff/v1/networks/([^\/]+)/trade_connections
           - /bff/v1/networks/([^\/]+)/suppliers(|\?[^\/]+)$
           - /bff/v1/networks/([^\/]+)/customers(|\?[^\/]+)$
+          - /bff/v1/reference/territories
+          - /bff/v1/reference/territories/([^\/]+)$
           - /v1/networks/([^\/]+)/configurations$
           - /v1/trade_connections$
           - /v1/trade_connections/([^\/]+)$
