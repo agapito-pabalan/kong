@@ -27,10 +27,12 @@ services:
         strip_path: false
         paths:
           - /distribution_networks/([^\/]+)/items
+        regex_priority: 0
       - name: saiph_distribution_networks_items_search
         strip_path: false
         paths:
           - /distribution_networks/([^\/]+)/items_search
+        regex_priority: 1
       - name: saiph_health
         strip_path: false
         paths:
@@ -59,18 +61,22 @@ services:
         strip_path: false
         paths:
           - /warehouses(|\?[^\/]+)$
+        regex_priority: 0
       - name: saiph_warehouse
         strip_path: false
         paths:
           - /warehouses/([^\/]+)$
+        regex_priority: 1
       - name: saiph_warehouse_distribution_networks
         strip_path: false
         paths:
           - /warehouses/([^\/]+)/distribution_networks
+        regex_priority: 2
       - name: saiph_warehouse_trade_connections
         strip_path: false
         paths:
           - /warehouses/([^\/]+)/trade_connections
+        regex_priority: 3
   - name: rigel
     url: http://RIGEL_URL
     routes:
@@ -78,30 +84,37 @@ services:
         strip_path: false
         paths:
           - /cancellations/([^\/]+)
+        regex_priority: 0
       - name: rigel_distribution_network_dashboard_calendar
         strip_path: false
         paths:
           - /distribution_networks/([^\/]+)/dashboard/calendar
+        regex_priority: 2
       - name: rigel_distribution_network_dashboard_open_orders
         strip_path: false
         paths:
           - /distribution_networks/([^\/]+)/dashboard/open_orders
+        regex_priority: 3
       - name: rigel_distribution_network_dashboard_overview
         strip_path: false
         paths:
           - /distribution_networks/([^\/]+)/dashboard/overview
+        regex_priority: 4
       - name: rigel_distribution_network_dashboard_top_warehouses
         strip_path: false
         paths:
           - /distribution_networks/([^\/]+)/dashboard/top_warehouses
+        regex_priority: 5
       - name: rigel_distribution_network_shipments
         strip_path: false
         paths:
           - /distribution_networks/([^\/]+)/shipments
+        regex_priority: 6
       - name: rigel_distribution_network_shipping_orders
         strip_path: false
         paths:
           - /distribution_networks/([^\/]+)/shipping_orders
+        regex_priority: 7
       - name: rigel_health
         strip_path: false
         paths:
@@ -114,6 +127,7 @@ services:
         strip_path: false
         paths:
           - /shipment_receipts/([^\/]+)/documents
+        regex_priority: 0
       - name: rigel_shipments
         strip_path: false
         paths:
@@ -122,6 +136,7 @@ services:
         strip_path: false
         paths:
           - /shipments/([^\/]+)/documents
+        regex_priority: 0
       - name: rigel_shippings_orders
         strip_path: false
         paths:
@@ -130,26 +145,32 @@ services:
         strip_path: false
         paths:
           - /shipping_orders/([^\/]+)/documents
+        regex_priority: 0
       - name: rigel_shipping_orders_inbound
         strip_path: false
         paths:
           - /shipping_orders/([^\/]+)/inbound
+        regex_priority: 1
       - name: rigel_shipping_orders_outbound
         strip_path: false
         paths:
           - /shipping_orders/([^\/]+)/outbound
+        regex_priority: 2
       - name: rigel_warehouses_inbound_shipping_orders
         strip_path: false
         paths:
           - /warehouses/([^\/]+)/inbound_shipping_orders
+        regex_priority: 5
       - name: rigel_warehouses_orders
         strip_path: false
         paths:
           - /warehouses/([^\/]+)/orders
+        regex_priority: 4
       - name: rigel_warehouses_outbound_shipping_orders
         strip_path: false
         paths:
           - /warehouses/([^\/]+)/outbound_shipping_orders
+        regex_priority: 6
   - name: user-management
     url: http://USER_MANAGEMENT_URL
     routes:
@@ -216,18 +237,22 @@ services:
         strip_path: false
         paths:
           - /cancellations/([^\/]+)/inventory_adjustment
+        regex_priority: 1
       - name: mintaka_distribution_networks_inventory_adjustment_activity
         strip_path: false
         paths:
           - /distribution_networks/([^\/]+)/inventory_adjustment_activity
+        regex_priority: 8
       - name: mintaka_distribution_networks_inventory_adjustments
         strip_path: false
         paths:
           - /distribution_networks/([^\/]+)/inventory_adjustments
+        regex_priority: 9
       - name: mintaka_distribution_networks_inventory_lookup
         strip_path: false
         paths:
           - /distribution_networks/([^\/]+)/inventory_lookup
+        regex_priority: 10
       - name: mintaka_inventory
         strip_path: false
         paths:
@@ -252,22 +277,27 @@ services:
         strip_path: false
         paths:
           - /inventory_advices/([^\/]+)
+        regex_priority: 0
       - name: mintaka_inventory_advices_inventory_adjustment
         strip_path: false
         paths:
           - /inventory_advices/([^\/]+)/inventory_adjustment
+        regex_priority: 1
       - name: mintaka_inventory_advices_item_counts
         strip_path: false
         paths:
           - /inventory_advices/([^\/]+)/item_counts
+        regex_priority: 2
       - name: mintaka_inventory_ledger_entries
         strip_path: false
         paths:
           - /inventory_ledger_entries/([^\/]+)
+        regex_priority: 0
       - name: mintaka_inventory_ledger_entries_inventory_balance
         strip_path: false
         paths:
           - /inventory_ledger_entries/([^\/]+)/inventory_balance
+        regex_priority: 1
       - name: mintaka_item_counts
         strip_path: false
         paths:
@@ -308,10 +338,12 @@ services:
         strip_path: false
         paths:
           - /warehouses/([^\/]+)/items
+        regex_priority: 7
       - name: mintaka_warehouses_item_qualifier
         strip_path: false
         paths:
           - /warehouses/([^\/]+)/items/([^\/]+)
+        regex_priority: 8
   - name: meissa
     url: http://MEISSA_URL
     routes:
