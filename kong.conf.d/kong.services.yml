@@ -230,6 +230,10 @@ services:
         strip_path: false 
         paths:
           - /bff/v1/users/([^\/]+)/deactivate$
+      - name: user_management_v1_bff_reactivate_user
+        strip_path: false 
+        paths:
+          - /bff/v1/users/([^\/]+)/reactivate$
       - name: user_management_v1_bff_cancel_user_invitation
         strip_path: false 
         paths:
