@@ -242,6 +242,10 @@ services:
         strip_path: false 
         paths:
           - /bff/v1/users/([^\/]+)/resend_invitation$
+      - name: user_management_v1_bff_reset_user_password
+        strip_path: false 
+        paths:
+          - /bff/v1/users/([^\/]+)/reset_password$
   - name: mintaka
     url: http://MINTAKA_URL
     routes:
