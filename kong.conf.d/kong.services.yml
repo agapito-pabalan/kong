@@ -227,7 +227,7 @@ services:
         paths:
           - /bff/v1/users/invite$
       - name: user_management_v1_bff_deactivate_user
-        strip_path: false 
+        strip_path: false
         paths:
           - /bff/v1/users/([^\/]+)/deactivate$
       - name: user_management_v1_bff_reactivate_user
@@ -509,20 +509,26 @@ services:
         strip_path: false
         paths:
           - /v1/products$
+          - /v1/kits$
           - /v1/products/([^\/]+)$
       - name: product_catalog_v1_product_item_mappings
         strip_path: false
         paths:
           - /v1/item_mappings$
+          - /v1/bill_of_materials$
           - /v1/item_mappings/([^\/]+)$
       - name: product_catalog_v1_bff
         strip_path: false
         paths:
           - /bff/v1/catalogs(|\?[^\/]+)$
           - /bff/v1/products_search$
+          - /bff/v1/kits_search$
           - /bff/v1/product_inventory/([^\/]+)$
+          - /bff/v1/kit_inventory/([^\/]+)$
           - /bff/v1/product_inventory/sku/([^\/]+)$
+          - /bff/v1/kit_inventory/sku/([^\/]+)$
           - /bff/v1/catalogs/([^\/]+)/products$
+          - /bff/v1/catalogs/([^\/]+)/kits$
   - name: acme_dummy
     host: 10.4.15.145
     routes:
