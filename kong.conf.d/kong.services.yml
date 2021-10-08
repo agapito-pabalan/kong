@@ -222,10 +222,16 @@ services:
         strip_path: false
         paths:
           - /bff/v1/users/([^\/]+)$
+        regex_priority: 0
       - name: user_management_v1_bff_invite_user
         strip_path: false
         paths:
           - /bff/v1/users/invite$
+      - name: user_management_v1_bff_activate_user
+        strip_path: false 
+        paths:
+          - /bff/v1/users/([^\/]+)/activate$
+        regex_priority: 1
       - name: user_management_v1_bff_deactivate_user
         strip_path: false
         paths:
