@@ -4,8 +4,8 @@ WORKDIR /go-plugins
 
 RUN apk add --no-cache git gcc libc-dev
 RUN go mod init kong-go-plugin
-RUN go get -d -v github.com/Kong/go-pdk
-RUN go get -d -v github.com/Kong/go-pluginserver
+RUN go get -d -v github.com/Kong/go-pdk@v0.6.1
+RUN go get -d -v github.com/Kong/go-pluginserver@v0.6.1
 RUN go get -d -v github.com/lestrrat-go/jwx/jwt
 RUN go get -d -v github.com/lestrrat-go/jwx/jwk
 RUN go get -d -v github.com/go-redis/redis/v8
