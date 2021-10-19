@@ -468,6 +468,7 @@ services:
         strip_path: false
         paths:
           - /integrations/v1/inventory_advice
+          - /integrations/v1/update_shopify_location_inventory
       - name: inventory-bff-v1
         strip_path: false
         paths:
