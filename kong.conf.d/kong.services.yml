@@ -484,6 +484,7 @@ services:
       - name: trade-partnerships-root
         strip_path: false
         paths:
+          - /base_configurations
           - /integrations/v1/facilities
           - /bff/admin/v1/networks
           - /bff/admin/v1/facilities
@@ -498,6 +499,7 @@ services:
           - /bff/v1/networks/([^\/]+)/customers(|\?[^\/]+)$
           - /bff/v1/reference/territories
           - /bff/v1/reference/territories/([^\/]+)$
+          - /v1/configurations
           - /v1/networks/([^\/]+)/configurations$
           - /v1/trade_connections$
           - /v1/trade_connections/([^\/]+)$
