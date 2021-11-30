@@ -228,7 +228,7 @@ services:
         paths:
           - /bff/v1/users/invite$
       - name: user_management_v1_bff_activate_user
-        strip_path: false 
+        strip_path: false
         paths:
           - /bff/v1/users/([^\/]+)/activate$
         regex_priority: 1
@@ -237,19 +237,19 @@ services:
         paths:
           - /bff/v1/users/([^\/]+)/deactivate$
       - name: user_management_v1_bff_reactivate_user
-        strip_path: false 
+        strip_path: false
         paths:
           - /bff/v1/users/([^\/]+)/reactivate$
       - name: user_management_v1_bff_cancel_user_invitation
-        strip_path: false 
+        strip_path: false
         paths:
           - /bff/v1/users/([^\/]+)/cancel_invitation$
       - name: user_management_v1_bff_resend_user_invitation
-        strip_path: false 
+        strip_path: false
         paths:
           - /bff/v1/users/([^\/]+)/resend_invitation$
       - name: user_management_v1_bff_reset_user_password
-        strip_path: false 
+        strip_path: false
         paths:
           - /bff/v1/users/([^\/]+)/reset_password$
       - name: user_management_v1_bff_roles
@@ -457,18 +457,6 @@ services:
         strip_path: false
         paths:
           - /v2/documents$
-  - name: item-service
-    url: http://ITEM_SERVICE_URL
-    routes:
-      - name: item_service_v1_integrations_items
-        strip_path: false
-        paths:
-          - /integrations/v1/items$
-          - /v1/items$
-          - /v1/items/([^\/]+)$
-          - /v1/items_bulk
-          - /v1/unit_conversions
-          - /bff/v1/items_search(|\?[^\/]+)$
   - name: inventory-service
     url: http://INVENTORY_SERVICE_URL
     routes:
@@ -547,6 +535,15 @@ services:
           - /bff/v1/kit_inventory/sku/([^\/]+)$
           - /bff/v1/catalogs/([^\/]+)/products$
           - /bff/v1/catalogs/([^\/]+)/kits$
+      - name: product_catalog_v1_items
+        strip_path: false
+        paths:
+          - /integrations/v1/items$
+          - /v1/items$
+          - /v1/items/([^\/]+)$
+          - /v1/items_bulk
+          - /v1/unit_conversions
+          - /bff/v1/items_search(|\?[^\/]+)$
   - name: acme_dummy
     host: 10.4.15.145
     routes:
