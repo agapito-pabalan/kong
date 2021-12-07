@@ -548,6 +548,13 @@ services:
           - /v1/items_bulk
           - /v1/unit_conversions
           - /bff/v1/items_search(|\?[^\/]+)$
+  - name: healthcheck-aggregator-service
+    url: http://HEALTHCHECK_AGGREGATOR_SERVICE_URL
+    routes:
+      - name: healthcheck_aggregator_health
+        strip_path: false
+        paths:
+          - /_health
   - name: acme_dummy
     host: 10.4.15.145
     routes:

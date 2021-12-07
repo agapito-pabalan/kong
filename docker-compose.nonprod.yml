@@ -24,6 +24,7 @@ services:
         INVENTORY_SERVICE_URL: http://inventory
         TRADE_PARTNERSHIPS_SERVICE_URL: http://trade-partnerships
         PRODUCT_CATALOG_SERVICE_URL: http://product-catalog
+        HEALTHCHECK_AGGREGATOR_SERVICE_URL: http://healthcheck-aggregator
     ports:
       - "8000:8000/tcp"
       - "8444:8444/tcp"
