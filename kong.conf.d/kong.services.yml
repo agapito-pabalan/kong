@@ -252,6 +252,10 @@ services:
         strip_path: false
         paths:
           - /bff/v1/users/([^\/]+)/reset_password$
+      - name: user_management_v1_bff_role_update
+        strip_path: false
+        paths:
+          - /bff/v1/users/([^\/]+)/role$
       - name: user_management_v1_bff_roles
         strip_path: false
         paths:
