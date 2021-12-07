@@ -260,6 +260,10 @@ services:
         strip_path: false
         paths:
           - /bff/v1/roles$
+      - name: user_management_v2_bff_invite_user
+        strip_path: false
+        paths:
+          - /bff/v2/users/invite$
   - name: mintaka
     url: http://MINTAKA_URL
     routes:
