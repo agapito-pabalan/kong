@@ -76,7 +76,13 @@ func (conf Config) Access(kong *pdk.PDK) {
 	kong.Log.Debug(fmt.Sprintf("begin access"))
 
 	path, _ := kong.Request.GetPath()
+
 	match, _ := regexp.MatchString("/.well-known/acme-challenge", path)
+	if match {
+		return
+	}
+
+	match, _ = regexp.MatchString("/_health", path)
 	if match {
 		return
 	}
