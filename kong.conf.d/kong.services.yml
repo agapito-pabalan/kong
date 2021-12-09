@@ -492,7 +492,7 @@ services:
           - /bff/admin/v1/networks
           - /bff/admin/v1/facilities
           - /bff/v1/networks
-          - /bff/v1/facilities
+          - /bff/v1/facilities$
           - /bff/v1/companies
           - /bff/v1/networks/([^\/]+)$
           - /bff/v1/facilities/([^\/]+)$
@@ -510,6 +510,7 @@ services:
           - /v1/trade_connections/rank$
           - /v1/facility_connections
           - /v1/facility_connections/([^\/]+)$
+          - /bff/admin/v1/networks/([^\/]+)$
   - name: product-catalog-service
     url: http://PRODUCT_CATALOG_SERVICE_URL
     routes:
