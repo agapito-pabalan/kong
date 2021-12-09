@@ -523,14 +523,16 @@ services:
         strip_path: false
         paths:
           - /v1/products$
-          - /v1/kits$
           - /v1/products/([^\/]+)$
+          - /v1/kits$
+          - /v1/kits/([^\/]+)$
       - name: product_catalog_v1_product_item_mappings
         strip_path: false
         paths:
           - /v1/item_mappings$
-          - /v1/bill_of_materials$
           - /v1/item_mappings/([^\/]+)$
+          - /v1/bill_of_materials$
+          - /v1/bill_of_materials/([^\/]+)$
       - name: product_catalog_v1_bff
         strip_path: false
         paths:
