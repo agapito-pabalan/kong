@@ -569,3 +569,23 @@ services:
         strip_path: false
         paths:
           - /.well-known/acme-challenge
+  - name: marketplace-service
+    url: http://MARKETPLACE_SERVICE_URL
+    routes:
+      - name: market_place_v1_credentias
+        strip_path: false
+        paths:
+          - /v1/logic_broker/credentials$
+          - /v1/logic_broker/credentials/([^\/]+)$
+      - name: market_place_v1_orders
+        strip_path: false
+        paths:
+          - /v1/shopify/orders_create
+      - name: market_place_v1_callbacks
+        strip_path: false
+        paths:
+          - /v1/shopify/callback
+      - name: market_place_v1_installations
+        strip_path: false
+        paths:
+          - /v1/shopify/install
