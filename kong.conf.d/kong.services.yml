@@ -582,3 +582,8 @@ services:
         strip_path: false
         paths:
           - /v1/shopify/install
+      - name: marketplace_v1_integrations
+        strip_path: false
+        paths:
+          - /v1/salesforce_commerce_cloud/integrations$
+          - /v1/salesforce_commerce_cloud/integrations/([^\/]+)$
