@@ -560,20 +560,20 @@ services:
   - name: marketplace-service
     url: http://MARKETPLACE_SERVICE_URL
     routes:
-      - name: market_place_v1_credentias
+      - name: marketplace_v1_credentials
         strip_path: false
         paths:
           - /v1/logic_broker/credentials$
           - /v1/logic_broker/credentials/([^\/]+)$
-      - name: market_place_v1_orders
+      - name: marketplace_v1_webhook
         strip_path: false
         paths:
-          - /v1/shopify/orders_create
-      - name: market_place_v1_callbacks
+          - /v1/shopify/webhook
+      - name: marketplace_v1_oauth_callback
         strip_path: false
         paths:
           - /v1/shopify/callback
-      - name: market_place_v1_installations
+      - name: marketplace_v1_install
         strip_path: false
         paths:
           - /v1/shopify/install
