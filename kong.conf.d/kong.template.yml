@@ -10,6 +10,8 @@ plugins:
         - https://shipper.stord.com
         - https://warehouse.stord.com
         - https://*.review.stord.com
+        - https://admin-cf.staging.stord.com
+        - https://*.admin-client-nonprod.pages.dev
   - name: user_management_bridge
     config:
       user_management_endpoint: http://user-management/v1/jwt/permissions
