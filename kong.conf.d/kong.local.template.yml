@@ -10,7 +10,7 @@ plugins:
       size_unit: megabytes
   - name: user_management_bridge
     config:
-      user_management_endpoint: http://user-management:4003/v1/jwt/permissions
+      user_management_endpoint: http://USER_MANAGEMENT_URL/v1/jwt/permissions
       auth0_url: https://stord-staging.auth0.com/.well-known/jwks.json
       cache_url: "redis://cache:6379"
       jwks_refresh_interval: 15
