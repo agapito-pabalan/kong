@@ -38,6 +38,7 @@ ARG TRADE_PARTNERSHIPS_SERVICE_URL
 ARG PRODUCT_CATALOG_SERVICE_URL
 ARG HEALTHCHECK_AGGREGATOR_SERVICE_URL
 ARG MARKETPLACE_SERVICE_URL
+ARG TENANT_SERVICE_URL
 
 COPY --from=builder /go-plugins/go-pluginserver /usr/local/bin/
 COPY --from=builder /go-plugins/user_management_bridge.so /usr/local/share/go-plugins/user_management_bridge.so
@@ -70,6 +71,7 @@ RUN sed -i "s~http://TRADE_PARTNERSHIPS_SERVICE_URL~$TRADE_PARTNERSHIPS_SERVICE_
 RUN sed -i "s~http://PRODUCT_CATALOG_SERVICE_URL~$PRODUCT_CATALOG_SERVICE_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://HEALTHCHECK_AGGREGATOR_SERVICE_URL~$HEALTHCHECK_AGGREGATOR_SERVICE_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://MARKETPLACE_SERVICE_URL~$MARKETPLACE_SERVICE_URL~g" /usr/local/share/kong.yml
+RUN sed -i "s~http://TENANT_SERVICE_URL~$TENANT_SERVICE_URL~g" /usr/local/share/kong.yml
 
 RUN chmod +r /usr/local/share/kong.yml
 

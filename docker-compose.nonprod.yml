@@ -26,6 +26,7 @@ services:
         PRODUCT_CATALOG_SERVICE_URL: http://product-catalog
         HEALTHCHECK_AGGREGATOR_SERVICE_URL: http://healthcheck-aggregator
         MARKETPLACE_SERVICE_URL: http://marketplace-service
+        TENANT_SERVICE_URL: http://tenant-service
     ports:
       - "8000:8000/tcp"
       - "8444:8444/tcp"
