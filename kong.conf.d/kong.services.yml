@@ -559,6 +559,8 @@ services:
       - name: tenant_integrations
         strip_path: false
         paths:
+          - /integrations/v1/tenants$
+          - /integrations/v1/tenants/([^\/]+)$
           - /integrations/v2/tenants/([^\/]+)/mappings$
   - name: healthcheck-aggregator-service
     url: http://HEALTHCHECK_AGGREGATOR_SERVICE_URL
