@@ -520,6 +520,7 @@ services:
           - /v1/facility_connections
           - /v1/facility_connections/([^\/]+)$
           - /bff/admin/v1/networks/([^\/]+)$
+          - /integrations/v2/facilities
   - name: product-catalog-service
     url: http://PRODUCT_CATALOG_SERVICE_URL
     routes:
