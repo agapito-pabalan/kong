@@ -45,6 +45,7 @@ services:
         strip_path: false
         paths:
           - /items
+          - /v1/items/([^\/]+)$
       - name: saiph_items_item_unit_conversions
         strip_path: false
         paths:
