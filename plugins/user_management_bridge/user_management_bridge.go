@@ -87,6 +87,11 @@ func (conf Config) Access(kong *pdk.PDK) {
 		return
 	}
 
+	match, _ = regexp.MatchString("/webhook", path)
+	if match {
+		return
+	}
+
 	auth0Token, err := getAuth0Token(kong)
 	if err != nil {
 		kong.Log.Warn("warning: ", err.Error())
