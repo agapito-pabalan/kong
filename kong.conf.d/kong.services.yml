@@ -547,6 +547,7 @@ services:
         strip_path: false
         paths:
           - /bff/v1/catalogs(|\?[^\/]+)$
+          - /bff/v1/kits(|\?[^\/]+)$
           - /bff/v1/kits_search$
           - /bff/v1/kit_inventory/([^\/]+)$
           - /bff/v1/kit_inventory/sku/([^\/]+)$
