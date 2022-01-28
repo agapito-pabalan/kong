@@ -591,6 +591,7 @@ services:
         paths:
           - /v1/logic_broker/credentials$
           - /v1/logic_broker/credentials/([^\/]+)$
+          - /webhook/v1/logic_broker/([^\/]+)/([^\/]+)/ecom$
       - name: marketplace_v1_webhook
         strip_path: false
         paths:
