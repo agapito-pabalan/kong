@@ -611,5 +611,7 @@ services:
       - name: marketplace_v1_integrations
         strip_path: false
         paths:
+          - /v1/logic_broker/integrations$
+          - /v1/logic_broker/integrations/([^\/]+)$
           - /v1/salesforce_commerce_cloud/integrations$
           - /v1/salesforce_commerce_cloud/integrations/([^\/]+)$
