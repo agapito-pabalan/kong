@@ -265,6 +265,10 @@ services:
         strip_path: false
         paths:
           - /bff/v2/users/invite$
+      - name: user_management_v1_bff_domo_jwt
+        strip_path: false
+        paths:
+          - /bff/v1/domo/jwt$
   - name: mintaka
     url: http://MINTAKA_URL
     routes:
