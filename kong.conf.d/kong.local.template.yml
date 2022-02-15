@@ -15,3 +15,8 @@ plugins:
       cache_url: "redis://cache:6379"
       jwks_refresh_interval: 15
   - name: prometheus
+  - name: correlation-id
+    config: 
+      header_name: x-request-id
+      generator: uuid
+      echo_downstream: true

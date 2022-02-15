@@ -8,7 +8,7 @@ services:
       KONG_DECLARATIVE_CONFIG: /usr/local/share/kong.yml
       KONG_ADMIN_LISTEN: 0.0.0.0:8001
       KONG_PROXY_LISTEN: 0.0.0.0:8000
-      KONG_PLUGINS: user_management_bridge,cors,request-size-limiting,prometheus
+      KONG_PLUGINS: user_management_bridge,cors,request-size-limiting,prometheus,correlation-id
       KONG_GO_PLUGINS_DIR: /usr/local/share/go-plugins
       AUTH0_JWKS_URL: https://stord-staging.auth0.com/.well-known/jwks.json
     ports:
