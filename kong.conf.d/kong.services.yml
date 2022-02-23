@@ -489,13 +489,13 @@ services:
         paths:
           - /integrations/v1/inventory_advice
           - /integrations/v1/update_shopify_location_inventory
+          - /integrations/v1/manual_adjustment
       - name: inventory-bff-v1
         strip_path: false
         paths:
           - /bff/v1/inventory_advice
           - /bff/v1/inventory
           - /bff/v1/qualifiers/facilities/([^\/]+)/items/([^\/]+)$
-          - /bff/v1/manual_adjustment
           - /bff/v1/inventory/csv_download$
   - name: trade-partnerships-service
     url: http://TRADE_PARTNERSHIPS_SERVICE_URL
