@@ -618,5 +618,5 @@ services:
         paths:
           - /v1/logic_broker/integrations$
           - /v1/logic_broker/integrations/([^\/]+)$
-          - /v1/salesforce_commerce_cloud/integrations$
-          - /v1/salesforce_commerce_cloud/integrations/([^\/]+)$
+          - /v1/ecom_integrations$
+          - /v1/ecom_integrations/([^\/]+)$
