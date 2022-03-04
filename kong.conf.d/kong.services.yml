@@ -553,13 +553,10 @@ services:
       - name: product_catalog_v1_bff
         strip_path: false
         paths:
-          - /bff/v1/catalogs(|\?[^\/]+)$
           - /bff/v1/kits$
           - /bff/v1/kits/([^\/]+)$
-          - /bff/v1/kits_search$
           - /bff/v1/kit_inventory/([^\/]+)$
           - /bff/v1/kit_inventory/sku/([^\/]+)$
-          - /bff/v1/catalogs/([^\/]+)/kits$
           - /bff/v1/products$
       - name: product_catalog_v1_items
         strip_path: false
