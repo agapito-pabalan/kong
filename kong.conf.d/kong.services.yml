@@ -539,6 +539,10 @@ services:
   - name: product-catalog-service
     url: http://PRODUCT_CATALOG_SERVICE_URL
     routes:
+      - name: product_catalog_v1_units_of_measure
+        strip_path: false
+        paths:
+          - /integrations/v1/units_of_measure$
       - name: product_catalog_v1_catalogs
         strip_path: false
         paths:
