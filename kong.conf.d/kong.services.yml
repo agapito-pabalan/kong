@@ -626,3 +626,10 @@ services:
           - /v1/ecom_integrations$
           - /v1/ecom_integrations/([^\/]+)$
           - /v1/ecom_integrations/([^\/]+)/enable$
+  - name: search-service
+    url: http://SEARCH_SERVICE_URL
+    routes:
+      - name: search_service_v1_products
+        strip_path: false
+        paths:
+          - /v1/search/products$
