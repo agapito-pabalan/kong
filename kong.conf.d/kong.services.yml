@@ -430,7 +430,7 @@ services:
           - /v2/orders/transfer
           - /v2/orders/([^\/]+)/process_outbounds$
           - /v2/orders/([^\/]+)/destination$
-  - name: facility-aqqctivity-service
+  - name: facility-activity-service
     url: http://FACILITY_ACTIVITY_SERVICE_URL
     routes:
       - name: facility_activity_service_v1_show_facility_activity
@@ -634,3 +634,16 @@ services:
         strip_path: false
         paths:
           - /v1/search/products$
+  - name: fin-ops-service
+    url: http://FIN_OPS_SERVICE_URL
+    routes:
+      - name: fin-ops-root
+        strip_path: false
+        paths:
+          - /finops/v1/partners
+          - /finops/v1/warehouses
+          - /finops/v1/warehouses/([^\/]+)/statements
+          - /finops/v1/warehouses/([^\/]+)/statements/([^\/]+)$
+          - /finops/v1/rate_cards
+          - /finops/v1/rate_cards/([^\/]+)$
+          - /finops/v1/billable_activities

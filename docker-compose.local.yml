@@ -22,6 +22,7 @@ services:
         MARKETPLACE_SERVICE_URL: http://marketplace-service:4000
         TENANT_SERVICE_URL: http://tenant-service:4000
         SEARCH_SERVICE_URL: http://search-service:4000
+        FIN_OPS_SERVICE_URL: http://fin-ops-service
     ports:
       - "8000:8000/tcp"
       - "8444:8444/tcp"
