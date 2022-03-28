@@ -537,6 +537,7 @@ services:
           - /v1/facility_connections/([^\/]+)$
           - /bff/admin/v1/networks/([^\/]+)$
           - /bff/v1/shippers
+          - /bff/v1/networks/([^\/]+)/bulk_facility_import
   - name: product-catalog-service
     url: http://PRODUCT_CATALOG_SERVICE_URL
     routes:
