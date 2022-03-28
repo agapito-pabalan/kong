@@ -642,6 +642,7 @@ services:
         strip_path: false
         paths:
           - /finops/v1/partners
+          - /finops/v1/partners/([^\/]+)$
           - /finops/v1/warehouses
           - /finops/v1/warehouses/([^\/]+)/statements
           - /finops/v1/warehouses/([^\/]+)/statements/([^\/]+)$
