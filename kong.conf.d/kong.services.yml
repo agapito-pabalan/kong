@@ -545,6 +545,7 @@ services:
         strip_path: false
         paths:
           - /integrations/v1/units_of_measure$
+          - /integrations/v1/add_aliases$
       - name: product_catalog_v1_catalogs
         strip_path: false
         paths:
