@@ -2,7 +2,7 @@ FROM golang:1.15-alpine as builder
 
 WORKDIR /go-plugins
 
-RUN apk add --no-cache git gcc libc-dev
+RUN apk add --no-cache git gcc libc-dev binutils-gold
 RUN go mod init kong-go-plugin
 RUN go get -d -v github.com/Kong/go-pdk@v0.6.1
 RUN go get -d -v github.com/Kong/go-pluginserver@v0.6.1

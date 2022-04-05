@@ -16,7 +16,7 @@ plugins:
       jwks_refresh_interval: 15
   - name: prometheus
   - name: correlation-id
-    config: 
+    config:
       header_name: x-request-id
       generator: uuid
       echo_downstream: true
