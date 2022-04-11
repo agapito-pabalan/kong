@@ -564,7 +564,6 @@ services:
           - /bff/v1/kits$
           - /bff/v1/kits/([^\/]+)$
           - /bff/v1/kit_inventory/([^\/]+)$
-          - /bff/v1/kit_inventory/sku/([^\/]+)$
           - /bff/v1/products$
           - /bff/v1/products/export$
       - name: product_catalog_v1_items
