@@ -138,6 +138,7 @@ jobs:
             --kube-context gke_stord-production_us-east1_orion-production \
             --namespace default \
             --set image.tag="${{ needs.build.outputs.tag }}" \
+            --set env.user_management_cache_url="${{ secrets.USER_MANAGEMENT_CACHE_URL }}" \
             --values ./helm/values.prod.yaml \
             --version 1.14.2 \
             --wait \

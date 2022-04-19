@@ -7,11 +7,6 @@ services:
       args:
         KONG_TEMPLATE: kong.template.yml
         AUTH0_JWKS_URL: https://stord-staging.auth0.com/.well-known/jwks.json
-        REDIS_CACHE_URL: $NONPROD_REDIS_CACHE_URL
-        SSL_CERTIFICATE_1: $NONPROD_SSL_CERTIFICATE_1
-        SSL_CERTIFICATE_2: $NONPROD_SSL_CERTIFICATE_2
-        SSL_CERTIFICATE_PRIVATE_KEY: $NONPROD_SSL_CERTIFICATE_PRIVATE_KEY
-        SNI_NAME: $NONPROD_SNI_NAME
         SAIPH_URL: http://saiph
         RIGEL_URL: http://rigel
         USER_MANAGEMENT_URL: http://user-management

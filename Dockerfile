@@ -17,11 +17,6 @@ RUN go build -buildmode plugin -o /go-plugins/user_management_bridge.so /go-plug
 FROM kong:2.2.1-alpine as release
 
 ARG AUTH0_JWKS_URL
-ARG REDIS_CACHE_URL
-ARG SSL_CERTIFICATE_1
-ARG SSL_CERTIFICATE_2
-ARG SSL_CERTIFICATE_PRIVATE_KEY
-ARG SNI_NAME
 ARG KONG_TEMPLATE
 
 ARG SAIPH_URL
@@ -53,11 +48,6 @@ RUN mv /usr/local/share/$KONG_TEMPLATE /usr/local/share/kong.yml
 RUN cat /usr/local/share/kong.services.yml >> /usr/local/share/kong.yml
 
 RUN sed -i "s~AUTH0_JWKS_URL~$AUTH0_JWKS_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~REDIS_CACHE_URL~$REDIS_CACHE_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~SSL_CERTIFICATE_1~$SSL_CERTIFICATE_1~g" /usr/local/share/kong.yml
-RUN sed -i "s~SSL_CERTIFICATE_2~$SSL_CERTIFICATE_2~g" /usr/local/share/kong.yml
-RUN sed -i "s~SSL_CERTIFICATE_PRIVATE_KEY~$SSL_CERTIFICATE_PRIVATE_KEY~g" /usr/local/share/kong.yml
-RUN sed -i "s~SNI_NAME~$SNI_NAME~g" /usr/local/share/kong.yml
 
 RUN sed -i "s~http://SAIPH_URL~$SAIPH_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://RIGEL_URL~$RIGEL_URL~g" /usr/local/share/kong.yml
@@ -75,7 +65,7 @@ RUN sed -i "s~http://HEALTHCHECK_AGGREGATOR_SERVICE_URL~$HEALTHCHECK_AGGREGATOR_
 RUN sed -i "s~http://MARKETPLACE_SERVICE_URL~$MARKETPLACE_SERVICE_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://FIN_OPS_SERVICE_URL~$FIN_OPS_SERVICE_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://TENANT_SERVICE_URL~$TENANT_SERVICE_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~http://SEARCH_SERVICE_URL~$SEARCH_SERVICE_URL~g" /usr/local/share/kong.yml 
+RUN sed -i "s~http://SEARCH_SERVICE_URL~$SEARCH_SERVICE_URL~g" /usr/local/share/kong.yml
 
 RUN chmod +r /usr/local/share/kong.yml
 

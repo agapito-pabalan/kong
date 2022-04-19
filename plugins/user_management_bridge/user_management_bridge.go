@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strings"
 	"time"
+	"os"
 
 	"github.com/Kong/go-pdk"
 	"github.com/go-redis/redis/v8"
@@ -65,10 +66,17 @@ type Config struct {
 
 func New() interface{} {
 	conf := Config{}
+
+	cache_url, cache_url_exists := os.LookupEnv("KONG_USER_MANAGEMENT_CACHE_URL")
+	if cache_url_exists {
+		conf.CacheUrl = cache_url
+	}
+
 	conf.JwkCtx = context.Background()
 	conf.CacheCtx = context.Background()
 	conf.AutoRefresh = jwk.NewAutoRefresh(conf.JwkCtx)
 	conf.CacheClient = nil
+
 	return &conf
 }
 
