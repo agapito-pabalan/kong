@@ -70,7 +70,9 @@ jobs:
               core.setOutput('tag', tag)
             }
 
-      - name: Build
+      - env:
+          NONPROD_REDIS_CACHE_URL: ${{ secrets.NONPROD_USER_MANAGEMENT_CACHE_URL }}
+        name: Build
         run: |
           docker-compose -f docker-compose.nonprod.yml build
 
@@ -137,7 +139,6 @@ jobs:
             --kube-context gke_stord-nonprod_us-east1_orion-nonprod \
             --namespace default \
             --set image.tag="${{ needs.build.outputs.tag }}" \
-            --set env.user_management_cache_url="${{ secrets.USER_MANAGEMENT_CACHE_URL }}" \
             --values ./helm/values.nonprod.yaml \
             --version 1.14.2 \
             --wait \
@@ -145,4 +146,4 @@ jobs:
 
       - name: Monitor Rollout
         run: |
-          kubectl rollout status deployment/kong-helm-istio-nonprod-pkpjpb1 --timeout=300s
+          kubectl rollout status deployment/kong-helm-istio-nonprod-pkpjpb1-kong --timeout=300s

@@ -71,7 +71,9 @@ jobs:
               core.setOutput('tag', tag)
             }
 
-      - name: Build
+      - env:
+          PROD_REDIS_CACHE_URL: ${{ secrets.PROD_USER_MANAGEMENT_CACHE_URL }}
+        name: Build
         run: |
           docker-compose -f docker-compose.prod.yml build
 
@@ -138,7 +140,6 @@ jobs:
             --kube-context gke_stord-production_us-east1_orion-production \
             --namespace default \
             --set image.tag="${{ needs.build.outputs.tag }}" \
-            --set env.user_management_cache_url="${{ secrets.USER_MANAGEMENT_CACHE_URL }}" \
             --values ./helm/values.prod.yaml \
             --version 1.14.2 \
             --wait \
@@ -146,4 +147,4 @@ jobs:
 
       - name: Monitor Rollout
         run: |
-          kubectl rollout status deployment/kong --timeout=300s
+          kubectl rollout status deployment/kong-kong --timeout=300s

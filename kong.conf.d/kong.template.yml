@@ -18,6 +18,7 @@ plugins:
     config:
       user_management_endpoint: http://user-management/v1/jwt/permissions
       auth0_url: AUTH0_JWKS_URL
+      cache_url: REDIS_CACHE_URL
       jwks_refresh_interval: 15
   - name: request-size-limiting
     config:
