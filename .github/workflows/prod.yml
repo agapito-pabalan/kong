@@ -1,0 +1,148 @@
+---
+name: Prod
+
+on:
+  release:
+    types:
+      - released
+      - prereleased
+  workflow_dispatch:
+
+concurrency: Deploy Prod
+
+jobs:
+  Build:
+    defaults:
+      run:
+        shell: bash
+
+    outputs:
+      image: ${{ steps.export.outputs.image }}
+      tag: ${{ steps.export.outputs.tag }}
+
+    permissions:
+      contents: read
+      id-token: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Login (GCP)
+        uses: google-github-actions/auth@v0
+        with:
+          service_account: github@stord-production.iam.gserviceaccount.com
+          workload_identity_provider: ${{ secrets.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
+
+      - name: Install (Gcloud)
+        uses: google-github-actions/setup-gcloud@v0
+
+      - name: Login (GCR)
+        run: gcloud auth configure-docker
+
+      - id: meta
+        name: Metadata
+        uses: docker/metadata-action@v3
+        with:
+          flavor: |
+            latest=true
+          images: gcr.io/stord-production/kong
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha
+
+      - id: export
+        name: Export
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const metadata = JSON.parse(`${{ steps.meta.outputs.json }}`)
+            const fullUrl = metadata.tags.find((t) => t.includes(':sha-'))
+            if (fullUrl == null) {
+              core.error('Unable to find sha tag of image')
+            } else {
+              const tag = fullUrl.split(':')[1]
+              core.setOutput('image', fullUrl)
+              core.setOutput('tag', tag)
+            }
+
+      - name: Build
+        run: |
+          docker-compose -f docker-compose.prod.yml build
+
+      - env:
+          DOCKER_IMAGES: ${{ steps.meta.outputs.tags }}
+        name: Tag
+        run: |
+          for img in $DOCKER_IMAGES; do
+            echo "Tagging kong with $img"
+            docker tag stordco/kong $img
+          done
+
+      - env:
+          DOCKER_IMAGES: ${{ steps.meta.outputs.tags }}
+        name: Push
+        run: |
+          for img in $DOCKER_IMAGES; do
+            echo "Pushing $img"
+            docker push $img
+          done
+
+  Deploy:
+    environment:
+      name: Prod
+      url: https://api.stord.com
+
+    needs: Build
+
+    permissions:
+      contents: read
+      id-token: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Login (GCP)
+        uses: google-github-actions/auth@v0
+        with:
+          service_account: github@stord-production.iam.gserviceaccount.com
+          workload_identity_provider: ${{ secrets.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
+
+      - name: Install (Gcloud)
+        uses: google-github-actions/setup-gcloud@v0
+
+      - name: Install (Helm)
+        uses: azure/setup-helm@v1
+
+      - name: Login (Kubernetes Cluster)
+        run: |
+          gcloud container clusters get-credentials orion-production --region=us-east1
+
+      - name: Helm Add
+        run: |
+          helm repo add kong https://charts.konghq.com
+
+      - name: Helm Release
+        run: |
+          helm upgrade \
+            kong kong/kong \
+            --install \
+            --kube-context gke_stord-production_us-east1_orion-production \
+            --namespace default \
+            --set image.tag="${{ needs.build.outputs.tag }}" \
+            --values ./helm/values.prod.yaml \
+            --version 1.14.2 \
+            --wait \
+            --timeout=300s
+
+      - name: Monitor Rollout
+        run: |
+          kubectl rollout status deployment/kong --timeout=300s

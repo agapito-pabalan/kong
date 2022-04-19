@@ -1,0 +1,56 @@
+image:
+  repository: gcr.io/stord-production/kong
+  tag: ${DOCKER_IMAGE_TAG}
+  pullSecrets:
+   - gcr-access-key
+
+serviceMonitor:
+  enabled: true
+
+ingressController:
+  enabled: false
+  installCRDs: false
+
+migrations:
+  preUpgrade: false
+  postUpgrade: false
+runMigrations: false
+
+postgresql:
+  enabled: false
+
+env:
+  database: "off"
+  plugins: user_management_bridge,cors,request-size-limiting,prometheus,correlation-id
+  go_plugins_dir: /usr/local/share/go-plugins
+  declarative_config: /usr/local/share/kong.yml
+
+admin:
+  enabled: true
+  useTLS: false
+  tls:
+    enabled: false
+  http:
+    enabled: true
+
+resources:
+  limits:
+    cpu: 1
+    memory: 1G
+  requests:
+    cpu: 1
+    memory: 1G
+
+proxy:
+  enabled: true
+  useTLS: false
+  tls:
+    enabled: false
+  http:
+    enabled: true
+  type: ClusterIP
+
+autoscaling:
+  enabled: true
+  minRepicas: 2
+  maxReplicas: 2
