@@ -273,6 +273,10 @@ services:
         strip_path: false
         paths:
           - /bff/v1/domo/jwt$
+      - name: user_management_migrate_users
+        strip_path: false
+        paths:
+          - /bff/v1/migrate_users$
   - name: mintaka
     url: http://MINTAKA_URL
     routes:
