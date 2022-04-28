@@ -520,6 +520,7 @@ services:
           - /integrations/v2/trade_connections/([^\/]+)$
           - /bff/admin/v1/networks
           - /bff/admin/v1/facilities
+          - /bff/admin/v1/companies
           - /bff/v1/networks
           - /bff/v1/facilities$
           - /bff/v1/companies
