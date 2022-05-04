@@ -561,6 +561,7 @@ services:
           - /bff/v1/kit_inventory/([^\/]+)$
           - /bff/v1/products$
           - /bff/v1/products/export$
+          - /bff/v1/migrate_items$
       - name: product_catalog_v1_items
         strip_path: false
         paths:
