@@ -640,8 +640,7 @@ services:
           - /v1/logic_broker/integrations/([^\/]+)/sync_channels$
           - /v1/ecom_integrations$
           - /v1/ecom_integrations/([^\/]+)$
-          - /v1/ecom_integrations/([^\/]+)/enable$
-          - /v1/ecom_integrations/([^\/]+)/channels$
+          - /v1/ecom_integrations/([^\/]+)/([^\/]+)$
           - /v1/user_integrations$
           - /v1/user_integrations/([^\/]+)$
           - /v1/user_integrations/([^\/]+)/enable$
