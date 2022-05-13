@@ -21,7 +21,7 @@ postgresql:
 
 env:
   database: "off"
-  plugins: user_management_bridge,cors,request-size-limiting,prometheus,correlation-id
+  plugins: user_management_bridge,cors,request-size-limiting,correlation-id,zipkin
   go_plugins_dir: /usr/local/share/go-plugins
   declarative_config: /usr/local/share/kong.yml
   nginx_proxy_client_body_buffer_size: "32M"
@@ -30,6 +30,10 @@ env:
   nginx_http_client_max_body_size: 0
   nginx_http_proxy_buffer_size: "32M"
   nginx_http_proxy_buffers: "16 32M"
+  datadog_agent_host:
+    valueFrom:
+      fieldRef:
+        fieldPath: status.hostIP
 
 admin:
   enabled: true

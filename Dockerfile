@@ -14,7 +14,7 @@ COPY /plugins/user_management_bridge/user_management_bridge.go .
 RUN go build github.com/Kong/go-pluginserver
 RUN go build -buildmode plugin -o /go-plugins/user_management_bridge.so /go-plugins/user_management_bridge.go
 
-FROM kong:2.2.1-alpine as release
+FROM kong:2.7.2-alpine as release
 
 ARG AUTH0_JWKS_URL
 ARG REDIS_CACHE_URL

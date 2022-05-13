@@ -24,9 +24,16 @@ plugins:
     config:
       allowed_payload_size: 128
       size_unit: megabytes
-  - name: prometheus
   - name: correlation-id
     config:
       header_name: x-request-id
       generator: uuid
       echo_downstream: true
+  - name: zipkin
+    config:
+      local_service_name: kong
+      http_endpoint: http://opentelemetry-collector:9411/api/v2/spans
+      sample_ratio: 1
+      include_credential: false
+      traceid_byte_count: 16
+      header_type: b3

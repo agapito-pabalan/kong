@@ -21,9 +21,13 @@ postgresql:
 
 env:
   database: "off"
-  plugins: user_management_bridge,cors,request-size-limiting,prometheus,correlation-id
+  plugins: user_management_bridge,cors,request-size-limiting,correlation-id,zipkin
   go_plugins_dir: /usr/local/share/go-plugins
   declarative_config: /usr/local/share/kong.yml
+  datadog_agent_host:
+    valueFrom:
+      fieldRef:
+        fieldPath: status.hostIP
 
 admin:
   enabled: true
