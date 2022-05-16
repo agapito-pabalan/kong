@@ -658,3 +658,10 @@ services:
         strip_path: false
         paths:
           - /finops/
+  - name: wms-integration-bridge
+    url: http://WMS_INTEGRATION_BRIDGE_URL
+    routes:
+      - name: wms-integration-bridge-root
+        strip_path: false
+        paths:
+          - /wms-bridge/

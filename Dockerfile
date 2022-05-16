@@ -37,6 +37,7 @@ ARG MARKETPLACE_SERVICE_URL
 ARG FIN_OPS_SERVICE_URL
 ARG TENANT_SERVICE_URL
 ARG SEARCH_SERVICE_URL
+ARG WMS_INTEGRATION_BRIDGE_URL
 
 COPY --from=builder /go-plugins/go-pluginserver /usr/local/bin/
 COPY --from=builder /go-plugins/user_management_bridge.so /usr/local/share/go-plugins/user_management_bridge.so
@@ -68,6 +69,7 @@ RUN sed -i "s~http://MARKETPLACE_SERVICE_URL~$MARKETPLACE_SERVICE_URL~g" /usr/lo
 RUN sed -i "s~http://FIN_OPS_SERVICE_URL~$FIN_OPS_SERVICE_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://TENANT_SERVICE_URL~$TENANT_SERVICE_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://SEARCH_SERVICE_URL~$SEARCH_SERVICE_URL~g" /usr/local/share/kong.yml
+RUN sed -i "s~http://WMS_INTEGRATION_BRIDGE_URL~$WMS_INTEGRATION_BRIDGE_URL~g" /usr/local/share/kong.yml
 
 RUN chmod +r /usr/local/share/kong.yml
 
