@@ -36,4 +36,4 @@ plugins:
       sample_ratio: 1
       include_credential: false
       traceid_byte_count: 16
-      header_type: b3
+      header_type: w3c
