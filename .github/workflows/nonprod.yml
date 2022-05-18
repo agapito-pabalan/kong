@@ -139,6 +139,7 @@ jobs:
             --kube-context gke_stord-nonprod_us-east1_orion-nonprod \
             --namespace default \
             --set image.tag="${{ needs.build.outputs.tag }}" \
+            --set podLabels.tags\\.datadoghq\\.com/version="${{ github.sha }}" \
             --values ./helm/values.nonprod.yaml \
             --version 1.14.2 \
             --wait \

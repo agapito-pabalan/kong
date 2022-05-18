@@ -52,6 +52,11 @@ proxy:
     enabled: true
   type: ClusterIP
 
+podLabels:
+  tags.datadoghq.com/env: staging
+  tags.datadoghq.com/service: kong
+  tags.datadoghq.com/version: <VERSION>
+
 autoscaling:
   enabled: true
   minRepicas: 4

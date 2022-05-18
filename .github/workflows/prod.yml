@@ -140,6 +140,7 @@ jobs:
             --kube-context gke_stord-production_us-east1_orion-production \
             --namespace default \
             --set image.tag="${{ needs.build.outputs.tag }}" \
+            --set podLabels.tags\\.datadoghq\\.com/version="${{ github.sha }}" \
             --values ./helm/values.prod.yaml \
             --version 1.14.2 \
             --wait \
