@@ -645,6 +645,7 @@ services:
           - /v1/user_integrations$
           - /v1/user_integrations/([^\/]+)$
           - /v1/user_integrations/([^\/]+)/enable$
+          - /v1/events/retry_consumer_failure([^\/]+)$
   - name: search-service
     url: http://SEARCH_SERVICE_URL
     routes:
