@@ -509,6 +509,10 @@ services:
           - /bff/v1/inventory
           - /bff/v1/qualifiers/facilities/([^\/]+)/items/([^\/]+)$
           - /bff/v1/inventory/csv_download$
+      - name: inventory-bff-v2
+        strip_path: false
+        paths:
+          - /bff/v2/inventory
   - name: trade-partnerships
     url: http://TRADE_PARTNERSHIPS_SERVICE_URL
     routes:
