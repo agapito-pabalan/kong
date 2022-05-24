@@ -442,6 +442,7 @@ services:
           - /v2/orders/purchase
           - /v2/orders/transfer
           - /v2/orders/([^\/]+)/process_outbounds$
+          - /v2/orders/([^\/]+)/process_order$
           - /v2/orders/([^\/]+)/destination$
           - /v2/orders/([^\/]+)/order_lines_update$
       - name: orders_network_documents
