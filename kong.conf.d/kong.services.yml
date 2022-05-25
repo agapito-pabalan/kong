@@ -515,6 +515,7 @@ services:
         strip_path: false
         paths:
           - /bff/v2/inventory
+          - /bff/v2/inventory/filter_selections
   - name: trade-partnerships
     url: http://TRADE_PARTNERSHIPS_SERVICE_URL
     routes:
