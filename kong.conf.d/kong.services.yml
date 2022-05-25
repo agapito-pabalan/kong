@@ -487,6 +487,7 @@ services:
         paths:
           - /integrations/v2/shipment_confirmations$
           - /integrations/v2/receipt_confirmations$
+          - /integrations/v2/facility_activities/status$
   - name: documents-service
     url: http://DOCUMENTS_SERVICE_URL
     routes:
