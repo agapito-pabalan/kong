@@ -591,6 +591,7 @@ services:
         strip_path: false
         paths:
           - /integrations/v1/items$
+          - /integrations/v1/([^\/]+)/items/([^\/]+)$
           - /v1/items$
           - /v1/items/([^\/]+)$
           - /v1/items_bulk
