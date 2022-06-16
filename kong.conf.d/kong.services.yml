@@ -563,6 +563,7 @@ services:
           - /v1/facility_connections
           - /v1/facility_connections/([^\/]+)$
           - /bff/admin/v1/networks/([^\/]+)$
+          - /bff/admin/v1/facilities/([^\/]+)$
           - /bff/v1/shippers
           - /bff/v1/networks/([^\/]+)/bulk_facility_import
   - name: product-catalog-service
