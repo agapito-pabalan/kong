@@ -445,8 +445,8 @@ services:
           - /v2/orders/([^\/]+)/process_order$
           - /v2/orders/([^\/]+)/destination$
           - /v2/orders/([^\/]+)/order_lines_update$
-          - /v2/docs/api_spec
-          - /v2/docs/api
+          - /orders_service/docs/api_spec
+          - /orders_service/docs/api
       - name: orders_network_documents
         strip_path: false
         paths:

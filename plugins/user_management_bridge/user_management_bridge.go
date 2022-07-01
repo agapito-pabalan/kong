@@ -97,7 +97,7 @@ func (conf Config) Access(kong *pdk.PDK) {
 		return
 	}
 
-	match, _ = regexp.MatchString("/v2/docs", path)
+	match, _ = regexp.MatchString("/docs/", path)
 	if match {
 		return
 	}
