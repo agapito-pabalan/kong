@@ -14,6 +14,7 @@ plugins:
         - https://*.admin-client-nonprod.pages.dev
         - https://cloud.stord.com
         - https://cloud.staging.stord.com
+        - https://orion-ui-*.vercel.app
   - name: user_management_bridge
     config:
       user_management_endpoint: http://user-management/v1/jwt/permissions
