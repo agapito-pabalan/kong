@@ -562,6 +562,7 @@ services:
           - /bff/admin/v1/companies
           - /bff/admin/v1/networks/([^\/]+)$
           - /bff/admin/v1/facilities/([^\/]+)$
+          - /bff/admin/v1/facilities/([^\/]+)/operation_schedules$
           - /bff/admin/v1/trade_connections
           - /bff/admin/v1/trade_connections/([^\/]+)$
       - name: trade-partnerships-bff-v1
