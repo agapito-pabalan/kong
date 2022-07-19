@@ -579,6 +579,8 @@ services:
           - /bff/v1/networks/([^\/]+)/customers(|\?[^\/]+)$
           - /bff/v1/reference/territories
           - /bff/v1/reference/territories/([^\/]+)$
+          - /bff/admin/v1/facilities/([^\/]+)/contacts
+          - /bff/admin/v1/facilities/([^\/]+)/contacts/([^\/]+)$
           - /bff/v1/shippers
           - /bff/v1/networks/([^\/]+)/bulk_facility_import
   - name: product-catalog-service
