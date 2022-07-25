@@ -30,6 +30,7 @@ plugins:
       header_name: x-request-id
       generator: uuid
       echo_downstream: true
+  - name: traceheaders
   - name: zipkin
     config:
       local_service_name: kong

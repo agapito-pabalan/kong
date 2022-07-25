@@ -1,4 +1,4 @@
-FROM golang:1.15-alpine as builder
+FROM golang:1.15-alpine as go-builder
 
 WORKDIR /go-plugins
 
@@ -13,6 +13,15 @@ RUN go get -d -v github.com/go-redis/redis/v8
 COPY /plugins/user_management_bridge/user_management_bridge.go .
 RUN go build github.com/Kong/go-pluginserver
 RUN go build -buildmode plugin -o /go-plugins/user_management_bridge.so /go-plugins/user_management_bridge.go
+
+FROM kong:2.7.2-alpine as lua-builder
+
+WORKDIR /lua-plugins
+
+USER root
+
+COPY /plugins/traceheaders .
+RUN luarocks make && luarocks pack kong-plugin-traceheaders 1.0.0-0
 
 FROM kong:2.7.2-alpine as release
 
@@ -39,10 +48,14 @@ ARG TENANT_SERVICE_URL
 ARG SEARCH_SERVICE_URL
 ARG WMS_INTEGRATION_BRIDGE_URL
 
-COPY --from=builder /go-plugins/go-pluginserver /usr/local/bin/
-COPY --from=builder /go-plugins/user_management_bridge.so /usr/local/share/go-plugins/user_management_bridge.so
-
 USER root
+
+COPY --from=go-builder /go-plugins/go-pluginserver /usr/local/bin/
+COPY --from=go-builder /go-plugins/user_management_bridge.so /usr/local/share/go-plugins/user_management_bridge.so
+
+COPY --from=lua-builder /lua-plugins/kong-plugin-traceheaders-1.0.0-0.all.rock /tmp
+RUN luarocks install /tmp/kong-plugin-traceheaders-1.0.0-0.all.rock
+RUN rm /tmp/kong-plugin-traceheaders-1.0.0-0.all.rock
 
 COPY kong.conf.d/$KONG_TEMPLATE /usr/local/share/
 COPY kong.conf.d/kong.services.yml /usr/local/share/
