@@ -480,6 +480,7 @@ services:
           - /integrations/v1/receipt_confirmations/cancellations$
           - /integrations/v1/receipt_confirmations/([^\/]+)/cancellations$
           - /bff/v1/receipt_confirmations/([^\/]+)/cancellations$
+          - /bff/v1/shipment_confirmations/([^\/]+)/cancellations$
       - name: facility_activity_service_v1_create_shipment_confirmation_cancellation
         strip_path: false
         paths:
