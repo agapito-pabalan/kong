@@ -716,3 +716,18 @@ services:
         strip_path: false
         paths:
           - /wms-bridge/
+  - name: transportation-service
+    url: http://TRANSPORTATION_SERVICE_URL
+    routes:
+      - name: transportation-service-carriers
+        strip_path: false
+        paths:
+          - /v1/carriers
+      - name: transportation-service-carrier-methods
+        strip_path: false
+        paths:
+          - /v1/carrier_methods 
+      - name: transportation-service-ship-options
+        strip_path: false
+        paths:
+          - /v1/ship_options
