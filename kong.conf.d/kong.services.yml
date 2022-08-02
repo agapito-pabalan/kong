@@ -528,6 +528,11 @@ services:
         paths:
           - /bff/v2/inventory
           - /bff/v2/inventory/filter_selections
+      - name: inventory-api-spec
+        strip_path: false
+        paths:
+          - /inventory/docs/api_spec
+          - /inventory/docs/api
   - name: trade-partnerships
     url: http://TRADE_PARTNERSHIPS_SERVICE_URL
     routes:
