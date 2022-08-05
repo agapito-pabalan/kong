@@ -15,4 +15,5 @@
 # vendor/
 
 .idea
+.vscode
 kong.values.yml
