@@ -3,9 +3,7 @@ plugins:
   - name: cors
     config:
       origins:
-        - https://*.staging.stord.com
-        - https://*.stord.com
-        - https://*.review.stord.com
+        - '^https:\/\/.*\.stord\.com$'
         - https://*.admin-client-nonprod.pages.dev
         - '^https:\/\/orion-ui-.*-stord\.vercel\.app$'
   - name: user_management_bridge
