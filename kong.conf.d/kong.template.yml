@@ -3,17 +3,10 @@ plugins:
   - name: cors
     config:
       origins:
-        - https://admin.staging.stord.com
-        - https://shipper.staging.stord.com
-        - https://warehouse.staging.stord.com
-        - https://admin.stord.com
-        - https://shipper.stord.com
-        - https://warehouse.stord.com
+        - https://*.staging.stord.com
+        - https://*.stord.com
         - https://*.review.stord.com
-        - https://admin-cf.staging.stord.com
         - https://*.admin-client-nonprod.pages.dev
-        - https://cloud.stord.com
-        - https://cloud.staging.stord.com
         - '^https:\/\/orion-ui-.*-stord\.vercel\.app$'
   - name: user_management_bridge
     config:
