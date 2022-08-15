@@ -1,0 +1,32 @@
+version: "3.7"
+services:
+  kong:
+    image: stordco/kong
+    build:
+      context: .
+      args:
+        KONG_TEMPLATE: kong.template.yml
+        AUTH0_JWKS_URL: https://stord-staging.auth0.com/.well-known/jwks.json
+        REDIS_CACHE_URL: $DEV_REDIS_CACHE_URL
+        SAIPH_URL: http://saiph
+        RIGEL_URL: http://rigel
+        USER_MANAGEMENT_URL: http://user-management
+        MINTAKA_URL: http://mintaka
+        MEISSA_URL: http://meissa
+        ORDERS_SERVICE_URL: http://orders-service
+        FACILITY_ACTIVITY_SERVICE_URL: http://facility-activity-service
+        DOCUMENTS_SERVICE_URL: http://documents-service
+        ITEM_SERVICE_URL: http://item-service
+        INVENTORY_SERVICE_URL: http://inventory
+        TRADE_PARTNERSHIPS_SERVICE_URL: http://trade-partnerships
+        PRODUCT_CATALOG_SERVICE_URL: http://product-catalog
+        HEALTHCHECK_AGGREGATOR_SERVICE_URL: http://healthcheck-aggregator
+        MARKETPLACE_SERVICE_URL: http://marketplace-service
+        TENANT_SERVICE_URL: http://tenant-service
+        SEARCH_SERVICE_URL: http://search-service
+        FIN_OPS_SERVICE_URL: http://fin-ops-service
+        WMS_INTEGRATION_BRIDGE_URL: http://wms-integration-bridge
+        TRANSPORTATION_SERVICE_URL: http://transportation-service
+    ports:
+      - "8000:8000/tcp"
+      - "8444:8444/tcp"

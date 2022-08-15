@@ -1,0 +1,186 @@
+---
+name: Dev
+
+on:
+  workflow_dispatch:
+    inputs:
+      namespace:
+        description: "Name of development environment"
+        required: false
+        type: choice
+        default: sre
+        options:
+          - apollo
+          - freightwatchers
+          - sre
+          - teamrocket
+          - titan
+          - vega
+          - wolfpack
+      cluster_context:
+        description: "Kubernetes cluster context"
+        required: false
+        type: choice
+        default: gke_stord-nonprod_us-east1_orion-dev--us-east1
+        options:
+          - gke_stord-nonprod_us-east1_orion-dev--us-east1
+      cluster_name:
+        description: "Kubernetes cluster name"
+        required: false
+        type: choice
+        default: orion-dev--us-east1
+        options:
+          -  orion-dev--us-east1
+      cluster_region:
+        description: "Kubernetes cluster region"
+        default: us-east1
+        required: false
+        type: choice
+        options:
+          - us-east1
+      helm_values_manifest:
+        description: "Helm deployment configuration"
+        required: false
+        type: string
+        default: values.dev.yaml
+
+concurrency: Deploy NonProd
+
+jobs:
+  Build:
+    defaults:
+      run:
+        shell: bash
+
+    outputs:
+      image: ${{ steps.export.outputs.image }}
+      tag: ${{ steps.export.outputs.tag }}
+
+    permissions:
+      contents: read
+      id-token: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Login (GCP)
+        uses: google-github-actions/auth@v0
+        with:
+          service_account: github@stord-nonprod.iam.gserviceaccount.com
+          workload_identity_provider: ${{ secrets.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
+
+      - name: Install (Gcloud)
+        uses: google-github-actions/setup-gcloud@v0
+
+      - name: Login (GCR)
+        run: gcloud auth configure-docker
+
+      - id: meta
+        name: Metadata
+        uses: docker/metadata-action@v3
+        with:
+          flavor: |
+            latest=true
+          images: gcr.io/stord-nonprod/kong
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha
+
+      - id: export
+        name: Export
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const metadata = JSON.parse(`${{ steps.meta.outputs.json }}`)
+            const fullUrl = metadata.tags.find((t) => t.includes(':sha-'))
+            const redis_namespace_key = core.getInput("namespace").toUpperCase();
+            if (fullUrl == null) {
+              core.error('Unable to find sha tag of image')
+            } else {
+              const tag = fullUrl.split(':')[1]
+              core.setOutput('image', fullUrl)
+              core.setOutput('tag', tag)
+            }
+
+      - env:
+          DEV_REDIS_CACHE_URL: ${{ secrets[format('{0}_DEV_REDIS_URI', steps.export.outputs.redis_namespace_key)] }}
+        name: Build
+        run: |
+          docker-compose -f docker-compose.dev.yml build
+
+      - env:
+          DOCKER_IMAGES: ${{ steps.meta.outputs.tags }}
+        name: Tag
+        run: |
+          for img in $DOCKER_IMAGES; do
+            echo "Tagging kong with $img"
+            docker tag stordco/kong $img
+          done
+
+      - env:
+          DOCKER_IMAGES: ${{ steps.meta.outputs.tags }}
+        name: Push
+        run: |
+          for img in $DOCKER_IMAGES; do
+            echo "Pushing $img"
+            docker push $img
+          done
+
+  Deploy:
+    environment:
+      name: Dev
+      url: "https://api.${{ inputs.namespace }}.dev.stord.com"
+
+    needs: Build
+
+    permissions:
+      contents: read
+      id-token: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Login (GCP)
+        uses: google-github-actions/auth@v0
+        with:
+          service_account: github@stord-nonprod.iam.gserviceaccount.com
+          workload_identity_provider: ${{ secrets.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
+
+      - name: Install (Gcloud)
+        uses: google-github-actions/setup-gcloud@v0
+
+      - name: Install (Helm)
+        uses: azure/setup-helm@v1
+
+      - name: Login (Kubernetes Cluster)
+        run: |
+          gcloud container clusters get-credentials ${{ inputs.cluster_name }} --region=${{ inputs.cluster_region }}
+
+      - name: Helm Add
+        run: |
+          helm repo add kong https://charts.konghq.com
+
+      - name: Helm Release
+        run: |
+          helm upgrade \
+            kong kong/kong \
+            --install \
+            --kube-context ${{ inputs.cluster_context }} \
+            --namespace ${{ inputs.namespace }} \
+            --set image.tag="${{ needs.build.outputs.tag }}" \
+            --set podLabels.tags\\.datadoghq\\.com/version="${{ github.sha }}" \
+            --values ./helm/${{ inputs.helm_values_manifest }} \
+            --version 1.14.2
+
+      - name: Monitor Rollout
+        run: |
+          kubectl rollout status deployment/kong-kong -n ${{ inputs.namespace }} --timeout=300s
