@@ -4,8 +4,7 @@ plugins:
     config:
       origins:
         - '^https:\/\/.*\.stord\.com$'
-        - https://*.admin-client-nonprod.pages.dev
-        - '^https:\/\/orion-ui-.*-stord\.vercel\.app$'
+        - '^https:\/\/.*\.stord-.*\.pages\.dev$'
   - name: user_management_bridge
     config:
       user_management_endpoint: http://user-management/v1/jwt/permissions
