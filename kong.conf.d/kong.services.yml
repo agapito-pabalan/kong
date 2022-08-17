@@ -735,12 +735,12 @@ services:
         strip_path: false
         paths:
           - /v1/carrier_methods
-          - /v1/shipper_service_methods
+          - /v1/vendor_service_methods
       - name: transportation-service-ship-options
         strip_path: false
         paths:
           - /v1/ship_options
-          - /v1/shipper_ship_options
+          - /v1/vendor_ship_options
       - name: transportation-service-carrier-mappings
         strip_path: false
         paths:
