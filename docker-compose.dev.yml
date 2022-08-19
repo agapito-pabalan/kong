@@ -8,6 +8,7 @@ services:
         KONG_TEMPLATE: kong.template.yml
         AUTH0_JWKS_URL: https://stord-staging.auth0.com/.well-known/jwks.json
         REDIS_CACHE_URL: $DEV_REDIS_CACHE_URL
+        OTEL_COLLECTOR_ENDPOINT: http://opentelemetry-collector.dd-agent.svc.cluster.local:9411/api/v2/spans
         SAIPH_URL: http://saiph
         RIGEL_URL: http://rigel
         USER_MANAGEMENT_URL: http://user-management

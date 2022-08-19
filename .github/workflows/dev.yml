@@ -99,7 +99,6 @@ jobs:
           script: |
             const metadata = JSON.parse(`${{ steps.meta.outputs.json }}`)
             const fullUrl = metadata.tags.find((t) => t.includes(':sha-'))
-            const redis_namespace_key = core.getInput("namespace").toUpperCase();
             if (fullUrl == null) {
               core.error('Unable to find sha tag of image')
             } else {
@@ -108,9 +107,15 @@ jobs:
               core.setOutput('tag', tag)
             }
 
-      - env:
-          DEV_REDIS_CACHE_URL: ${{ secrets[format('{0}_DEV_REDIS_URI', steps.export.outputs.redis_namespace_key)] }}
-        name: Build
+      - id: get_secrets
+        uses: stordco/actions-google-secrets//map@v0.0
+        with:
+          add_to_environment: true
+          project_id: stord-nonprod
+          map: |
+            DEV_REDIS_CACHE_URL: "stord-gsm:stord-nonprod/orion-infrastructure--memorystore--us-east1--url--${{ inputs.namespace }}"
+
+      - name: Build
         run: |
           docker-compose -f docker-compose.dev.yml build
 
