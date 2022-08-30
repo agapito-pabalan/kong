@@ -578,6 +578,7 @@ services:
           - /bff/admin/v1/trade_connections/([^\/]+)$
           - /bff/admin/v1/holidays
           - /bff/admin/v1/contacts/titles
+          - /bff/admin/v1/timezones
       - name: trade-partnerships-bff-v1
         strip_path: false
         paths:
