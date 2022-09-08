@@ -672,6 +672,10 @@ services:
           - /v1/logic_broker/credentials/([^\/]+)$
           - /webhook/v1/logic_broker/([^\/]+)/([^\/]+)/ecom$
           - /webhook/v1/pipe17/([^\/]+)/ecom$
+      - name: marketplace_v1_slack
+        strip_path: false
+        paths:
+          - /webhook/v1/marketplace_connector/slack/webhook$
       - name: marketplace_v1_webhook
         strip_path: false
         paths:
