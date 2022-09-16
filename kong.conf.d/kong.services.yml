@@ -447,6 +447,7 @@ services:
           - /v2/orders/([^\/]+)/process_order$
           - /v2/orders/([^\/]+)/destination$
           - /v2/orders/([^\/]+)/order_lines_update$
+          - /v2/orders/([^\/]+)/shipping_method$
           - /orders_service/docs/api_spec
           - /orders_service/docs/api
       - name: orders_network_documents
