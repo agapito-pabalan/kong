@@ -754,3 +754,11 @@ services:
         strip_path: false
         paths:
           - /v1/carrier_mappings
+  - name: order-orchestration
+    url: http://ORDER_ORCHESTRATION_SERVICE_URL
+    routes:
+      - name: order-orchestration-automation
+        strip_path: false
+        paths:
+          - /v1/automations/([^\/]+)/action_configs$
+          - /v1/automations/([^\/]+)/action_configs/([^\/]+)$

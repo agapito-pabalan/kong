@@ -49,6 +49,7 @@ ARG TENANT_SERVICE_URL
 ARG SEARCH_SERVICE_URL
 ARG WMS_INTEGRATION_BRIDGE_URL
 ARG TRANSPORTATION_SERVICE_URL
+ARG ORDER_ORCHESTRATION_SERVICE_URL
 
 USER root
 
@@ -87,6 +88,7 @@ RUN sed -i "s~http://TENANT_SERVICE_URL~$TENANT_SERVICE_URL~g" /usr/local/share/
 RUN sed -i "s~http://SEARCH_SERVICE_URL~$SEARCH_SERVICE_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://WMS_INTEGRATION_BRIDGE_URL~$WMS_INTEGRATION_BRIDGE_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://TRANSPORTATION_SERVICE_URL~$TRANSPORTATION_SERVICE_URL~g" /usr/local/share/kong.yml
+RUN sed -i "s~http://ORDER_ORCHESTRATION_SERVICE_URL~$ORDER_ORCHESTRATION_SERVICE_URL~g" /usr/local/share/kong.yml
 
 RUN chmod +r /usr/local/share/kong.yml
 

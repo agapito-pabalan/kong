@@ -28,6 +28,7 @@ services:
         FIN_OPS_SERVICE_URL: http://fin-ops-service
         WMS_INTEGRATION_BRIDGE_URL: http://wms-integration-bridge
         TRANSPORTATION_SERVICE_URL: http://transportation-service
+        ORDER_ORCHESTRATION_SERVICE_URL: http://order-orchestration
     ports:
       - "8000:8000/tcp"
       - "8444:8444/tcp"
