@@ -451,6 +451,8 @@ services:
           - /v2/orders/([^\/]+)/shipping_method$
           - /orders_service/docs/api_spec
           - /orders_service/docs/api
+          - /orders_service_v1/docs/api_spec
+          - /orders_service_v1/docs/api
       - name: orders_network_documents
         strip_path: false
         paths:
