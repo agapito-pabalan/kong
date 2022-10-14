@@ -437,6 +437,7 @@ services:
           - /bff/v1/orders/([^\/]+)/signed_upload_urls
           - /bff/v1/networks/([^\/]+)/signed_upload_urls
           - /bff/v1/orders/([^\/]+)/reset_activities$
+          - /bff/v1/orders/reset_activities
           - /integrations/v1/orders/([^\/]+)$
           - /bff/v1/facility_availability
           - /bff/v2/facility_availability
