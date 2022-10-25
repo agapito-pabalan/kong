@@ -120,9 +120,6 @@ jobs:
       - name: Install (Gcloud)
         uses: google-github-actions/setup-gcloud@v0
 
-      - name: Install (Helm)
-        uses: azure/setup-helm@v1
-
       - name: Login (Kubernetes Cluster)
         run: |
           gcloud container clusters get-credentials orion-nonprod --region=us-east1
