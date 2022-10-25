@@ -686,7 +686,7 @@ services:
       - name: marketplace_v1_webhook
         strip_path: false
         paths:
-          - /v1/shopify/webhook
+          - /webhook/v1/shopify/([^\/]+)/([^\/]+)$
       - name: marketplace_v1_oauth_callback
         strip_path: false
         paths:
