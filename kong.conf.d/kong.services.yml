@@ -538,6 +538,8 @@ services:
           - /bff/v2/inventory/export
           - /bff/v2/inventory/filter_selections
           - /bff/v2/inventory/inventory_alerts
+          - /bff/v2/reasons$
+          - /bff/v2/reasons/([^\/]+)$
       - name: inventory-api-spec
         strip_path: false
         paths:
