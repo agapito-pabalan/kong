@@ -535,6 +535,7 @@ services:
         strip_path: false
         paths:
           - /bff/v2/inventory
+          - /bff/v2/inventory/export
           - /bff/v2/inventory/filter_selections
           - /bff/v2/inventory/inventory_alerts
       - name: inventory-api-spec
