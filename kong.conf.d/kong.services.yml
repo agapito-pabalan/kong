@@ -773,6 +773,16 @@ services:
         strip_path: false
         paths:
           - /v1/carrier_mappings
+      - name: transportation-service-transportation-networks
+        strip_path: false
+        paths:
+          - /v1/transportation_networks$
+          - /v1/transportation_networks/([^\/]+)$
+      - name: transportation-service-contracted-carrier-methods
+        strip_path: false
+        paths:
+          - /v1/transportation_networks/([^\/]+)/contracted_carrier_methods$
+          - /v1/transportation_networks/([^\/]+)/contracted_carrier_methods/bulk_upsert$
   - name: order-orchestration
     url: http://ORDER_ORCHESTRATION_SERVICE_URL
     routes:
