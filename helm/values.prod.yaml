@@ -39,11 +39,11 @@ admin:
 
 resources:
   limits:
-    cpu: 1
-    memory: 1G
+    cpu: 2
+    memory: 4G
   requests:
-    cpu: 1
-    memory: 1G
+    cpu: 2
+    memory: 4G
 
 proxy:
   enabled: true
@@ -61,5 +61,5 @@ podLabels:
 
 autoscaling:
   enabled: true
-  minRepicas: 2
-  maxReplicas: 2
+  minRepicas: 3
+  maxReplicas: 3

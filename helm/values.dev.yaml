@@ -43,6 +43,14 @@ admin:
   http:
     enabled: true
 
+resources:
+  limits:
+    cpu: 1
+    memory: 2G
+  requests:
+    cpu: 1
+    memory: 2G
+
 proxy:
   enabled: true
   useTLS: false
