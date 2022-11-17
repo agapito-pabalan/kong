@@ -21,8 +21,11 @@ affinity:
           topologyKey: topology.kubernetes.io/zone
         weight: 100
 
-deploymentAnnotations:
+podAnnotations:
   sidecar.istio.io/proxyMemory: "512Mi"
+  sidecar.istio.io/proxyMemoryLimit: "1Gi"
+  sidecar.istio.io/proxyCPU: "100m"
+  sidecar.istio.io/proxyCPULimit: "1"
 
 image:
   repository: gcr.io/stord-nonprod/kong
