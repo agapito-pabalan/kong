@@ -1,3 +1,29 @@
+tolerations:
+   - key: node.kubernetes.io/not-ready
+     operator: Exists
+     effect: NoExecute
+     tolerationSeconds: 300
+   - key: node.kubernetes.io/unreachable
+     operator: Exists
+     effect: NoExecute
+     tolerationSeconds: 300
+
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - kong
+          topologyKey: topology.kubernetes.io/zone
+        weight: 100
+
+deploymentAnnotations:
+  sidecar.istio.io/proxyMemory: "512Mi"
+
 image:
   repository: gcr.io/stord-nonprod/kong
   tag: ${DOCKER_IMAGE_TAG}
