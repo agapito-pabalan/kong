@@ -419,6 +419,7 @@ services:
           - /v1/sales_order_lines
           - /v1/orders/([^\/]+)/purchase_order_lines
           - /v1/orders/([^\/]+)/sales_order_lines
+          - /bff/v1/accountant/snapshots
           - /bff/v1/cancel_order_lines
           - /bff/v1/cancel_order
           - /bff/v1/facility_activities/([^\/]+)/documents/([^\/]+)$
