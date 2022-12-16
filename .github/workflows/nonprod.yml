@@ -118,11 +118,16 @@ jobs:
           workload_identity_provider: ${{ secrets.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
 
       - name: Install (Gcloud)
-        uses: google-github-actions/setup-gcloud@v0
+        uses: google-github-actions/setup-gcloud@v1
+        with: 
+          install_components: 'gke-gcloud-auth-plugin'
 
       - name: Login (Kubernetes Cluster)
-        run: |
-          gcloud container clusters get-credentials orion-nonprod --region=us-east1
+        uses: google-github-actions/get-gke-credentials@v1
+        with:
+          cluster_name: orion-nonprod
+          location: us-east1
+          project_id: stord-nonprod
 
       - name: Helm Add
         run: |
