@@ -1,2 +1,3 @@
-/kong.conf.d/kong.services.yml	@stordco/titan
+* @stordco/core-platform
+/kong.conf.d/kong.services.yml	@stordco/core-platform @stordco/sre
 
