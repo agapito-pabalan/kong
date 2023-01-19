@@ -699,18 +699,14 @@ services:
         strip_path: false
         paths:
           - /webhook/v1/marketplace_connector/slack/webhook$
-      - name: marketplace_v1_webhook
+      - name: marketplace_v1_shopify_connections
         strip_path: false
         paths:
+          - /connections/auth/shopify/callback
+          - /connections/auth/shopify/install
           - /webhook/v1/shopify/([^\/]+)/([^\/]+)$
-      - name: marketplace_v1_oauth_callback
-        strip_path: false
-        paths:
-          - /v1/shopify/callback
-      - name: marketplace_v1_install
-        strip_path: false
-        paths:
-          - /v1/shopify/install
+          - /v1/connections/shopify/:id
+          - /v1/connections/shopify/validate_connection/([^\/]+)$
       - name: marketplace_v1_connections
         strip_path: false
         paths:
@@ -749,13 +745,6 @@ services:
         strip_path: false
         paths:
           - /v1/search/([^\/]+)/dashboard
-  - name: fin-ops-service
-    url: http://FIN_OPS_SERVICE_URL
-    routes:
-      - name: fin-ops-root
-        strip_path: false
-        paths:
-          - /finops/
   - name: wms-integration-bridge
     url: http://WMS_INTEGRATION_BRIDGE_URL
     routes:
