@@ -92,7 +92,7 @@ func (conf Config) Access(kong *pdk.PDK) {
 		return
 	}
 
-	match, _ = regexp.MatchString("/finops", path)
+	match, _ = regexp.MatchString("/connections/auth", path)
 	if match {
 		return
 	}
