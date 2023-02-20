@@ -656,6 +656,7 @@ services:
           - /bff/v1/([^\/]+)/units_of_measure/([^\/]+)$
           - /bff/v1/([^\/]+)/items$
           - /bff/v1/([^\/]+)/items/([^\/]+)$
+          - /bff/v1/networks/([^\/]+)/bundle_details/([^\/]+)$
       - name: product_catalog_v1_items
         strip_path: false
         paths:
