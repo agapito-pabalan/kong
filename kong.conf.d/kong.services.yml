@@ -723,6 +723,10 @@ services:
           - /v1/connections$
           - /v1/connections/([^\/]+)$
           - /v1/connections/([^\/]+)/([^\/]+)$
+      - name: marketplace_v1_activity_log
+        strip_path: false
+        paths:
+          - /v1/activity_log$
       - name: marketplace_v1_integrations
         strip_path: false
         paths:
