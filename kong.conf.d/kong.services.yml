@@ -552,6 +552,8 @@ services:
           - /bff/v2/reasons/([^\/]+)$
           - /bff/v2/inventory_advice
           - /bff/v2/networks/([^\/]+)/reservations
+          - /bff/v2/networks/([^\/]+)/update_reservations
+          - /bff/v2/networks/([^\/]+)/delete_reservations
       - name: inventory-api-spec
         strip_path: false
         paths:
