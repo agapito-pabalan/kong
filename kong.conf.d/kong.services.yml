@@ -716,6 +716,7 @@ services:
           - /connections/auth/shopify/install$
           - /webhook/v1/shopify/([^\/]+)/([^\/]+)$
           - /v1/connections/shopify/([^\/]+)$
+          - /v1/connections/shopify/orders/([^\/]+)$
           - /v1/connections/shopify/validate_connection/([^\/]+)$
       - name: marketplace_v1_connections
         strip_path: false
