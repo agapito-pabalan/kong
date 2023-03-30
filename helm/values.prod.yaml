@@ -68,10 +68,10 @@ admin:
 
 resources:
   limits:
-    cpu: 2
+    cpu: 1.5
     memory: 4G
   requests:
-    cpu: 2
+    cpu: 1
     memory: 4G
 
 proxy:
