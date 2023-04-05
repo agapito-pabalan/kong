@@ -4,15 +4,13 @@ WORKDIR /go-plugins
 
 RUN apk add --no-cache git gcc libc-dev binutils-gold
 RUN go mod init kong-go-plugin
-RUN go get -d -v github.com/Kong/go-pdk@v0.6.1
-RUN go get -d -v github.com/Kong/go-pluginserver@v0.6.1
+RUN go get -d -v github.com/Kong/go-pdk@v0.8.0
 RUN go get -d -v github.com/lestrrat-go/jwx/jwt
 RUN go get -d -v github.com/lestrrat-go/jwx/jwk
 RUN go get -d -v github.com/go-redis/redis/v8
 
 COPY /plugins/user_management_bridge/user_management_bridge.go .
-RUN go build github.com/Kong/go-pluginserver
-RUN go build -buildmode plugin -o /go-plugins/user_management_bridge.so /go-plugins/user_management_bridge.go
+RUN go build  -o /go-plugins/user_management_bridge /go-plugins/user_management_bridge.go
 
 FROM kong:2.7.2-alpine as lua-builder
 
@@ -53,8 +51,7 @@ ARG ORDER_ORCHESTRATION_SERVICE_URL
 
 USER root
 
-COPY --from=go-builder /go-plugins/go-pluginserver /usr/local/bin/
-COPY --from=go-builder /go-plugins/user_management_bridge.so /usr/local/share/go-plugins/user_management_bridge.so
+COPY --from=go-builder /go-plugins/user_management_bridge /usr/local/bin/user_management_bridge
 
 COPY --from=lua-builder /lua-plugins/kong-plugin-traceheaders-1.0.0-0.all.rock /tmp
 RUN luarocks install /tmp/kong-plugin-traceheaders-1.0.0-0.all.rock

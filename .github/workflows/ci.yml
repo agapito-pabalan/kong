@@ -85,7 +85,9 @@ jobs:
               -e KONG_DATABASE=off \
               -e KONG_DECLARATIVE_CONFIG=/usr/local/share/kong.yml \
               -e KONG_PLUGINS=user_management_bridge,cors,request-size-limiting,prometheus,correlation-id \
-              -e KONG_GO_PLUGINS_DIR=/usr/local/share/go-plugins \
+              -e KONG_PLUGINSERVER_NAMES=user_management_bridge \
+              -e KONG_PLUGINSERVER_USER_MANAGEMENT_BRIDGE_START_CMD=/usr/local/bin/user_management_bridge \
+              -e KONG_PLUGINSERVER_USER_MANAGEMENT_BRIDGE_QUERY_CMD='/usr/local/bin/user_management_bridge -dump' \
               --rm kong \
               kong config parse /usr/local/share/kong.yml
           )

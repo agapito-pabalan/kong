@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/Kong/go-pdk"
+	"github.com/Kong/go-pdk/server"
 	"github.com/go-redis/redis/v8"
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/lestrrat-go/jwx/jwt"
@@ -57,22 +58,28 @@ type Config struct {
 	Auth0Url               string `json:"auth0_url"`
 	CacheUrl               string `json:"cache_url"`
 	JwksRefreshInterval    int    `json:"jwks_refresh_interval"`
-	AutoRefresh            *jwk.AutoRefresh
-	CacheClient            *redis.Client
-	JwkCtx                 context.Context
-	CacheCtx               context.Context
+}
+
+type Globals struct {
+	AutoRefresh *jwk.AutoRefresh
+	CacheClient *redis.Client
+	JwkCtx      context.Context
+	CacheCtx    context.Context
+}
+
+var jwkCtx = context.Background()
+var globals = Globals{
+	JwkCtx:      jwkCtx,
+	CacheCtx:    context.Background(),
+	AutoRefresh: jwk.NewAutoRefresh(jwkCtx),
+	CacheClient: nil,
 }
 
 func New() interface{} {
-	conf := Config{}
-	conf.JwkCtx = context.Background()
-	conf.CacheCtx = context.Background()
-	conf.AutoRefresh = jwk.NewAutoRefresh(conf.JwkCtx)
-	conf.CacheClient = nil
-	return &conf
+	return &Config{}
 }
 
-func (conf Config) Access(kong *pdk.PDK) {
+func (conf *Config) Access(kong *pdk.PDK) {
 	kong.Log.Debug(fmt.Sprintf("begin access"))
 
 	path, _ := kong.Request.GetPath()
@@ -109,9 +116,9 @@ func (conf Config) Access(kong *pdk.PDK) {
 		return
 	}
 
-	conf.AutoRefresh.Configure(conf.Auth0Url, jwk.WithMinRefreshInterval(time.Duration(conf.JwksRefreshInterval)*time.Minute))
+	globals.AutoRefresh.Configure(conf.Auth0Url, jwk.WithMinRefreshInterval(time.Duration(conf.JwksRefreshInterval)*time.Minute))
 
-	keyset, err := conf.AutoRefresh.Fetch(conf.JwkCtx, conf.Auth0Url)
+	keyset, err := globals.AutoRefresh.Fetch(globals.JwkCtx, conf.Auth0Url)
 	if err != nil {
 		kong.Log.Err("failed to fetch Auth0 JWKS keys: ", err)
 		kong.Response.Exit(500, err.Error(), nil)
@@ -155,12 +162,12 @@ func (conf Config) Access(kong *pdk.PDK) {
 	return
 }
 
-func (conf Config) RedisClient() *redis.Client {
-	if conf.CacheClient == nil {
+func (conf *Config) RedisClient() *redis.Client {
+	if globals.CacheClient == nil {
 		opts, _ := redis.ParseURL(conf.CacheUrl)
-		conf.CacheClient = redis.NewClient(opts)
+		globals.CacheClient = redis.NewClient(opts)
 	}
-	return conf.CacheClient
+	return globals.CacheClient
 }
 
 func getAuth0Token(kong *pdk.PDK) ([]byte, error) {
@@ -178,12 +185,13 @@ func getAuth0Token(kong *pdk.PDK) ([]byte, error) {
 	return []byte(headerValueArr[1]), nil
 }
 
-func (conf Config) memoPermissionsToken(auth0Token jwt.Token, kong *pdk.PDK) (string, error) {
+func (conf *Config) memoPermissionsToken(auth0Token jwt.Token, kong *pdk.PDK) (string, error) {
 	permissionsToken := ""
 	auth0UserID := auth0Token.Subject()
 	cacheClient := conf.RedisClient()
 
-	permissionsToken, err := cacheClient.Get(conf.CacheCtx, auth0UserID).Result()
+	permissionsToken, err := cacheClient.Get(globals.CacheCtx, auth0UserID).Result()
+
 	if err == nil {
 		return permissionsToken, nil
 	}
@@ -195,7 +203,7 @@ func (conf Config) memoPermissionsToken(auth0Token jwt.Token, kong *pdk.PDK) (st
 
 	processing_period := time.Duration(PROCESSING_PERIOD) * time.Minute
 	cachedTokenTTL := auth0Token.Expiration().Sub(auth0Token.IssuedAt().Add(processing_period))
-	err = cacheClient.SetEX(conf.CacheCtx, auth0UserID, permissionsToken, cachedTokenTTL).Err()
+	err = cacheClient.SetEX(globals.CacheCtx, auth0UserID, permissionsToken, cachedTokenTTL).Err()
 	if err != nil {
 		kong.Log.Warn("warning: ", err.Error(), " unable to store internal token in cache")
 	}
@@ -203,7 +211,7 @@ func (conf Config) memoPermissionsToken(auth0Token jwt.Token, kong *pdk.PDK) (st
 	return permissionsToken, nil
 }
 
-func (conf Config) exchangeAuth0ForPermissionsToken(auth0UserID string) (string, error) {
+func (conf *Config) exchangeAuth0ForPermissionsToken(auth0UserID string) (string, error) {
 	requestEnvelope := RequestEnvelope{Data: UserManagementRequest{
 		Attributes: UserManagementRequestAttributes{
 			Auth0UserID: auth0UserID,
@@ -234,4 +242,11 @@ func (conf Config) exchangeAuth0ForPermissionsToken(auth0UserID string) (string,
 	}
 
 	return responseEnvelope.Data.Attributes.PermissionsJwt, nil
+}
+
+const Version = "1.0.0"
+const Priority = 1
+
+func main() {
+	server.StartServer(New, Version, Priority)
 }

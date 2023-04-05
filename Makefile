@@ -17,3 +17,9 @@ attach:
 
 logs:
 	docker-compose -f docker-compose.yml logs -f
+
+local:
+	docker compose -f docker-compose.yml -f docker-compose.local.yml up
+
+local-rebuild:
+	docker compose -f docker-compose.yml -f docker-compose.local.yml up --build

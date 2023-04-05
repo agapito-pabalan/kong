@@ -1,12 +1,12 @@
 tolerations:
-   - key: node.kubernetes.io/not-ready
-     operator: Exists
-     effect: NoExecute
-     tolerationSeconds: 300
-   - key: node.kubernetes.io/unreachable
-     operator: Exists
-     effect: NoExecute
-     tolerationSeconds: 300
+  - key: node.kubernetes.io/not-ready
+    operator: Exists
+    effect: NoExecute
+    tolerationSeconds: 300
+  - key: node.kubernetes.io/unreachable
+    operator: Exists
+    effect: NoExecute
+    tolerationSeconds: 300
 
 affinity:
   podAntiAffinity:
@@ -31,7 +31,7 @@ image:
   repository: gcr.io/stord-production/kong
   tag: ${DOCKER_IMAGE_TAG}
   pullSecrets:
-   - gcr-access-key
+    - gcr-access-key
 
 serviceMonitor:
   enabled: true
@@ -51,7 +51,9 @@ postgresql:
 env:
   database: "off"
   plugins: user_management_bridge,cors,request-size-limiting,correlation-id,traceheaders,zipkin
-  go_plugins_dir: /usr/local/share/go-plugins
+  pluginserver_names: user_management_bridge
+  pluginserver_user_management_bridge_start_cmd: /usr/local/bin/user_management_bridge
+  pluginserver_user_management_bridge_query_cmd: /usr/local/bin/user_management_bridge -dump
   declarative_config: /usr/local/share/kong.yml
   datadog_agent_host:
     valueFrom:
