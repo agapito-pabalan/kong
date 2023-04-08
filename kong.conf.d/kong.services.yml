@@ -447,6 +447,7 @@ services:
           - /bff/v1/networks/([^\/]+)/backorder_configuration
           - /integrations/v1/orders/([^\/]+)$
           - /bff/v1/facility_availability
+          - /bff/v1/update_order_tags
           - /bff/v2/facility_availability
           - /v2/orders/sales
           - /v2/orders/purchase
