@@ -461,6 +461,7 @@ services:
           - /v2/orders/([^\/]+)/shipping_method$
           - /v2/orders/([^\/]+)/channel$
           - /v2/orders/([^\/]+)/order_header$
+          - /v3/orders/sales
           - /orders_service/docs/api_spec
           - /orders_service/docs/api
           - /orders_service_v1/docs/api_spec
