@@ -30,7 +30,7 @@ on:
         type: choice
         default: orion-dev--us-east1
         options:
-          -  orion-dev--us-east1
+          - orion-dev--us-east1
       cluster_region:
         description: "Kubernetes cluster region"
         default: us-east1
@@ -114,6 +114,7 @@ jobs:
           project_id: stord-nonprod
           map: |
             DEV_REDIS_CACHE_URL: "stord-gsm:stord-nonprod/orion-infrastructure--memorystore--us-east1--url--${{ inputs.namespace }}"
+            DEV_CLOUD_SIGNATURE_KEY: "stord-gsm:stord-nonprod/stord-secrets--cloudsignaturekey-staging--password"
 
       - name: Build
         run: |
@@ -162,8 +163,8 @@ jobs:
 
       - name: Install (Gcloud)
         uses: google-github-actions/setup-gcloud@v1
-        with: 
-          install_components: 'gke-gcloud-auth-plugin'
+        with:
+          install_components: "gke-gcloud-auth-plugin"
 
       - name: Login (Kubernetes Cluster)
         uses: google-github-actions/get-gke-credentials@v1

@@ -71,8 +71,17 @@ jobs:
               core.setOutput('tag', tag)
             }
 
+      - id: get_secrets
+        uses: stordco/actions-google-secrets//map@v0.0
+        with:
+          add_to_environment: true
+          project_id: stord-production
+          map: |
+            PROD_CLOUD_SIGNATURE_KEY: "stord-gsm:stord-production/stord-secrets--cloudsignaturekey-production--password"
+
       - env:
           PROD_REDIS_CACHE_URL: ${{ secrets.PROD_USER_MANAGEMENT_CACHE_URL }}
+          PROD_CLOUD_SIGNATURE_KEY: ${{ env.PROD_CLOUD_SIGNATURE_KEY }}
         name: Build
         run: |
           docker-compose -f docker-compose.prod.yml build
@@ -120,8 +129,8 @@ jobs:
 
       - name: Install (Gcloud)
         uses: google-github-actions/setup-gcloud@v1
-        with: 
-          install_components: 'gke-gcloud-auth-plugin'
+        with:
+          install_components: "gke-gcloud-auth-plugin"
 
       - name: Login (Kubernetes Cluster)
         uses: google-github-actions/get-gke-credentials@v1

@@ -13,14 +13,18 @@ import (
 	"github.com/Kong/go-pdk"
 	"github.com/Kong/go-pdk/server"
 	"github.com/go-redis/redis/v8"
+	"github.com/lestrrat-go/jwx/jwa"
 	"github.com/lestrrat-go/jwx/jwk"
+	"github.com/lestrrat-go/jwx/jws"
 	"github.com/lestrrat-go/jwx/jwt"
 )
 
 const REQUEST_JWT_TYPE string = "permissionsJwt"
 const REQUEST_AUTHORIZATION_HEADER string = "authorization"
 const BEARER_PREFIX string = "Bearer "
+const REQUEST_TIMESTAMP_HEADER string = "request-timestamp"
 const REQUIRES_AUTH_HEADER string = "requires-auth"
+const CLOUD_SIGNATURE_HEADER string = "x-cloud-signature"
 const PROCESSING_PERIOD int = 1
 
 type UserManagementResponseAttributes struct {
@@ -53,26 +57,53 @@ type RequestEnvelope struct {
 	Data UserManagementRequest `json:"data"`
 }
 
+type JwksAutoRefresh interface {
+	Configure(url string, options ...jwk.AutoRefreshOption)
+	Fetch(ctx context.Context, url string) (jwk.Set, error)
+}
+
 type Config struct {
 	UserManagementEndpoint string `json:"user_management_endpoint"`
+	CloudSignatureKey      string `json:"cloud_signature_key"`
 	Auth0Url               string `json:"auth0_url"`
 	CacheUrl               string `json:"cache_url"`
 	JwksRefreshInterval    int    `json:"jwks_refresh_interval"`
 }
 
 type Globals struct {
-	AutoRefresh *jwk.AutoRefresh
+	AutoRefresh JwksAutoRefresh
 	CacheClient *redis.Client
 	JwkCtx      context.Context
 	CacheCtx    context.Context
 }
 
-var jwkCtx = context.Background()
-var globals = Globals{
-	JwkCtx:      jwkCtx,
-	CacheCtx:    context.Background(),
-	AutoRefresh: jwk.NewAutoRefresh(jwkCtx),
-	CacheClient: nil,
+var globals = Globals{}
+
+type GlobalOption func(*Globals)
+
+func WithCacheClient(cacheClient *redis.Client) GlobalOption {
+	return func(globals *Globals) {
+		globals.CacheClient = cacheClient
+	}
+}
+
+func WithAutoRefresh(autoRefresh JwksAutoRefresh) GlobalOption {
+	return func(globals *Globals) {
+		globals.AutoRefresh = autoRefresh
+	}
+}
+
+func InitializeGlobals(opts ...GlobalOption) {
+	globals.JwkCtx = context.Background()
+	globals.CacheCtx = context.Background()
+
+	for _, opt := range opts {
+		opt(&globals)
+	}
+
+	if globals.AutoRefresh == nil {
+		globals.AutoRefresh = jwk.NewAutoRefresh(globals.JwkCtx)
+	}
 }
 
 func New() interface{} {
@@ -106,6 +137,58 @@ func (conf *Config) Access(kong *pdk.PDK) {
 
 	match, _ = regexp.MatchString("/docs/", path)
 	if match {
+		return
+	}
+
+	cloudSignatureHeader, err := kong.Request.GetHeader(CLOUD_SIGNATURE_HEADER)
+	if err != nil {
+		kong.Log.Err("error: ", err.Error(), " unable to read header")
+		kong.Response.Exit(500, err.Error(), nil)
+		return
+	}
+
+	// If we have a cloud signature header, verify it and set requires auth and early return.
+	// The cloud service can be trusted to have already done all of the validation that happens
+	// below this block
+	if cloudSignatureHeader != "" {
+		// first we validate the request-timestamp to be within the PROCESSING_PERIOD number of minutes
+		timestamp, _ := kong.Request.GetHeader(REQUEST_TIMESTAMP_HEADER)
+		requestTime, err := time.Parse(time.RFC1123, timestamp)
+		if err != nil {
+			kong.Log.Err("error: ", err.Error(), " invalid request-timestamp")
+			kong.Response.Exit(400, err.Error(), nil)
+			return
+		}
+		processing_period := time.Duration(PROCESSING_PERIOD) * time.Minute
+		if time.Now().Sub(requestTime) > processing_period {
+			kong.Log.Err("error: request-timestamp is out of sync")
+			kong.Response.Exit(400, "invalid request-timestamp", nil)
+			return
+		}
+
+		// then we verify the cloud signature
+		verified, err := jws.Verify([]byte(cloudSignatureHeader), jwa.HS256, []byte(conf.CloudSignatureKey))
+		if err != nil {
+			kong.Log.Err("error: ", err.Error(), " failed to verify cloud signature")
+			kong.Response.Exit(400, err.Error(), nil)
+			return
+		}
+
+		method, _ := kong.Request.GetMethod()
+		expected := []byte(fmt.Sprintf("%s.%s.%s", method, path, timestamp))
+
+		if !bytes.Equal(expected, verified) {
+			kong.Log.Err("error: payload does not match cloud signature")
+			kong.Response.Exit(400, "Invalid Cloud Signature", nil)
+			return
+		}
+
+		err = kong.ServiceRequest.SetHeader(REQUIRES_AUTH_HEADER, "true")
+		if err != nil {
+			kong.Log.Err("error: ", err.Error(), " unable to insert \"requires-auth\" header")
+			kong.Response.Exit(500, err.Error(), nil)
+			return
+		}
 		return
 	}
 
@@ -248,5 +331,6 @@ const Version = "1.0.0"
 const Priority = 1
 
 func main() {
+	InitializeGlobals()
 	server.StartServer(New, Version, Priority)
 }

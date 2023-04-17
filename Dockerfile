@@ -25,6 +25,7 @@ FROM kong:2.7.2-alpine as release
 
 ARG AUTH0_JWKS_URL
 ARG REDIS_CACHE_URL
+ARG CLOUD_SIGNATURE_KEY
 ARG OTEL_COLLECTOR_ENDPOINT
 ARG KONG_TEMPLATE
 
@@ -65,6 +66,7 @@ RUN cat /usr/local/share/kong.services.yml >> /usr/local/share/kong.yml
 
 RUN sed -i "s~AUTH0_JWKS_URL~$AUTH0_JWKS_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~REDIS_CACHE_URL~$REDIS_CACHE_URL~g" /usr/local/share/kong.yml
+RUN sed -i "s~CLOUD_SIGNATURE_KEY~$CLOUD_SIGNATURE_KEY~g" /usr/local/share/kong.yml
 RUN sed -i "s~OTEL_COLLECTOR_ENDPOINT~$OTEL_COLLECTOR_ENDPOINT~g" /usr/local/share/kong.yml
 
 RUN sed -i "s~http://SAIPH_URL~$SAIPH_URL~g" /usr/local/share/kong.yml

@@ -11,6 +11,7 @@ plugins:
   - name: user_management_bridge
     config:
       user_management_endpoint: http://USER_MANAGEMENT_URL/v1/jwt/permissions
+      cloud_signature_key: CLOUD_SIGNATURE_KEY
       auth0_url: https://stord-staging.auth0.com/.well-known/jwks.json
       cache_url: "redis://cache:6379"
       jwks_refresh_interval: 15

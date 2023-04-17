@@ -8,6 +8,7 @@ plugins:
   - name: user_management_bridge
     config:
       user_management_endpoint: http://user-management/v1/jwt/permissions
+      cloud_signature_key: CLOUD_SIGNATURE_KEY
       auth0_url: AUTH0_JWKS_URL
       cache_url: REDIS_CACHE_URL
       jwks_refresh_interval: 15

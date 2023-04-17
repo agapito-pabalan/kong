@@ -70,8 +70,17 @@ jobs:
               core.setOutput('tag', tag)
             }
 
+      - id: get_secrets
+        uses: stordco/actions-google-secrets//map@v0.0
+        with:
+          add_to_environment: true
+          project_id: stord-nonprod
+          map: |
+            NONPROD_CLOUD_SIGNATURE_KEY: "stord-gsm:stord-nonprod/stord-secrets--cloudsignaturekey-staging--password"
+
       - env:
           NONPROD_REDIS_CACHE_URL: ${{ secrets.NONPROD_USER_MANAGEMENT_CACHE_URL }}
+          NONPROD_CLOUD_SIGNATURE_KEY: ${{ env.NONPROD_CLOUD_SIGNATURE_KEY }}
         name: Build
         run: |
           docker-compose -f docker-compose.nonprod.yml build
@@ -119,8 +128,8 @@ jobs:
 
       - name: Install (Gcloud)
         uses: google-github-actions/setup-gcloud@v1
-        with: 
-          install_components: 'gke-gcloud-auth-plugin'
+        with:
+          install_components: "gke-gcloud-auth-plugin"
 
       - name: Login (Kubernetes Cluster)
         uses: google-github-actions/get-gke-credentials@v1

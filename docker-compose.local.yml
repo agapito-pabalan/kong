@@ -6,6 +6,8 @@ services:
       context: .
       args:
         KONG_TEMPLATE: kong.local.template.yml
+        CLOUD_SIGNATURE_KEY: signature
+        KONG_LOG_LEVEL: debug
         SAIPH_URL: http://saiph:4001
         RIGEL_URL: http://rigel:4002
         USER_MANAGEMENT_URL: http://user-management:4003
