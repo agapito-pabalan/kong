@@ -445,6 +445,7 @@ services:
           - /bff/v1/orders/([^\/]+)/events$
           - /bff/v1/networks/([^\/]+)/work_orders
           - /bff/v1/networks/([^\/]+)/backorder_configuration
+          - /bff/v1/networks/([^\/]+)/order_routing_configuration
           - /bff/v1/networks/([^\/]+)/split_order_configuration
           - /bff/v1/networks/([^\/]+)/billing_accounts
           - /integrations/v1/orders/([^\/]+)$
