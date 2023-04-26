@@ -115,6 +115,9 @@ jobs:
           - file: prod
             project: stord-production
             image: kong
+          - file: dev
+            project: stord-nonprod
+            image: kong
 
   Lint:
     container:
