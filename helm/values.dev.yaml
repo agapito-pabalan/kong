@@ -48,10 +48,10 @@ admin:
 resources:
   limits:
     cpu: 1.5
-    memory: 2G
+    memory: 4G
   requests:
     cpu: 1
-    memory: 2G
+    memory: 4G
 
 proxy:
   enabled: true
@@ -68,4 +68,6 @@ podLabels:
   tags.datadoghq.com/version: <VERSION>
 
 autoscaling:
-  enabled: false
+  enabled: true
+  minRepicas: 3
+  maxReplicas: 3
