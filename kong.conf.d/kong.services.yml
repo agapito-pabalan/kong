@@ -426,6 +426,7 @@ services:
           - /bff/v1/cancel_order
           - /bff/v1/facility_activities/([^\/]+)/documents/([^\/]+)$
           - /bff/v1/order_details
+          - /bff/v1/support/update_sales_order_based_on_activities
           - /bff/v1/facility_activities/([^\/]+)$
           - /bff/v1/facility_activities/([^\/]+)/documents$
           - /bff/v1/networks/([^\/]+)/facility_activities$
