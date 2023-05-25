@@ -731,6 +731,7 @@ services:
           - /v1/connections/shopify/([^\/]+)$
           - /v1/connections/shopify/orders/([^\/]+)$
           - /v1/connections/shopify/validate_connection/([^\/]+)$
+          - /v1/connections/shopify/([^\/]+)/dispatch_action/([^\/]+)$
       - name: marketplace_v1_connections
         strip_path: false
         paths:
