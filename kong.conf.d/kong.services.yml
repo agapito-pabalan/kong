@@ -685,6 +685,11 @@ services:
           - /v1/items_bulk
           - /v1/unit_conversions
           - /bff/v1/items_search(|\?[^\/]+)$
+      - name: product_catalog_v1_listings
+        strip_path: false
+        paths:
+          - /v1/networks/([^\/]+)/listings
+          - /v1/networks/([^\/]+)/delete_listings
   - name: tenant-service
     url: http://TENANT_SERVICE_URL
     routes:
