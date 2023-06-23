@@ -432,7 +432,6 @@ services:
           - /bff/v1/networks/([^\/]+)/facility_activities$
           - /bff/v1/networks/([^\/]+)/orders$
           - /bff/v1/networks/([^\/]+)/tags
-          - /bff/v1/orders/filter_selections
           - /bff/v1/orders/([^\/]+)/documents$
           - /bff/v1/orders/([^\/]+)/documents/([^\/]+)$
           - /bff/v1/orders/([^\/]+)/signed_documents/([^\/]+)$
