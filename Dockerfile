@@ -1,10 +1,11 @@
-FROM golang:1.15-alpine as go-builder
+FROM golang:1.20-alpine as go-builder
 
 WORKDIR /go-plugins
 
 RUN apk add --no-cache git gcc libc-dev binutils-gold
 RUN go mod init kong-go-plugin
 RUN go get -d -v github.com/Kong/go-pdk@v0.8.0
+RUN go get -d -v github.com/Kong/go-pdk/server@v0.8.0
 RUN go get -d -v github.com/lestrrat-go/jwx/jwt
 RUN go get -d -v github.com/lestrrat-go/jwx/jwk
 RUN go get -d -v github.com/go-redis/redis/v8
