@@ -786,6 +786,10 @@ services:
         strip_path: false
         paths:
           - /v1/search/([^\/]+)/dashboard
+      - name: search_service_v1_network_stats
+        strip_path: false
+        paths:
+          - /v1/search/([^\/]+)/network_stats/([^\/]+)$
       - name: search_service_v0_delivery_tracking
         strip_path: false
         paths:
