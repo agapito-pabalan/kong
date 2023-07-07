@@ -519,6 +519,10 @@ services:
         strip_path: false
         paths:
           - /integrations/v2/facility_activities/status$
+      - name: facility_activity_service_public_v1_receipt_confirmations
+        strip_path: false
+        paths:
+          - /public/v1/receipt_confirmations$
   - name: documents-service
     url: http://DOCUMENTS_SERVICE_URL
     routes:
