@@ -9,7 +9,7 @@ on:
       - synchronize
   push:
     branches:
-      - "master"
+      - "main"
 
 concurrency:
   group: ${{ github.head_ref || github.run_id }}
