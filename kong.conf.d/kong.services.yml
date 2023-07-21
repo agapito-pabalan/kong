@@ -697,6 +697,7 @@ services:
         paths:
           - /v1/networks/([^\/]+)/listings
           - /v1/networks/([^\/]+)/delete_listings
+          - /v1/networks/([^\/]+)/listings/([^\/]+)
   - name: tenant-service
     url: http://TENANT_SERVICE_URL
     routes:
