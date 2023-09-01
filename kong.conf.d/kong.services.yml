@@ -472,6 +472,10 @@ services:
         strip_path: false
         paths:
           - /bff/v1/networks/([^\/]+)/documents/([^\/]+)$
+      - name: orders_public_v1
+        strip_path: false
+        paths:
+          - /public/v1/estimated_delivery_date$
   - name: facility-activity-service
     url: http://FACILITY_ACTIVITY_SERVICE_URL
     routes:
