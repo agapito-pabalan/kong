@@ -460,6 +460,7 @@ services:
           - /v2/orders/([^\/]+)/process_order$
           - /v2/orders/([^\/]+)/destination$
           - /v2/orders/([^\/]+)/order_lines_update$
+          - /v2/orders/([^\/]+)/edit_listing_order_lines$
           - /v2/orders/([^\/]+)/shipping_method$
           - /v2/orders/([^\/]+)/channel$
           - /v2/orders/([^\/]+)/order_header$
