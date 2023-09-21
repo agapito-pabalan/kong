@@ -456,6 +456,7 @@ services:
           - /v2/orders/purchase
           - /v2/orders/transfer
           - /v2/orders/process_order
+          - /v2/orders/cancel_order_lines
           - /v2/orders/([^\/]+)/process_outbounds$
           - /v2/orders/([^\/]+)/process_order$
           - /v2/orders/([^\/]+)/destination$
