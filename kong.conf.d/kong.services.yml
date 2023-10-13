@@ -795,6 +795,7 @@ services:
         strip_path: false
         paths:
           - /bff/v1/webflow/connections$
+          - /bff/v1/webflow/connections/request$
   - name: search-service
     url: http://SEARCH_SERVICE_URL
     routes:
