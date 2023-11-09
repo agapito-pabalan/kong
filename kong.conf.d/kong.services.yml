@@ -831,6 +831,10 @@ services:
         strip_path: false
         paths:
           - /v2/search/orders$
+      - name: search_service_single_order_reindex
+        strip_path: false
+        paths:
+          - /v1/search/orders/([^\/]+)/reindex
   - name: wms-integration-bridge
     url: http://WMS_INTEGRATION_BRIDGE_URL
     routes:
