@@ -821,6 +821,10 @@ services:
         strip_path: false
         paths:
           - /v1/search/orders/suggest
+      - name: search_service_v1_orders_export
+        strip_path: false
+        paths:
+          - /v1/search/orders/export
       - name: search_service_v1_orders_dashboard
         strip_path: false
         paths:
