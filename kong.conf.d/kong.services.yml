@@ -453,6 +453,8 @@ services:
           - /integrations/v1/orders/([^\/]+)$
           - /bff/v1/update_order_tags
           - /bff/v2/facility_availability
+          - /bff/v2/add_order_lines
+          - /bff/v2/cancel_order_lines
           - /v2/orders/sales
           - /v2/orders/purchase
           - /v2/orders/transfer
