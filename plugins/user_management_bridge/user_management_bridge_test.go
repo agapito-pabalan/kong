@@ -193,6 +193,7 @@ func TestCloudSignatureValid(t *testing.T) {
 	assert.Equal(t, 200, env.ClientRes.Status)
 	assert.Equal(t, "true", env.ServiceReq.Headers.Get("requires-auth"))
 	assert.Equal(t, "Bearer STORDCLOUD", env.ServiceReq.Headers.Get("Authorization"))
+	assert.Empty(t, env.ServiceReq.Headers.Get("x-cloud-signature"))
 
 	if err := redisMock.ExpectationsWereMet(); err != nil {
 		t.Error(err)

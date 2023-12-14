@@ -189,6 +189,14 @@ func (conf *Config) Access(kong *pdk.PDK) {
 			kong.Response.Exit(500, err.Error(), nil)
 			return
 		}
+
+		// Best effort to strip the header out from the downstream request to prevent any security concerns
+		err = kong.ServiceRequest.ClearHeader(CLOUD_SIGNATURE_HEADER)
+		if err != nil {
+			kong.Log.Err("error: ", err.Error(), " Failed to clear cloud signature header")
+			return
+		}
+
 		return
 	}
 
