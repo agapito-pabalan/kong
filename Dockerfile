@@ -9,6 +9,8 @@ RUN go get -d -v github.com/Kong/go-pdk/server@v0.8.0
 RUN go get -d -v github.com/lestrrat-go/jwx/jwt
 RUN go get -d -v github.com/lestrrat-go/jwx/jwk
 RUN go get -d -v github.com/go-redis/redis/v8
+RUN go get github.com/launchdarkly/go-sdk-common/v3/ldcontext
+RUN go get github.com/launchdarkly/go-server-sdk/v7
 
 COPY /plugins/user_management_bridge/user_management_bridge.go .
 RUN go build  -o /go-plugins/user_management_bridge /go-plugins/user_management_bridge.go
@@ -27,6 +29,8 @@ FROM kong:2.7.2-alpine as release
 ARG AUTH0_JWKS_URL
 ARG REDIS_CACHE_URL
 ARG CLOUD_SIGNATURE_KEY
+ARG CLOUD_SERVICE_URL
+ARG LD_SDK_KEY
 ARG OTEL_COLLECTOR_ENDPOINT
 ARG KONG_TEMPLATE
 
@@ -68,8 +72,10 @@ RUN cat /usr/local/share/kong.services.yml >> /usr/local/share/kong.yml
 RUN sed -i "s~AUTH0_JWKS_URL~$AUTH0_JWKS_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~REDIS_CACHE_URL~$REDIS_CACHE_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~CLOUD_SIGNATURE_KEY~$CLOUD_SIGNATURE_KEY~g" /usr/local/share/kong.yml
+RUN sed -i "s~LD_SDK_KEY~$LD_SDK_KEY~g" /usr/local/share/kong.yml
 RUN sed -i "s~OTEL_COLLECTOR_ENDPOINT~$OTEL_COLLECTOR_ENDPOINT~g" /usr/local/share/kong.yml
 
+RUN sed -i "s~http://CLOUD_SERVICE_URL~$CLOUD_SERVICE_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://SAIPH_URL~$SAIPH_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://RIGEL_URL~$RIGEL_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://USER_MANAGEMENT_URL~$USER_MANAGEMENT_URL~g" /usr/local/share/kong.yml

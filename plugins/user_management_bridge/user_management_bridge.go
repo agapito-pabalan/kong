@@ -17,6 +17,13 @@ import (
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/lestrrat-go/jwx/jws"
 	"github.com/lestrrat-go/jwx/jwt"
+
+	// go-sdk-common/v3/ldcontext defines LaunchDarkly's model for contexts
+	"github.com/launchdarkly/go-sdk-common/v3/ldcontext"
+
+	// go-server-sdk/v7 is the main SDK package - here we are aliasing it to "ld"
+
+	ld "github.com/launchdarkly/go-server-sdk/v7"
 )
 
 const REQUEST_JWT_TYPE string = "permissionsJwt"
@@ -53,6 +60,27 @@ type UserManagementRequest struct {
 	Type       string                          `json:"type"`
 }
 
+type CloudServiceRequest struct {
+	Type         string `json:"type"`
+	App          string `json:"app"`
+	Organization string `json:"organization"`
+}
+
+type CloudRequestEnvelope struct {
+	Data CloudServiceRequest `json:"data"`
+}
+
+type CloudResponse struct {
+	Type         string `json:"type"`
+	App          string `json:"app"`
+	Organization string `json:"organization"`
+	Token        string `json:"token"`
+}
+
+type CloudResponseEnvelope struct {
+	Data CloudResponse `json:"data"`
+}
+
 type RequestEnvelope struct {
 	Data UserManagementRequest `json:"data"`
 }
@@ -62,9 +90,15 @@ type JwksAutoRefresh interface {
 	Fetch(ctx context.Context, url string) (jwk.Set, error)
 }
 
+type FeatureFlagClient interface {
+	BoolVariation(flagKey string, context ldcontext.Context, defaultValue bool) (bool, error)
+}
+
 type Config struct {
 	UserManagementEndpoint string `json:"user_management_endpoint"`
+	CloudEndpoint          string `json:"cloud_endpoint"`
 	CloudSignatureKey      string `json:"cloud_signature_key"`
+	LdSdkKey               string `json:"ld_sdk_key"`
 	Auth0Url               string `json:"auth0_url"`
 	CacheUrl               string `json:"cache_url"`
 	JwksRefreshInterval    int    `json:"jwks_refresh_interval"`
@@ -75,6 +109,7 @@ type Globals struct {
 	CacheClient *redis.Client
 	JwkCtx      context.Context
 	CacheCtx    context.Context
+	LdClient    FeatureFlagClient
 }
 
 var globals = Globals{}
@@ -84,6 +119,12 @@ type GlobalOption func(*Globals)
 func WithCacheClient(cacheClient *redis.Client) GlobalOption {
 	return func(globals *Globals) {
 		globals.CacheClient = cacheClient
+	}
+}
+
+func WithFeatureFlags(ldClient FeatureFlagClient) GlobalOption {
+	return func(globals *Globals) {
+		globals.LdClient = ldClient
 	}
 }
 
@@ -111,7 +152,7 @@ func New() interface{} {
 }
 
 func (conf *Config) Access(kong *pdk.PDK) {
-	kong.Log.Debug(fmt.Sprintf("begin access"))
+	kong.Log.Debug("begin access")
 
 	path, _ := kong.Request.GetPath()
 
@@ -160,7 +201,7 @@ func (conf *Config) Access(kong *pdk.PDK) {
 			return
 		}
 		processing_period := time.Duration(PROCESSING_PERIOD) * time.Minute
-		if time.Now().Sub(requestTime) > processing_period {
+		if time.Since(requestTime) > processing_period {
 			kong.Log.Err("error: request-timestamp is out of sync")
 			kong.Response.Exit(400, "invalid request-timestamp", nil)
 			return
@@ -223,7 +264,7 @@ func (conf *Config) Access(kong *pdk.PDK) {
 		return
 	}
 
-	permissionsToken, err := conf.memoPermissionsToken(parsedAuth0Token, kong)
+	permissionsToken, err := conf.cacheFetchPermissionsToken(string(auth0Token), parsedAuth0Token, kong)
 	if err != nil {
 		kong.Log.Warn("warning: ", err.Error(), " unable to exchange Auth0 token for permissions token")
 		kong.Response.Exit(401, "Unauthorized", nil)
@@ -250,7 +291,6 @@ func (conf *Config) Access(kong *pdk.PDK) {
 	}
 
 	kong.Log.Debug("Success! Called UserManagement API and swapped [", auth0Token, "] for [", permissionsToken, "]")
-	return
 }
 
 func (conf *Config) RedisClient() *redis.Client {
@@ -259,6 +299,14 @@ func (conf *Config) RedisClient() *redis.Client {
 		globals.CacheClient = redis.NewClient(opts)
 	}
 	return globals.CacheClient
+}
+
+func (conf *Config) LdClient() FeatureFlagClient {
+	if globals.LdClient == nil {
+		client, _ := ld.MakeClient(conf.LdSdkKey, 5*time.Second)
+		globals.LdClient = client
+	}
+	return globals.LdClient
 }
 
 func getAuth0Token(kong *pdk.PDK) ([]byte, error) {
@@ -276,7 +324,11 @@ func getAuth0Token(kong *pdk.PDK) ([]byte, error) {
 	return []byte(headerValueArr[1]), nil
 }
 
-func (conf *Config) memoPermissionsToken(auth0Token jwt.Token, kong *pdk.PDK) (string, error) {
+// cacheFetchPermissionsToken exchanges the Auth0 token for a permissions token
+// by calling the UserManagement API. It will first attempt to retrieve the
+// permissions token from the cache. If it is not found, it will call the
+// UserManagement API and store the permissions token in the cache.
+func (conf *Config) cacheFetchPermissionsToken(rawToken string, auth0Token jwt.Token, kong *pdk.PDK) (string, error) {
 	permissionsToken := ""
 	auth0UserID := auth0Token.Subject()
 	cacheClient := conf.RedisClient()
@@ -287,7 +339,34 @@ func (conf *Config) memoPermissionsToken(auth0Token jwt.Token, kong *pdk.PDK) (s
 		return permissionsToken, nil
 	}
 
-	permissionsToken, err = conf.exchangeAuth0ForPermissionsToken(auth0UserID)
+	useLd := conf.LdClient() != nil
+
+	var useCloudAuth bool
+	org, _ := kong.Request.GetHeader("tenant-id")
+	if useLd {
+		// check if cloud auth is enabled and if so, return a token returned by cloud-service
+		// otherwise continue with the normal flow of using the user-management service
+		sub := auth0Token.Subject()
+
+		// If there is no tenant id header, default to the "admin" org which is in this case "stord"
+		if org == "" {
+			org = "stord"
+		}
+		context := ldcontext.NewMultiBuilder().Add(ldcontext.NewWithKind("organization", org)).Add(ldcontext.NewWithKind("user_id", sub)).Build()
+		useCloudAuth, err = conf.LdClient().BoolVariation("enable-cloud-auth-oms", context, false)
+		if err != nil {
+			kong.Log.Warn("warning: ", err.Error(), " unable to get flag value")
+		}
+	} else {
+		useCloudAuth = false
+	}
+
+	if useCloudAuth {
+		permissionsToken, err = conf.exchangeAuth0ForCloudToken(org, rawToken)
+	} else {
+		permissionsToken, err = conf.exchangeAuth0ForUserManagementToken(auth0UserID)
+	}
+
 	if err != nil {
 		return "", err
 	}
@@ -302,7 +381,9 @@ func (conf *Config) memoPermissionsToken(auth0Token jwt.Token, kong *pdk.PDK) (s
 	return permissionsToken, nil
 }
 
-func (conf *Config) exchangeAuth0ForPermissionsToken(auth0UserID string) (string, error) {
+// exchangeAuth0ForUserManagementToken exchanges the Auth0 token for a permissions token
+// by calling the UserManagement API.
+func (conf *Config) exchangeAuth0ForUserManagementToken(auth0UserID string) (string, error) {
 	requestEnvelope := RequestEnvelope{Data: UserManagementRequest{
 		Attributes: UserManagementRequestAttributes{
 			Auth0UserID: auth0UserID,
@@ -333,6 +414,47 @@ func (conf *Config) exchangeAuth0ForPermissionsToken(auth0UserID string) (string
 	}
 
 	return responseEnvelope.Data.Attributes.PermissionsJwt, nil
+}
+
+// exchangeAuth0ForCloudToken exchanges the Auth0 token for a permissions token
+// by calling the Cloud Service API.
+func (conf *Config) exchangeAuth0ForCloudToken(org string, rawToken string) (string, error) {
+	requestEnvelope := CloudRequestEnvelope{Data: CloudServiceRequest{
+		Type:         "orion",
+		App:          "oms",
+		Organization: org,
+	}}
+
+	requestBody, err := json.Marshal(requestEnvelope)
+	if err != nil {
+		return "", err
+	}
+
+	req, err := http.NewRequest("POST", conf.CloudEndpoint, bytes.NewBuffer(requestBody))
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Authorization", "Bearer "+rawToken)
+	req.Header.Set("Content-Type", "application/json")
+
+	response, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+
+	if response.StatusCode < 200 || response.StatusCode > 299 {
+		return "", fmt.Errorf("unexpected status code from Cloud: %d", response.StatusCode)
+	}
+
+	var responseEnvelope CloudResponseEnvelope
+
+	err = json.NewDecoder(response.Body).Decode(&responseEnvelope)
+
+	if err != nil {
+		return "", err
+	}
+
+	return responseEnvelope.Data.Token, nil
 }
 
 const Version = "1.0.0"

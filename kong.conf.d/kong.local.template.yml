@@ -10,10 +10,12 @@ plugins:
       size_unit: megabytes
   - name: user_management_bridge
     config:
+      cloud_endpoint: http://CLOUD_SERVICE_URL/v1/auth/token
       user_management_endpoint: http://USER_MANAGEMENT_URL/v1/jwt/permissions
       cloud_signature_key: CLOUD_SIGNATURE_KEY
+      ld_sdk_key: LD_SDK_KEY
       auth0_url: https://stord-staging.auth0.com/.well-known/jwks.json
-      cache_url: "redis://cache:6379"
+      cache_url: "redis://host.docker.internal:6379"
       jwks_refresh_interval: 15
   - name: correlation-id
     config:

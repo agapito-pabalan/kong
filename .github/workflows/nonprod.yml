@@ -77,10 +77,12 @@ jobs:
           project_id: stord-nonprod
           map: |
             NONPROD_CLOUD_SIGNATURE_KEY: "stord-gsm:stord-nonprod/stord-secrets--cloudsignaturekey-staging--password"
+            NONPROD_LD_SDK_KEY: "stord-gsm:stord-nonprod/stord-secrets--launchdarkly_api_key"
 
       - env:
           NONPROD_REDIS_CACHE_URL: ${{ secrets.NONPROD_USER_MANAGEMENT_CACHE_URL }}
           NONPROD_CLOUD_SIGNATURE_KEY: ${{ env.NONPROD_CLOUD_SIGNATURE_KEY }}
+          NONPROD_LD_SDK_KEY: ${{ env.NONPROD_LD_SDK_KEY }}
         name: Build
         run: |
           docker-compose -f docker-compose.nonprod.yml build

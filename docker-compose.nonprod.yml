@@ -9,10 +9,12 @@ services:
         AUTH0_JWKS_URL: https://stord-staging.auth0.com/.well-known/jwks.json
         REDIS_CACHE_URL: $NONPROD_REDIS_CACHE_URL
         CLOUD_SIGNATURE_KEY: $NONPROD_CLOUD_SIGNATURE_KEY
+        LD_SDK_KEY: $NONPROD_LD_SDK_KEY
         OTEL_COLLECTOR_ENDPOINT: http://opentelemetry-collector:9411/api/v2/spans
         SAIPH_URL: http://saiph
         RIGEL_URL: http://rigel
         USER_MANAGEMENT_URL: http://user-management
+        CLOUD_SERVICE_URL: https://api.staging.cloud.stord.com
         MINTAKA_URL: http://mintaka
         MEISSA_URL: http://meissa
         ORDERS_SERVICE_URL: http://orders-service

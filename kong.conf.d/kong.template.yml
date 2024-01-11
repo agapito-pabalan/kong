@@ -7,8 +7,10 @@ plugins:
         - '^https:\/\/.*\.stord-.*\.pages\.dev$'
   - name: user_management_bridge
     config:
+      cloud_endpoint: http://CLOUD_SERVICE_URL/v1/auth/token
       user_management_endpoint: http://user-management/v1/jwt/permissions
       cloud_signature_key: CLOUD_SIGNATURE_KEY
+      ld_sdk_key: LD_SDK_KEY
       auth0_url: AUTH0_JWKS_URL
       cache_url: REDIS_CACHE_URL
       jwks_refresh_interval: 15

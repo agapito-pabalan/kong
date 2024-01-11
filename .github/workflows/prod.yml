@@ -78,10 +78,12 @@ jobs:
           project_id: stord-production
           map: |
             PROD_CLOUD_SIGNATURE_KEY: "stord-gsm:stord-production/stord-secrets--cloudsignaturekey-production--password"
+            PROD_LD_SDK_KEY: "stord-gsm:stord-production/stord-secrets--launchdarkly_api_key"
 
       - env:
           PROD_REDIS_CACHE_URL: ${{ secrets.PROD_USER_MANAGEMENT_CACHE_URL }}
           PROD_CLOUD_SIGNATURE_KEY: ${{ env.PROD_CLOUD_SIGNATURE_KEY }}
+          PROD_LD_SDK_KEY: ${{ env.PROD_LD_SDK_KEY }}
         name: Build
         run: |
           docker-compose -f docker-compose.prod.yml build
