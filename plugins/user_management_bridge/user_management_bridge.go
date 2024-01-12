@@ -332,26 +332,28 @@ func (conf *Config) cacheFetchPermissionsToken(rawToken string, auth0Token jwt.T
 	permissionsToken := ""
 	auth0UserID := auth0Token.Subject()
 	cacheClient := conf.RedisClient()
-
-	permissionsToken, err := cacheClient.Get(globals.CacheCtx, auth0UserID).Result()
-
-	if err == nil {
-		return permissionsToken, nil
-	}
-
 	useLd := conf.LdClient() != nil
 
 	var useCloudAuth bool
+	var err error
+
 	org, _ := kong.Request.GetHeader("tenant-id")
+	// If there is no tenant id header, default to the "admin" org which is in this case "stord"
+	if org == "" {
+		org = "stord"
+	}
+	var cachePrefix string
+	if useCloudAuth {
+		cachePrefix = "kong:cloud:" + org + ":"
+	} else {
+		cachePrefix = ""
+	}
+
 	if useLd {
 		// check if cloud auth is enabled and if so, return a token returned by cloud-service
 		// otherwise continue with the normal flow of using the user-management service
 		sub := auth0Token.Subject()
 
-		// If there is no tenant id header, default to the "admin" org which is in this case "stord"
-		if org == "" {
-			org = "stord"
-		}
 		context := ldcontext.NewMultiBuilder().Add(ldcontext.NewWithKind("organization", org)).Add(ldcontext.NewWithKind("user_id", sub)).Build()
 		useCloudAuth, err = conf.LdClient().BoolVariation("enable-cloud-auth-oms", context, false)
 		if err != nil {
@@ -359,6 +361,13 @@ func (conf *Config) cacheFetchPermissionsToken(rawToken string, auth0Token jwt.T
 		}
 	} else {
 		useCloudAuth = false
+	}
+	cacheKey := cachePrefix + auth0UserID
+
+	permissionsToken, err = cacheClient.Get(globals.CacheCtx, cacheKey).Result()
+
+	if err == nil {
+		return permissionsToken, nil
 	}
 
 	if useCloudAuth {
@@ -373,7 +382,7 @@ func (conf *Config) cacheFetchPermissionsToken(rawToken string, auth0Token jwt.T
 
 	processing_period := time.Duration(PROCESSING_PERIOD) * time.Minute
 	cachedTokenTTL := auth0Token.Expiration().Sub(auth0Token.IssuedAt().Add(processing_period))
-	err = cacheClient.SetEX(globals.CacheCtx, auth0UserID, permissionsToken, cachedTokenTTL).Err()
+	err = cacheClient.SetEX(globals.CacheCtx, cacheKey, permissionsToken, cachedTokenTTL).Err()
 	if err != nil {
 		kong.Log.Warn("warning: ", err.Error(), " unable to store internal token in cache")
 	}
