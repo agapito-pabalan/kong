@@ -348,8 +348,9 @@ func TestCloudEnabled(t *testing.T) {
 	}))
 	defer httpMock.Close()
 
-	redisMock.ExpectGet(subject).RedisNil()
-	redisMock.ExpectSetEX(subject, "RESULT", 60*time.Second).SetVal("1")
+	cacheKey := "kong:cloud:oms_admin:tenant:stord:" + subject
+	redisMock.ExpectGet(cacheKey).RedisNil()
+	redisMock.ExpectSetEX(cacheKey, "RESULT", 60*time.Second).SetVal("1")
 
 	env, err := test.New(t, test.Request{
 		Method:  "GET",

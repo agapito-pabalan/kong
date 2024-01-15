@@ -63,7 +63,8 @@ type UserManagementRequest struct {
 type CloudServiceRequest struct {
 	Type         string `json:"type"`
 	App          string `json:"app"`
-	Organization string `json:"organization"`
+	Organization string `json:"organization,omitempty"`
+	ResourcePath string `json:"resource_path,omitempty"`
 }
 
 type CloudRequestEnvelope struct {
@@ -341,25 +342,32 @@ func (conf *Config) cacheFetchPermissionsToken(rawToken string, auth0Token jwt.T
 
 	var useCloudAuth bool
 	var err error
+	var app string
 
 	org, _ := kong.Request.GetHeader("tenant-id")
-	// If there is no tenant id header, default to the "admin" org which is in this case "stord"
-	if org == "" {
+	networkId, _ := kong.Request.GetHeader("x-network-id")
+
+	stordAdmin, _ := regexp.Match(".*@stord\\.com$", []byte(auth0UserID))
+
+	if (org == "" && networkId == "") || stordAdmin {
+		app = "oms_admin"
 		org = "stord"
-	}
-	var cachePrefix string
-	if useCloudAuth {
-		cachePrefix = "kong:cloud:" + org + ":"
+		networkId = ""
 	} else {
-		cachePrefix = ""
+		app = "oms"
 	}
 
 	if useLd {
-		// check if cloud auth is enabled and if so, return a token returned by cloud-service
-		// otherwise continue with the normal flow of using the user-management service
 		sub := auth0Token.Subject()
+		builder := ldcontext.NewMultiBuilder().Add(ldcontext.NewWithKind("app", app)).Add(ldcontext.NewWithKind("user_id", sub))
+		if org != "" {
+			builder.Add(ldcontext.NewWithKind("organization", org))
+		}
+		if networkId != "" {
+			builder.Add(ldcontext.NewWithKind("network", networkId))
+		}
+		context := builder.Build()
 
-		context := ldcontext.NewMultiBuilder().Add(ldcontext.NewWithKind("organization", org)).Add(ldcontext.NewWithKind("user_id", sub)).Build()
 		useCloudAuth, err = conf.LdClient().BoolVariation("enable-cloud-auth-oms", context, false)
 		if err != nil {
 			kong.Log.Warn("warning: ", err.Error(), " unable to get flag value")
@@ -367,6 +375,19 @@ func (conf *Config) cacheFetchPermissionsToken(rawToken string, auth0Token jwt.T
 	} else {
 		useCloudAuth = false
 	}
+
+	var cachePrefix string
+	if useCloudAuth {
+		cachePrefix = "kong:cloud:" + app + ":"
+		if networkId != "" {
+			cachePrefix += "network:" + networkId + ":"
+		} else {
+			cachePrefix += "tenant:" + org + ":"
+		}
+	} else {
+		cachePrefix = ""
+	}
+
 	cacheKey := cachePrefix + auth0UserID
 
 	permissionsToken, err = cacheClient.Get(globals.CacheCtx, cacheKey).Result()
@@ -376,7 +397,7 @@ func (conf *Config) cacheFetchPermissionsToken(rawToken string, auth0Token jwt.T
 	}
 
 	if useCloudAuth {
-		permissionsToken, err = conf.exchangeAuth0ForCloudToken(org, rawToken)
+		permissionsToken, err = conf.exchangeAuth0ForCloudToken(app, org, networkId, rawToken)
 	} else {
 		permissionsToken, err = conf.exchangeAuth0ForUserManagementToken(auth0UserID)
 	}
@@ -432,12 +453,17 @@ func (conf *Config) exchangeAuth0ForUserManagementToken(auth0UserID string) (str
 
 // exchangeAuth0ForCloudToken exchanges the Auth0 token for a permissions token
 // by calling the Cloud Service API.
-func (conf *Config) exchangeAuth0ForCloudToken(org string, rawToken string) (string, error) {
+func (conf *Config) exchangeAuth0ForCloudToken(app string, org string, networkId string, rawToken string) (string, error) {
 	requestEnvelope := CloudRequestEnvelope{Data: CloudServiceRequest{
-		Type:         "orion",
-		App:          "oms",
-		Organization: org,
+		Type: "orion",
+		App:  app,
 	}}
+
+	if networkId != "" {
+		requestEnvelope.Data.ResourcePath = "/networks/" + networkId
+	} else {
+		requestEnvelope.Data.Organization = org
+	}
 
 	requestBody, err := json.Marshal(requestEnvelope)
 	if err != nil {
