@@ -918,3 +918,18 @@ services:
         strip_path: false
         paths:
           - /webhook/v1/logiwa/([^\/]+)$
+  - name: stordbot
+    url: http://STORDBOT_URL
+    routes:
+      - name: ping
+        strip_path: false
+        paths:
+          - /stordbot/ping
+      - name: v1_conversations
+        strip_path: false
+        paths:
+          - /stordbot/v1/conversations$
+          - /stordbot/v1/conversations/([^\/]+)$
+          - /stordbot/v1/conversations/([^\/]+)/messages$
+
+

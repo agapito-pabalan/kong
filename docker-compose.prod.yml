@@ -33,6 +33,7 @@ services:
         TRANSPORTATION_SERVICE_URL: http://transportation-service
         ORDER_ORCHESTRATION_SERVICE_URL: http://order-orchestration
         LOGIWA_READER_URL: http://logiwa-reader
+        STORDBOT_URL: http://stordbot
     ports:
       - "8000:8000/tcp"
       - "8444:8444/tcp"
