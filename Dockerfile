@@ -55,6 +55,7 @@ ARG WMS_INTEGRATION_BRIDGE_URL
 ARG TRANSPORTATION_SERVICE_URL
 ARG ORDER_ORCHESTRATION_SERVICE_URL
 ARG LOGIWA_READER_URL
+ARG STORDBOT_URL
 
 USER root
 
@@ -97,6 +98,7 @@ RUN sed -i "s~http://WMS_INTEGRATION_BRIDGE_URL~$WMS_INTEGRATION_BRIDGE_URL~g" /
 RUN sed -i "s~http://TRANSPORTATION_SERVICE_URL~$TRANSPORTATION_SERVICE_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://ORDER_ORCHESTRATION_SERVICE_URL~$ORDER_ORCHESTRATION_SERVICE_URL~g" /usr/local/share/kong.yml
 RUN sed -i "s~http://LOGIWA_READER_URL~$LOGIWA_READER_URL~g" /usr/local/share/kong.yml
+RUN sed -i "s~http://STORDBOT_URL~$STORDBOT_URL~g" /usr/local/share/kong.yml
 
 RUN chmod +r /usr/local/share/kong.yml
 
