@@ -32,6 +32,7 @@ services:
         ORDER_ORCHESTRATION_SERVICE_URL: http://order-orchestration
         LOGIWA_READER_URL: http://logiwa-reader
         STORDBOT_URL: http://stordbot
+        PLANNING_SERVICE_URL: http://planning-service:4000
     ports:
       - "8000:8000/tcp"
       - "8001:8001/tcp"

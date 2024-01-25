@@ -937,5 +937,10 @@ services:
           - /stordbot/v1/conversations$
           - /stordbot/v1/conversations/([^\/]+)$
           - /stordbot/v1/conversations/([^\/]+)/messages$
-
-
+  - name: planning-service
+    url: http://PLANNING_SERVICE_URL
+    routes:
+      - name: inventory-demand-forcasting
+        strip_path: false
+        paths:
+          - /v1/inventory/([^\/]+)/historicals$
