@@ -67,7 +67,7 @@ podLabels:
   tags.datadoghq.com/service: kong
   tags.datadoghq.com/version: <VERSION>
 
+replicaCount: 3
+
 autoscaling:
-  enabled: true
-  minRepicas: 3
-  maxReplicas: 3
+  enabled: false
