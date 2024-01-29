@@ -498,66 +498,29 @@ services:
   - name: facility-activity-service
     url: http://FACILITY_ACTIVITY_SERVICE_URL
     routes:
-      - name: facility_activity_service_v1_show_facility_activity
+      - name: fas-root
         strip_path: false
         paths:
           - /v1/facility_activities/([^\/]+)$
-      - name: facility_activity_service_v1_create_facility_activity
-        strip_path: false
-        paths:
           - /v1/facility_activities$
-      - name: facility_activity_service_v1_show_receipt_confirmation
-        strip_path: false
-        paths:
           - /v1/receipt_confirmations/([^\/]+)$
-      - name: facility_activity_service_v1_show_shipment_confirmation
-        strip_path: false
-        paths:
           - /v1/shipment_confirmations/([^\/]+)$
-      - name: facility_activity_service_v1_show_shipment_confirmations_for_order
-        strip_path: false
-        paths:
-          - /bff/v1/networks/([^\/]+)/order_numbers/([^\/]+)/shipment_confirmations$
-      - name: facility_activity_service_v1_create_receipt_confirmation_cancellation
-        strip_path: false
-        paths:
           - /integrations/v1/receipt_confirmations/cancellations$
           - /integrations/v1/receipt_confirmations/([^\/]+)/cancellations$
-          - /bff/v1/receipt_confirmations/([^\/]+)/cancellations$
-          - /bff/v1/shipment_confirmations/([^\/]+)/cancellations$
-      - name: facility_activity_service_v1_create_shipment_confirmation_cancellation
-        strip_path: false
-        paths:
           - /integrations/v1/shipment_confirmations/cancellations$
           - /integrations/v1/shipment_confirmations/([^\/]+)/cancellations$
-      - name: facility_activity_service_v2_create_shipment_confirmation
-        strip_path: false
-        paths:
           - /integrations/v2/shipment_confirmations$
-      - name: facility_activity_service_v2_create_receipt_confirmation
-        strip_path: false
-        paths:
           - /integrations/v2/receipt_confirmations$
-      - name: facility_activity_service_v2_update_status
-        strip_path: false
-        paths:
           - /integrations/v2/facility_activities/status$
-      - name: facility_activity_service_public_v1_receipt_confirmations
-        strip_path: false
-        paths:
-          - /public/v1/receipt_confirmations$
-      - name: facility_activity_service_public_v1_shipment_confirmations
-        strip_path: false
-        paths:
-          - /public/v1/shipment_confirmations$
-      - name: facility_activity_service_public_v1_facility_activities
-        strip_path: false
-        paths:
-          - /public/v1/networks/([^\/]+)/facility_activities$
-      - name: facility_activity_service_bff_v1_support
-        strip_path: false
-        paths:
+          - /bff/v1/networks/([^\/]+)/order_numbers/([^\/]+)/shipment_confirmations$
+          - /bff/v1/receipt_confirmations/([^\/]+)/cancellations$
+          - /bff/v1/shipment_confirmations/([^\/]+)/cancellations$
           - /bff/v1/support/reopen_outbound$
+          - /bff/v2/networks/([^\/]+)/receipt_confirmations$
+          - /bff/v2/networks/([^\/]+)/shipment_confirmations$
+          - /public/v1/receipt_confirmations$
+          - /public/v1/shipment_confirmations$
+          - /public/v1/networks/([^\/]+)/facility_activities$
   - name: documents-service
     url: http://DOCUMENTS_SERVICE_URL
     routes:
