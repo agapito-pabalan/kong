@@ -405,6 +405,9 @@ services:
           - /orders_service/docs/api
           - /orders_service_v1/docs/api_spec
           - /orders_service_v1/docs/api
+          - /public_portal/v1/consumer_experience/orders/([^\/]+)/shipments$
+          - /public_portal/v1/consumer_experience/orders/([^\/]+)/shipments/([^\/]+)$
+          - /public_portal/v1/consumer_experience/orders/([^\/]+)/authenticate$
       - name: orders_network_documents
         strip_path: false
         paths:
