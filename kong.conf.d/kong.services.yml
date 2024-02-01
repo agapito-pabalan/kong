@@ -457,6 +457,7 @@ services:
           - /bff/v1/networks/([^\/]+)/split_order_configuration
           - /bff/v1/networks/([^\/]+)/hold_order_configuration
           - /bff/v1/networks/([^\/]+)/billing_accounts
+          - /bff/v1/networks/([^\/]+)/consumer_experience/alerts/([^\/]+)/test/([^\/]+)
           - /integrations/v1/orders/([^\/]+)$
           - /bff/v1/update_order_tags
           - /bff/v2/facility_availability
