@@ -833,3 +833,4 @@ services:
         strip_path: false
         paths:
           - /v1/inventory/([^\/]+)/historicals$
+          - /v1/inventory/([^\/]+)/forecasts/([^\/]+)$
