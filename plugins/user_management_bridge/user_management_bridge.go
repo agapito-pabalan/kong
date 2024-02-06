@@ -362,12 +362,12 @@ func (conf *Config) cacheFetchPermissionsToken(rawToken string, auth0Token jwt.T
 
 	if useLd {
 		sub := auth0Token.Subject()
-		builder := ldcontext.NewMultiBuilder().Add(ldcontext.NewWithKind("app", app)).Add(ldcontext.NewWithKind("user_id", sub))
+		builder := ldcontext.NewBuilder("user").SetString("external_user_id", sub).SetString("app", app)
 		if flagOrg != "" {
-			builder.Add(ldcontext.NewWithKind("organization", flagOrg))
+			builder.SetString("organization", flagOrg)
 		}
 		if flagNetworkId != "" {
-			builder.Add(ldcontext.NewWithKind("network", flagNetworkId))
+			builder.SetString("network", flagNetworkId)
 		}
 		context := builder.Build()
 
