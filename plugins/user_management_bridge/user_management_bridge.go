@@ -346,6 +346,9 @@ func (conf *Config) cacheFetchPermissionsToken(rawToken string, auth0Token jwt.T
 
 	org, _ := kong.Request.GetHeader("tenant-id")
 	networkId, _ := kong.Request.GetHeader("x-network-id")
+	// We need the original values here so we can flag against them
+	flagOrg := org
+	flagNetworkId := networkId
 
 	stordAdmin, _ := regexp.Match(".*@stord\\.com$", []byte(auth0UserID))
 
@@ -361,10 +364,10 @@ func (conf *Config) cacheFetchPermissionsToken(rawToken string, auth0Token jwt.T
 		sub := auth0Token.Subject()
 		builder := ldcontext.NewMultiBuilder().Add(ldcontext.NewWithKind("app", app)).Add(ldcontext.NewWithKind("user_id", sub))
 		if org != "" {
-			builder.Add(ldcontext.NewWithKind("organization", org))
+			builder.Add(ldcontext.NewWithKind("organization", flagOrg))
 		}
 		if networkId != "" {
-			builder.Add(ldcontext.NewWithKind("network", networkId))
+			builder.Add(ldcontext.NewWithKind("network", flagNetworkId))
 		}
 		context := builder.Build()
 
