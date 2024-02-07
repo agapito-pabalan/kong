@@ -1,0 +1,39 @@
+{
+  "$comment": "This file is copied from stordco/common-config-elixir.",
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "changelog-sections": [
+    {
+      "hidden": false,
+      "section": "Features",
+      "type": "feat"
+    },
+    {
+      "hidden": false,
+      "section": "Bug Fixes",
+      "type": "fix"
+    },
+    {
+      "hidden": false,
+      "section": "Miscellaneous",
+      "type": "chore"
+    }
+  ],
+  "draft": false,
+  "draft-pull-request": false,
+  "packages": {
+    ".": {
+      "extra-files": [
+        "README.md"
+      ],
+      "release-type": "simple"
+    }
+  },
+  "plugins": [
+    {
+      "type": "sentence-case"
+    }
+  ],
+  "prerelease": false,
+  "pull-request-header": "An automated release has been created for you.",
+  "separate-pull-requests": true
+}
