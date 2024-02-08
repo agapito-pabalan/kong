@@ -495,6 +495,10 @@ services:
           - /bff/v2/support/zero_inventory_balance_by_id
           - /bff/v2/support/delete_zero_inventory_balance_by_sku
           - /bff/v2/support/delete_zero_inventory_balance_by_id
+      - name: inventory-public-api-routes
+        strip_path: false
+        paths:
+          - /public/v1/networks/([^\/]+)/inventory/advice
       - name: inventory-api-spec
         strip_path: false
         paths:
