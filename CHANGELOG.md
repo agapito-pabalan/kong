@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.63.2](https://github.com/stordco/kong/compare/v1.63.1...v1.63.2) (2024-02-09)
+
+
+### Bug Fixes
+
+* Handle boomi integrations ([#387](https://github.com/stordco/kong/issues/387)) ([678b511](https://github.com/stordco/kong/commit/678b51123491d7b8345fa5382dc7aadde9aedbc6))
+
+
+### Miscellaneous
+
+* Add inventory advice endpoint for public API ([#385](https://github.com/stordco/kong/issues/385)) ([d013d3f](https://github.com/stordco/kong/commit/d013d3f3b7d7211a45496c7e01e7d69439d4f04e))
+
 ## [1.63.1](https://github.com/stordco/kong/compare/v1.63.0...v1.63.1) (2024-02-07)
 
 
