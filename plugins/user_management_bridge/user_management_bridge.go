@@ -351,8 +351,9 @@ func (conf *Config) cacheFetchPermissionsToken(rawToken string, auth0Token jwt.T
 	flagNetworkId := networkId
 
 	stordAdmin, _ := regexp.Match(".*@stord\\.com$", []byte(auth0UserID))
+	integrations, _ := regexp.Match(".*@clients$", []byte(auth0UserID))
 
-	if (org == "" && networkId == "") || stordAdmin {
+	if (org == "" && networkId == "") || (stordAdmin || integrations) {
 		app = "oms_admin"
 		org = "stord"
 		networkId = ""
