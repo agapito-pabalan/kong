@@ -18,7 +18,6 @@ services:
         ORDERS_SERVICE_URL: http://orders-service
         FACILITY_ACTIVITY_SERVICE_URL: http://facility-activity-service
         DOCUMENTS_SERVICE_URL: http://documents-service
-        ITEM_SERVICE_URL: http://item-service
         INVENTORY_SERVICE_URL: http://inventory
         TRADE_PARTNERSHIPS_SERVICE_URL: http://trade-partnerships
         PRODUCT_CATALOG_SERVICE_URL: http://product-catalog
@@ -26,7 +25,6 @@ services:
         MARKETPLACE_SERVICE_URL: http://marketplace-service
         TENANT_SERVICE_URL: http://tenant-service
         SEARCH_SERVICE_URL: http://search-service
-        FIN_OPS_SERVICE_URL: http://fin-ops-service
         WMS_INTEGRATION_BRIDGE_URL: http://wms-integration-bridge
         TRANSPORTATION_SERVICE_URL: http://transportation-service
         ORDER_ORCHESTRATION_SERVICE_URL: http://order-orchestration

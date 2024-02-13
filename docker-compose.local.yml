@@ -18,7 +18,6 @@ services:
         ORDERS_SERVICE_URL: http://orders-service:4000
         FACILITY_ACTIVITY_SERVICE_URL: http://facility-activity-service:4000
         DOCUMENTS_SERVICE_URL: http://documents-service:4000
-        ITEM_SERVICE_URL: http://item-service:4000
         INVENTORY_SERVICE_URL: http://inventory:4000
         TRADE_PARTNERSHIPS_SERVICE_URL: http://trade-partnerships-service:4000
         PRODUCT_CATALOG_SERVICE_URL: http://product-catalog-service:4000
@@ -26,7 +25,6 @@ services:
         MARKETPLACE_SERVICE_URL: http://marketplace-service:4000
         TENANT_SERVICE_URL: http://tenant-service:4000
         SEARCH_SERVICE_URL: http://search-service:4000
-        FIN_OPS_SERVICE_URL: http://fin-ops-service
         WMS_INTEGRATION_BRIDGE_URL: http://wms-integration-bridge
         TRANSPORTATION_SERVICE_URL: http://transportation-service
         ORDER_ORCHESTRATION_SERVICE_URL: http://order-orchestration
