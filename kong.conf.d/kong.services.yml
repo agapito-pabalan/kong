@@ -458,6 +458,10 @@ services:
         strip_path: false
         paths:
           - /v2/documents$
+      - name: documents_service_v2_public_images
+        strip_path: false
+        paths:
+          - /v2/public_images$
   - name: inventory
     url: http://INVENTORY_SERVICE_URL
     routes:
