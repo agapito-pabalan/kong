@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.64.0](https://github.com/stordco/kong/compare/v1.63.2...v1.64.0) (2024-02-23)
+
+
+### Features
+
+* Remove OMS-644 create_shipment_confirmation ([#354](https://github.com/stordco/kong/issues/354)) ([b59c5a6](https://github.com/stordco/kong/commit/b59c5a6bca835822f67b5ef632e7e16bbe7afaa4))
+
+
+### Bug Fixes
+
+* Remove reference to old services ([#390](https://github.com/stordco/kong/issues/390)) ([87fa8a6](https://github.com/stordco/kong/commit/87fa8a67e90c5cdccbeadb5ba8bdb90752477f0e))
+* Remove shopify_extensions/ prefix from kong punchthrough ([#392](https://github.com/stordco/kong/issues/392)) ([2ad5a46](https://github.com/stordco/kong/commit/2ad5a468eb386bf6f7e755f10de5cce42b26361c))
+* Send referer to launchdarkly ([#394](https://github.com/stordco/kong/issues/394)) ([0729a2e](https://github.com/stordco/kong/commit/0729a2e011f6fb2b1feef9715b84dad28d0e0d18))
+* Use the sub as the key for launch darkly ([#393](https://github.com/stordco/kong/issues/393)) ([cb0bd67](https://github.com/stordco/kong/commit/cb0bd67ee84053004ffcda77326d071da2de79b3))
+
+
+### Miscellaneous
+
+* Add /shopify_extensions/v1/estimated_delivery_date endpoint ([#388](https://github.com/stordco/kong/issues/388)) ([144c0c8](https://github.com/stordco/kong/commit/144c0c8a54fb76bf2c377b733b32fb272945bbb2))
+
 ## [1.63.2](https://github.com/stordco/kong/compare/v1.63.1...v1.63.2) (2024-02-09)
 
 
