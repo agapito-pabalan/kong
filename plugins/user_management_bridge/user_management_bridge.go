@@ -362,8 +362,10 @@ func (conf *Config) cacheFetchPermissionsToken(rawToken string, auth0Token jwt.T
 	}
 
 	if useLd {
+		referer, _ := kong.Request.GetHeader("referer")
+
 		sub := auth0Token.Subject()
-		builder := ldcontext.NewBuilder(sub).SetString("external_user_id", sub).SetString("app", app)
+		builder := ldcontext.NewBuilder(sub).SetString("external_user_id", sub).SetString("app", app).SetString("referer", referer)
 		if flagOrg != "" {
 			builder.SetString("organization", flagOrg)
 		}
