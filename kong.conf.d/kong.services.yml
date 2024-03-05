@@ -729,6 +729,10 @@ services:
         strip_path: false
         paths:
           - /v1/search/orders$
+      - name: search_service_v1_inventory_dashboard
+        strip_path: false
+        paths:
+          - /v1/search/orders/inventory_dashboard_stats$
       - name: search_service_v1_orders_suggest
         strip_path: false
         paths:
@@ -848,4 +852,6 @@ services:
         strip_path: false
         paths:
           - /v1/inventory/([^\/]+)/historicals$
-          - /v1/inventory/([^\/]+)/forecasts/([^\/]+)$
+          - /v1/inventory/([^\/]+)/forecasts$
+          - /v1/inventory/{network_id}/forecasts/adjustments$
+          - /v1/inventory/{network_id}/forecasts/adjustments/([^\/]+)$
