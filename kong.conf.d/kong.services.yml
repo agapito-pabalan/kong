@@ -737,6 +737,10 @@ services:
         strip_path: false
         paths:
           - /v1/search/orders/export
+      - name: search_service_v1_orders_inventory_dashboard_stats
+        strip_path: false
+        paths:
+          - /v1/search/orders/inventory_dashboard_stats
       - name: search_service_v1_orders_dashboard
         strip_path: false
         paths:
