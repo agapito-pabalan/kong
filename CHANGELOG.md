@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.64.1](https://github.com/stordco/kong/compare/v1.64.0...v1.64.1) (2024-03-05)
+
+
+### Bug Fixes
+
+* Allow latest forecast ([#398](https://github.com/stordco/kong/issues/398)) ([437f9a5](https://github.com/stordco/kong/commit/437f9a54638257a3b0296c9cfdb1cc4df952e606))
+
+
+### Miscellaneous
+
+* [IP-154] Add inventory dashboard stats endpoint ([#395](https://github.com/stordco/kong/issues/395)) ([f81a5ae](https://github.com/stordco/kong/commit/f81a5aeb829533b6471cc86904e8ea982edb5dfa))
+* Add forecast adjustments route(s) ([#397](https://github.com/stordco/kong/issues/397)) ([b100336](https://github.com/stordco/kong/commit/b100336d25557b9afcc9d6f0b7b1276506627c08))
+
 ## [1.64.0](https://github.com/stordco/kong/compare/v1.63.2...v1.64.0) (2024-02-23)
 
 
