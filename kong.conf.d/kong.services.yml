@@ -450,6 +450,8 @@ services:
           - /public/v1/receipt_confirmations$
           - /public/v1/shipment_confirmations$
           - /public/v1/networks/([^\/]+)/facility_activities$
+          - /public/v1/networks/([^\/]+)/facility_activities/inbounds$
+          - /public/v1/networks/([^\/]+)/facility_activities/outbounds$
   - name: documents-service
     url: http://DOCUMENTS_SERVICE_URL
     routes:
