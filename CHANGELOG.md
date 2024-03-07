@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.65.0](https://github.com/stordco/kong/compare/v1.64.1...v1.65.0) (2024-03-07)
+
+
+### Features
+
+* [OMS-2499] add integrations availability endpoint ([#402](https://github.com/stordco/kong/issues/402)) ([f619655](https://github.com/stordco/kong/commit/f6196554adb077f6ae9d25e02ec03ba90252f0e6))
+* Add inbounds/outbounds routes ([#399](https://github.com/stordco/kong/issues/399)) ([0411b25](https://github.com/stordco/kong/commit/0411b2515db92723d660ddeace83da0ee94957fe))
+
 ## [1.64.1](https://github.com/stordco/kong/compare/v1.64.0...v1.64.1) (2024-03-05)
 
 
