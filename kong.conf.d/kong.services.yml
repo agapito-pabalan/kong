@@ -479,6 +479,7 @@ services:
         paths:
           - /integrations/v2/inventory_advice
           - /integrations/v2/wms_adjustment
+          - /integrations/v2/networks/([^\/]+)/inventory/availability
       - name: inventory-bff-v1
         strip_path: false
         paths:
