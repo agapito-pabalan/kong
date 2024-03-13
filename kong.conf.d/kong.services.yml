@@ -404,9 +404,6 @@ services:
           - /orders_service/docs/api
           - /orders_service_v1/docs/api_spec
           - /orders_service_v1/docs/api
-          - /public_portal/v1/consumer_experience/orders/([^\/]+)/shipments$
-          - /public_portal/v1/consumer_experience/orders/([^\/]+)/shipments/([^\/]+)$
-          - /public_portal/v1/consumer_experience/orders/([^\/]+)/authenticate$
       - name: orders_network_documents
         strip_path: false
         paths:
@@ -424,6 +421,18 @@ services:
         strip_path: false
         paths:
           - /shopify_extensions/v1/estimated_delivery_date$
+      - name: consumer_experience_v1
+        strip_path: false
+        paths:
+          - /public_portal/v1/consumer_experience/orders/([^\/]+)/shipments$
+          - /public_portal/v1/consumer_experience/orders/([^\/]+)/shipments/([^\/]+)$
+          - /public_portal/v1/consumer_experience/orders/([^\/]+)/authenticate$
+          - /v1/consumer_experience/([^\/]+)/delivery_options$
+          - /v1/consumer_experience/([^\/]+)/configurations$
+          - /v1/consumer_experience/([^\/]+)/brandings$
+          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/alert_types$
+          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/alert_types/([^\/]+)/alert_channels$
+          - /v1/consumer_experience/([^\/]+)/tracking_portals$
   - name: facility-activity-service
     url: http://FACILITY_ACTIVITY_SERVICE_URL
     routes:
