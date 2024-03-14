@@ -429,11 +429,17 @@ services:
           - /public_portal/v1/consumer_experience/orders/([^\/]+)/shipments/([^\/]+)$
           - /public_portal/v1/consumer_experience/orders/([^\/]+)/authenticate$
           - /v1/consumer_experience/([^\/]+)/delivery_options$
+          - /v1/consumer_experience/([^\/]+)/delivery_options/([^\/]+)$
           - /v1/consumer_experience/([^\/]+)/configurations$
+          - /v1/consumer_experience/([^\/]+)/configurations/([^\/]+)$
           - /v1/consumer_experience/([^\/]+)/brandings$
+          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)$
           - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/alert_types$
+          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/alert_types/([^\/]+)$
           - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/alert_types/([^\/]+)/alert_channels$
+          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/alert_types/([^\/]+)/alert_channels/([^\/]+)$
           - /v1/consumer_experience/([^\/]+)/tracking_portals$
+          - /v1/consumer_experience/([^\/]+)/tracking_portals/([^\/]+)$
   - name: facility-activity-service
     url: http://FACILITY_ACTIVITY_SERVICE_URL
     routes:
