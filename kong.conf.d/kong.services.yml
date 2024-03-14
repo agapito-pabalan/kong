@@ -867,3 +867,4 @@ services:
           - /v1/inventory/([^\/]+)/historicals$
           - /v1/inventory/([^\/]+)/forecasts/([^\/]+)$
           - /v1/inventory/([^\/]+)/forecasts/adjustments/([^\/]+)$
+          - /v1/inventory/([^\/]+)/velocity$
