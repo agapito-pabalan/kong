@@ -82,12 +82,6 @@ jobs:
         run: |
           check=$(
             docker-compose -f docker-compose.${{ matrix.combos.file }}.yml run \
-              -e KONG_DATABASE=off \
-              -e KONG_DECLARATIVE_CONFIG=/usr/local/share/kong.yml \
-              -e KONG_PLUGINS=user_management_bridge,cors,request-size-limiting,prometheus,correlation-id \
-              -e KONG_PLUGINSERVER_NAMES=user_management_bridge \
-              -e KONG_PLUGINSERVER_USER_MANAGEMENT_BRIDGE_START_CMD=/usr/local/bin/user_management_bridge \
-              -e KONG_PLUGINSERVER_USER_MANAGEMENT_BRIDGE_QUERY_CMD='/usr/local/bin/user_management_bridge -dump' \
               --rm kong \
               kong config parse /usr/local/share/kong.yml
           )
@@ -118,30 +112,3 @@ jobs:
           - file: dev
             project: stord-nonprod
             image: kong
-
-  Lint:
-    container:
-      image: kong:2.2.1-alpine
-      options: --user root
-
-    defaults:
-      run:
-        shell: bash
-
-    env:
-      KONG_DATABASE: "off"
-
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Install (Git)
-        run: |
-          apk update && apk add --no-cache bash git
-
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Check
-        run: |
-          check=$(kong config parse kong.conf.d/kong.services.yml)
-          if [ "$check" != "parse successful" ]; then exit 1; fi

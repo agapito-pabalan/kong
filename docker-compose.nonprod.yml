@@ -5,7 +5,6 @@ services:
     build:
       context: .
       args:
-        KONG_TEMPLATE: kong.template.yml
         AUTH0_JWKS_URL: https://stord-staging.auth0.com/.well-known/jwks.json
         REDIS_CACHE_URL: $NONPROD_REDIS_CACHE_URL
         CLOUD_SIGNATURE_KEY: $NONPROD_CLOUD_SIGNATURE_KEY

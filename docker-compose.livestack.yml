@@ -1,0 +1,37 @@
+services:
+  kong:
+    build:
+      context: .
+      args:
+        - AUTH0_JWKS_URL
+        - REDIS_CACHE_URL
+        - CLOUD_SIGNATURE_KEY
+        - CLOUD_SERVICE_URL
+        - LD_SDK_KEY
+        - OTEL_COLLECTOR_ENDPOINT
+        - SAIPH_URL
+        - RIGEL_URL
+        - USER_MANAGEMENT_URL
+        - MINTAKA_URL
+        - MEISSA_URL
+        - ORDERS_SERVICE_URL
+        - FACILITY_ACTIVITY_SERVICE_URL
+        - DOCUMENTS_SERVICE_URL
+        - INVENTORY_SERVICE_URL
+        - TRADE_PARTNERSHIPS_SERVICE_URL
+        - PRODUCT_CATALOG_SERVICE_URL
+        - HEALTHCHECK_AGGREGATOR_SERVICE_URL
+        - MARKETPLACE_SERVICE_URL
+        - TENANT_SERVICE_URL
+        - SEARCH_SERVICE_URL
+        - WMS_INTEGRATION_BRIDGE_URL
+        - TRANSPORTATION_SERVICE_URL
+        - ORDER_ORCHESTRATION_SERVICE_URL
+        - LOGIWA_READER_URL
+        - STORDBOT_URL
+        - PLANNING_SERVICE_URL
+    environment:
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+      KONG_PROXY_LISTEN: 0.0.0.0:8000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

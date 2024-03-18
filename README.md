@@ -2,7 +2,7 @@
 
 This repo contains a custom plugin for Kong built with Go and outputs a build of Kong with that plugin embedded. A multistage Docker build process exists to first assemble the user management plugin, it then builds a Kong image bundled with that plugin.
 
-### **Note: An Orion route is publicly accessible (i.e. visible to anyone on the internet) only when it is present in kong.services.yml**
+### **Note: An Orion route is publicly accessible (i.e. visible to anyone on the internet) only when it is present in kong.yml**
 
 *To avoid exposing unprotected routes with the same base path as PAM protected routes, we have introduced the internal scope for private routes of a service - base path will be prefixed as /internal/v1 instead of the standard v1. See this PR as an example: https://github.com/stordco/product_catalog_service/pull/62*
 
@@ -33,7 +33,7 @@ Does our API Gateway do anything else?
     Contents: List the routes to expose, HTTP methods, and appropriate permissions per route-method combination, eg POST /v1/items → Permission: itemmanager.item.create
     ```
 
-4. Create a PR in http://github.com/stordco/kong  that adds the routes to /kong.conf.d/kong.services.yml.
+4. Create a PR in http://github.com/stordco/kong  that adds the routes to /kong.conf.d/kong.yml.
 
 5. Reference ticket from step 1 in the PR.
 

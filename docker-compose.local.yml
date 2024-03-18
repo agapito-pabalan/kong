@@ -5,7 +5,6 @@ services:
     build:
       context: .
       args:
-        KONG_TEMPLATE: kong.local.template.yml
         CLOUD_SIGNATURE_KEY: signature
         LD_SDK_KEY: replaceme
         KONG_LOG_LEVEL: debug
@@ -31,6 +30,11 @@ services:
         LOGIWA_READER_URL: http://logiwa-reader
         STORDBOT_URL: http://stordbot
         PLANNING_SERVICE_URL: http://planning-service:4000
+    environment:
+      KONG_ADMIN_LISTEN: 0.0.0.0:8001
+      KONG_PROXY_LISTEN: 0.0.0.0:8000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "8000:8000/tcp"
       - "8001:8001/tcp"

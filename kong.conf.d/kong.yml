@@ -1,4 +1,38 @@
 _format_version: "1.1"
+
+plugins:
+  - name: cors
+    config:
+      origins:
+        - '^https:\/\/.*\.stord\.com$'
+        - '^https:\/\/.*\.stord-.*\.pages\.dev$'
+  - name: user_management_bridge
+    config:
+      cloud_endpoint: http://CLOUD_SERVICE_URL/v1/auth/token
+      user_management_endpoint: http://USER_MANAGEMENT_URL/v1/jwt/permissions
+      cloud_signature_key: CLOUD_SIGNATURE_KEY
+      ld_sdk_key: LD_SDK_KEY
+      auth0_url: AUTH0_JWKS_URL
+      cache_url: REDIS_CACHE_URL
+      jwks_refresh_interval: 15
+  - name: request-size-limiting
+    config:
+      allowed_payload_size: 128
+      size_unit: megabytes
+  - name: correlation-id
+    config:
+      header_name: x-request-id
+      generator: uuid
+      echo_downstream: true
+  - name: traceheaders
+  - name: zipkin
+    config:
+      local_service_name: kong
+      http_endpoint: OTEL_COLLECTOR_ENDPOINT
+      sample_ratio: 1
+      include_credential: false
+      traceid_byte_count: 16
+      header_type: w3c
 services:
   - name: saiph
     url: http://SAIPH_URL

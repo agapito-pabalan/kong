@@ -3,16 +3,6 @@ services:
   kong:
     build:
       context: .
-    environment:
-      KONG_DATABASE: "off"
-      KONG_DECLARATIVE_CONFIG: /usr/local/share/kong.yml
-      KONG_ADMIN_LISTEN: 0.0.0.0:8001
-      KONG_PROXY_LISTEN: 0.0.0.0:8000
-      KONG_PLUGINS: user_management_bridge,cors,request-size-limiting,correlation-id
-      KONG_PLUGINSERVER_NAMES: user_management_bridge
-      KONG_PLUGINSERVER_USER_MANAGEMENT_BRIDGE_START_CMD: /usr/local/bin/user_management_bridge
-      KONG_PLUGINSERVER_USER_MANAGEMENT_BRIDGE_QUERY_CMD: /usr/local/bin/user_management_bridge -dump
-      AUTH0_JWKS_URL: https://stord-staging.auth0.com/.well-known/jwks.json
     ports:
       - "8000:8000/tcp"
       - "8444:8444/tcp"
@@ -21,5 +11,6 @@ services:
     restart: always
     environment:
       NODE_ENV: production
+    init: true
     ports:
       - "1337:1337"

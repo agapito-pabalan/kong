@@ -32,7 +32,6 @@ ARG CLOUD_SIGNATURE_KEY
 ARG CLOUD_SERVICE_URL
 ARG LD_SDK_KEY
 ARG OTEL_COLLECTOR_ENDPOINT
-ARG KONG_TEMPLATE
 
 ARG SAIPH_URL
 ARG RIGEL_URL
@@ -61,47 +60,43 @@ USER root
 COPY --from=go-builder /go-plugins/user_management_bridge /usr/local/bin/user_management_bridge
 
 COPY --from=lua-builder /lua-plugins/kong-plugin-traceheaders-1.0.0-0.all.rock /tmp
-RUN luarocks install /tmp/kong-plugin-traceheaders-1.0.0-0.all.rock
-RUN rm /tmp/kong-plugin-traceheaders-1.0.0-0.all.rock
+RUN luarocks install /tmp/kong-plugin-traceheaders-1.0.0-0.all.rock && rm /tmp/kong-plugin-traceheaders-1.0.0-0.all.rock
 
-COPY kong.conf.d/$KONG_TEMPLATE /usr/local/share/
-COPY kong.conf.d/kong.services.yml /usr/local/share/
-RUN mv /usr/local/share/$KONG_TEMPLATE /usr/local/share/kong.yml
-RUN cat /usr/local/share/kong.services.yml >> /usr/local/share/kong.yml
+COPY kong.conf.d/kong.yml /usr/local/share/
 
-RUN sed -i "s~AUTH0_JWKS_URL~$AUTH0_JWKS_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~REDIS_CACHE_URL~$REDIS_CACHE_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~CLOUD_SIGNATURE_KEY~$CLOUD_SIGNATURE_KEY~g" /usr/local/share/kong.yml
-RUN sed -i "s~LD_SDK_KEY~$LD_SDK_KEY~g" /usr/local/share/kong.yml
-RUN sed -i "s~OTEL_COLLECTOR_ENDPOINT~$OTEL_COLLECTOR_ENDPOINT~g" /usr/local/share/kong.yml
+RUN sed -i "s~AUTH0_JWKS_URL~$AUTH0_JWKS_URL~g" /usr/local/share/kong.yml && \
+    sed -i "s~REDIS_CACHE_URL~$REDIS_CACHE_URL~g" /usr/local/share/kong.yml && \
+    sed -i "s~CLOUD_SIGNATURE_KEY~$CLOUD_SIGNATURE_KEY~g" /usr/local/share/kong.yml && \
+    sed -i "s~LD_SDK_KEY~$LD_SDK_KEY~g" /usr/local/share/kong.yml && \
+    sed -i "s~OTEL_COLLECTOR_ENDPOINT~$OTEL_COLLECTOR_ENDPOINT~g" /usr/local/share/kong.yml && \
+    sed -i "s~http://CLOUD_SERVICE_URL~$CLOUD_SERVICE_URL~g" /usr/local/share/kong.yml && \
+    sed -i "s~http://SAIPH_URL~$SAIPH_URL~g" /usr/local/share/kong.yml && \
+    sed -i "s~http://RIGEL_URL~$RIGEL_URL~g" /usr/local/share/kong.yml && \
+    sed -i "s~http://USER_MANAGEMENT_URL~$USER_MANAGEMENT_URL~g" /usr/local/share/kong.yml && \
+    sed -i "s~http://MINTAKA_URL~$MINTAKA_URL~g" /usr/local/share/kong.yml && \
+    sed -i "s~http://MEISSA_URL~$MEISSA_URL~g" /usr/local/share/kong.yml && \
+    sed -i "s~http://ORDERS_SERVICE_URL~$ORDERS_SERVICE_URL~g" /usr/local/share/kong.yml && \
+    sed -i "s~http://FACILITY_ACTIVITY_SERVICE_URL~$FACILITY_ACTIVITY_SERVICE_URL~g" /usr/local/share/kong.yml && \
+    sed -i "s~http://DOCUMENTS_SERVICE_URL~$DOCUMENTS_SERVICE_URL~g" /usr/local/share/kong.yml && \
+    sed -i "s~http://INVENTORY_SERVICE_URL~$INVENTORY_SERVICE_URL~g" /usr/local/share/kong.yml && \
+    sed -i "s~http://TRADE_PARTNERSHIPS_SERVICE_URL~$TRADE_PARTNERSHIPS_SERVICE_URL~g" /usr/local/share/kong.yml && \
+    sed -i "s~http://PRODUCT_CATALOG_SERVICE_URL~$PRODUCT_CATALOG_SERVICE_URL~g" /usr/local/share/kong.yml && \
+    sed -i "s~http://HEALTHCHECK_AGGREGATOR_SERVICE_URL~$HEALTHCHECK_AGGREGATOR_SERVICE_URL~g" /usr/local/share/kong.yml && \
+    sed -i "s~http://MARKETPLACE_SERVICE_URL~$MARKETPLACE_SERVICE_URL~g" /usr/local/share/kong.yml && \
+    sed -i "s~http://TENANT_SERVICE_URL~$TENANT_SERVICE_URL~g" /usr/local/share/kong.yml && \
+    sed -i "s~http://SEARCH_SERVICE_URL~$SEARCH_SERVICE_URL~g" /usr/local/share/kong.yml && \
+    sed -i "s~http://WMS_INTEGRATION_BRIDGE_URL~$WMS_INTEGRATION_BRIDGE_URL~g" /usr/local/share/kong.yml && \
+    sed -i "s~http://TRANSPORTATION_SERVICE_URL~$TRANSPORTATION_SERVICE_URL~g" /usr/local/share/kong.yml && \
+    sed -i "s~http://ORDER_ORCHESTRATION_SERVICE_URL~$ORDER_ORCHESTRATION_SERVICE_URL~g" /usr/local/share/kong.yml && \
+    sed -i "s~http://LOGIWA_READER_URL~$LOGIWA_READER_URL~g" /usr/local/share/kong.yml && \
+    sed -i "s~http://STORDBOT_URL~$STORDBOT_URL~g" /usr/local/share/kong.yml && \
+    sed -i "s~http://PLANNING_SERVICE_URL~$PLANNING_SERVICE_URL~g" /usr/local/share/kong.yml
 
-RUN sed -i "s~http://CLOUD_SERVICE_URL~$CLOUD_SERVICE_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~http://SAIPH_URL~$SAIPH_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~http://RIGEL_URL~$RIGEL_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~http://USER_MANAGEMENT_URL~$USER_MANAGEMENT_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~http://MINTAKA_URL~$MINTAKA_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~http://MEISSA_URL~$MEISSA_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~http://ORDERS_SERVICE_URL~$ORDERS_SERVICE_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~http://FACILITY_ACTIVITY_SERVICE_URL~$FACILITY_ACTIVITY_SERVICE_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~http://DOCUMENTS_SERVICE_URL~$DOCUMENTS_SERVICE_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~http://INVENTORY_SERVICE_URL~$INVENTORY_SERVICE_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~http://TRADE_PARTNERSHIPS_SERVICE_URL~$TRADE_PARTNERSHIPS_SERVICE_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~http://PRODUCT_CATALOG_SERVICE_URL~$PRODUCT_CATALOG_SERVICE_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~http://HEALTHCHECK_AGGREGATOR_SERVICE_URL~$HEALTHCHECK_AGGREGATOR_SERVICE_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~http://MARKETPLACE_SERVICE_URL~$MARKETPLACE_SERVICE_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~http://TENANT_SERVICE_URL~$TENANT_SERVICE_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~http://SEARCH_SERVICE_URL~$SEARCH_SERVICE_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~http://WMS_INTEGRATION_BRIDGE_URL~$WMS_INTEGRATION_BRIDGE_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~http://TRANSPORTATION_SERVICE_URL~$TRANSPORTATION_SERVICE_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~http://ORDER_ORCHESTRATION_SERVICE_URL~$ORDER_ORCHESTRATION_SERVICE_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~http://LOGIWA_READER_URL~$LOGIWA_READER_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~http://STORDBOT_URL~$STORDBOT_URL~g" /usr/local/share/kong.yml
-RUN sed -i "s~http://PLANNING_SERVICE_URL~$PLANNING_SERVICE_URL~g" /usr/local/share/kong.yml
-
-RUN chmod +r /usr/local/share/kong.yml
-
-RUN apk add --update nodejs npm
-RUN npm install --global yaml-validator
-RUN yaml-validator /usr/local/share/kong.yml
+ENV KONG_DATABASE=off
+ENV KONG_DECLARATIVE_CONFIG=/usr/local/share/kong.yml
+ENV KONG_PLUGINS=user_management_bridge,cors,request-size-limiting,correlation-id,traceheaders,zipkin
+ENV KONG_PLUGINSERVER_NAMES=user_management_bridge
+ENV KONG_PLUGINSERVER_USER_MANAGEMENT_BRIDGE_START_CMD=/usr/local/bin/user_management_bridge
+ENV KONG_PLUGINSERVER_USER_MANAGEMENT_BRIDGE_QUERY_CMD="/usr/local/bin/user_management_bridge -dump"
 
 USER kong
