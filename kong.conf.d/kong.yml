@@ -905,6 +905,8 @@ services:
         strip_path: false
         paths:
           - /v1/inventory/([^\/]+)/historicals$
-          - /v1/inventory/([^\/]+)/forecasts/([^\/]+)$
+          - /v1/inventory/([^\/]+)/historicals/export$
+          - /v1/inventory/([^\/]+)/forecasts/latest$
+          - /v1/inventory/([^\/]+)/forecasts/export$
           - /v1/inventory/([^\/]+)/forecasts/adjustments/([^\/]+)$
           - /v1/inventory/([^\/]+)/velocity$
