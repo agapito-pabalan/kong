@@ -1,5 +1,27 @@
 # Changelog
 
+## [1.66.0](https://github.com/stordco/kong/compare/v1.65.0...v1.66.0) (2024-03-20)
+
+
+### Features
+
+* [OMS-2224] add fulfillment consolidation configuration endpoint ([#414](https://github.com/stordco/kong/issues/414)) ([6f7acc6](https://github.com/stordco/kong/commit/6f7acc60f43503805cc65f0a3d8366c24277e77a))
+* IP-182 add specific export routes ([#413](https://github.com/stordco/kong/issues/413)) ([c7e49b2](https://github.com/stordco/kong/commit/c7e49b2c215272b5b76ee6624f79221bc110e780))
+* Support running in livestack ([#391](https://github.com/stordco/kong/issues/391)) ([10777e5](https://github.com/stordco/kong/commit/10777e5d03cc5607b426ceebe10fb1a03fa3d5fc))
+
+
+### Bug Fixes
+
+* [CX-278] pluralize branding routes for CX ([#412](https://github.com/stordco/kong/issues/412)) ([b9daf1e](https://github.com/stordco/kong/commit/b9daf1eda95b0c80f42655e4bd7df3c822d03bab))
+* [IP-179] add backordered_items route for orders service ([#403](https://github.com/stordco/kong/issues/403)) ([f97f929](https://github.com/stordco/kong/commit/f97f9296b0e4a56f7a13033719da875f4e54bf55))
+* CX-278 | Add CX routes to handle IDs ([#411](https://github.com/stordco/kong/issues/411)) ([c2cbdca](https://github.com/stordco/kong/commit/c2cbdca7563c762d729577085f37ce5b046e84ab))
+
+
+### Miscellaneous
+
+* [IP-157] Add new Planning Service endpoint ([#406](https://github.com/stordco/kong/issues/406)) ([0563ade](https://github.com/stordco/kong/commit/0563ade9126477c4b26e29435523f50802cdb22e))
+* Add kong routes for CX CRUD endpoints ([#407](https://github.com/stordco/kong/issues/407)) ([1e44410](https://github.com/stordco/kong/commit/1e44410ea105c8bb4d27ebe9266fb2cbb6aa22a9))
+
 ## [1.65.0](https://github.com/stordco/kong/compare/v1.64.1...v1.65.0) (2024-03-07)
 
 
