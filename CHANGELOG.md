@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.66.1](https://github.com/stordco/kong/compare/v1.66.0...v1.66.1) (2024-03-20)
+
+
+### Bug Fixes
+
+* Add EDD webhook endpoint ([#415](https://github.com/stordco/kong/issues/415)) ([713f67f](https://github.com/stordco/kong/commit/713f67f55a5f4c3910f26a614fed54a3cac50bd0))
+
 ## [1.66.0](https://github.com/stordco/kong/compare/v1.65.0...v1.66.0) (2024-03-20)
 
 
