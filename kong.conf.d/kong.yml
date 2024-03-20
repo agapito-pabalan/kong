@@ -411,6 +411,7 @@ services:
           - /bff/v1/networks/([^\/]+)/order_routing_configuration
           - /bff/v1/networks/([^\/]+)/split_order_configuration
           - /bff/v1/networks/([^\/]+)/hold_order_configuration
+          - /bff/v1/networks/([^\/]+)/configurations/consolidate_fulfillments
           - /bff/v1/networks/([^\/]+)/billing_accounts
           - /bff/v1/networks/([^\/]+)/consumer_experience/alerts/([^\/]+)/test/([^\/]+)
           - /integrations/v1/orders/([^\/]+)$
