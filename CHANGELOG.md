@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.66.2](https://github.com/stordco/kong/compare/v1.66.1...v1.66.2) (2024-03-21)
+
+
+### Bug Fixes
+
+* Add base adjustment route to fix PUT route ([#417](https://github.com/stordco/kong/issues/417)) ([96c7c33](https://github.com/stordco/kong/commit/96c7c334c5a70ff8c54de2decd6ef808ba52d321))
+
 ## [1.66.1](https://github.com/stordco/kong/compare/v1.66.0...v1.66.1) (2024-03-20)
 
 
