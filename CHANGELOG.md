@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.67.0](https://github.com/stordco/kong/compare/v1.66.2...v1.67.0) (2024-03-27)
+
+
+### Features
+
+* IP-217 add velocity export route ([#419](https://github.com/stordco/kong/issues/419)) ([6fbb8e7](https://github.com/stordco/kong/commit/6fbb8e760f451969e8348c98c33740387daee65e))
+
 ## [1.66.2](https://github.com/stordco/kong/compare/v1.66.1...v1.66.2) (2024-03-21)
 
 
