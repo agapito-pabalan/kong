@@ -912,5 +912,6 @@ services:
           - /v1/inventory/([^\/]+)/forecasts/export$
           - /v1/inventory/([^\/]+)/forecasts/adjustments$
           - /v1/inventory/([^\/]+)/forecasts/adjustments/([^\/]+)$
+          - /v1/inventory/([^\/]+)/forecasts/configuration$
           - /v1/inventory/([^\/]+)/velocity$
           - /v1/inventory/([^\/]+)/velocity/export$
