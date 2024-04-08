@@ -84,17 +84,7 @@ func (mock *MockFeatureFlags) BoolVariation(flagKey string, context ldcontext.Co
 	return defaultValue, nil
 }
 
-func mockFeatureFlags(ldValues map[string]bool) FeatureFlagClient {
-	return &MockFeatureFlags{
-		values: ldValues,
-	}
-}
-
-func defaultLdValues() map[string]bool {
-	return map[string]bool{}
-}
-
-func getTestConfig(ldValues map[string]bool, keySet jwk.Set, handlerFunc http.HandlerFunc) (*Config, redismock.ClientMock, *httptest.Server) {
+func getTestConfig(keySet jwk.Set, handlerFunc http.HandlerFunc) (*Config, redismock.ClientMock, *httptest.Server) {
 	redisClient, redisMock := redismock.NewClientMock()
 	httpMock := httptest.NewServer(http.HandlerFunc(handlerFunc))
 
@@ -111,7 +101,6 @@ func getTestConfig(ldValues map[string]bool, keySet jwk.Set, handlerFunc http.Ha
 			keySet: keySet,
 		}),
 		WithCacheClient(redisClient),
-		WithFeatureFlags(mockFeatureFlags(ldValues)),
 	)
 
 	return config, redisMock, httpMock
@@ -123,18 +112,19 @@ func TestCacheMiss(t *testing.T) {
 
 	assert.NoError(t, err)
 
-	config, redisMock, httpMock := getTestConfig(defaultLdValues(), keySet, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path != "/userManagementEndpoint" {
-			t.Errorf("Expected to request '/fixedvalue', got: %s", r.URL.Path)
+	config, redisMock, httpMock := getTestConfig(keySet, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/cloudEndpoint" {
+			t.Errorf("Expected to request '/cloudEndpoint', got: %s", r.URL.Path)
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(`{"data":{"type":"jwtPermissions","attributes":{"permissionsJwt":"RESULT"}}}`))
+		w.Write([]byte(`{"data":{"token":"RESULT"}}`))
 	}))
 	defer httpMock.Close()
 
-	redisMock.ExpectGet(subject).RedisNil()
-	redisMock.ExpectSetEX(subject, "RESULT", 60*time.Second).SetVal("1")
+	cacheKey := "kong:cloud:oms_admin:tenant:stord:" + subject
+	redisMock.ExpectGet(cacheKey).RedisNil()
+	redisMock.ExpectSetEX(cacheKey, "RESULT", 60*time.Second).SetVal("1")
 
 	env, err := test.New(t, test.Request{
 		Method:  "GET",
@@ -159,13 +149,14 @@ func TestCacheHit(t *testing.T) {
 
 	assert.NoError(t, err)
 
-	config, redisMock, httpMock := getTestConfig(defaultLdValues(), keySet, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	config, redisMock, httpMock := getTestConfig(keySet, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// this should never reach out to UserManagementEndpoint
 		assert.Equal(t, false, true)
 	}))
 	defer httpMock.Close()
 
-	redisMock.ExpectGet(subject).SetVal("(ORION TOKEN)")
+	cacheKey := "kong:cloud:oms_admin:tenant:stord:" + subject
+	redisMock.ExpectGet(cacheKey).SetVal("(ORION TOKEN)")
 
 	env, err := test.New(t, test.Request{
 		Method:  "GET",
@@ -190,7 +181,7 @@ func TestCloudSignatureValid(t *testing.T) {
 
 	assert.NoError(t, err)
 
-	config, redisMock, httpMock := getTestConfig(defaultLdValues(), keySet, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	config, redisMock, httpMock := getTestConfig(keySet, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	}))
 	defer httpMock.Close()
 
@@ -230,7 +221,7 @@ func TestCloudSignatureInvalidKey(t *testing.T) {
 
 	assert.NoError(t, err)
 
-	config, redisMock, httpMock := getTestConfig(defaultLdValues(), keySet, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	config, redisMock, httpMock := getTestConfig(keySet, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	}))
 	defer httpMock.Close()
 
@@ -259,7 +250,7 @@ func TestCloudSignatureInvalidTimestamp(t *testing.T) {
 
 	assert.NoError(t, err)
 
-	config, redisMock, httpMock := getTestConfig(defaultLdValues(), keySet, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	config, redisMock, httpMock := getTestConfig(keySet, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	}))
 	defer httpMock.Close()
 
@@ -288,17 +279,13 @@ func TestCloudSignatureInvalidTimestamp(t *testing.T) {
 	}
 }
 
-func TestCloudDisabled(t *testing.T) {
+func TestV1Network(t *testing.T) {
 	subject := "Subject1"
 	signedJwt, keySet, err := generateJwkKeys(subject)
 
 	assert.NoError(t, err)
 
-	ldvalues := map[string]bool{
-		"enable-cloud-auth-oms": false,
-	}
-
-	config, redisMock, httpMock := getTestConfig(ldvalues, keySet, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	config, redisMock, httpMock := getTestConfig(keySet, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/userManagementEndpoint" {
 			t.Errorf("Expected to request '/fixedvalue', got: %s", r.URL.Path)
 		}
@@ -314,7 +301,7 @@ func TestCloudDisabled(t *testing.T) {
 	env, err := test.New(t, test.Request{
 		Method:  "GET",
 		Url:     "http://example.com/v1/items?q=search&x=9",
-		Headers: map[string][]string{"authorization": {fmt.Sprintf("Bearer %s", signedJwt)}},
+		Headers: map[string][]string{"referer": {"v1.shipper.stord.com"}, "authorization": {fmt.Sprintf("Bearer %s", signedJwt)}},
 	})
 	assert.NoError(t, err)
 
@@ -334,13 +321,9 @@ func TestCloudEnabled(t *testing.T) {
 
 	assert.NoError(t, err)
 
-	ldvalues := map[string]bool{
-		"enable-cloud-auth-oms": true,
-	}
-
-	config, redisMock, httpMock := getTestConfig(ldvalues, keySet, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	config, redisMock, httpMock := getTestConfig(keySet, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/cloudEndpoint" {
-			t.Errorf("Expected to request '/fixedvalue', got: %s", r.URL.Path)
+			t.Errorf("Expected to request '/cloudEndpoint', got: %s", r.URL.Path)
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)

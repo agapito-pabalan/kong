@@ -17,13 +17,6 @@ import (
 	"github.com/lestrrat-go/jwx/jwk"
 	"github.com/lestrrat-go/jwx/jws"
 	"github.com/lestrrat-go/jwx/jwt"
-
-	// go-sdk-common/v3/ldcontext defines LaunchDarkly's model for contexts
-	"github.com/launchdarkly/go-sdk-common/v3/ldcontext"
-
-	// go-server-sdk/v7 is the main SDK package - here we are aliasing it to "ld"
-
-	ld "github.com/launchdarkly/go-server-sdk/v7"
 )
 
 const REQUEST_JWT_TYPE string = "permissionsJwt"
@@ -91,10 +84,6 @@ type JwksAutoRefresh interface {
 	Fetch(ctx context.Context, url string) (jwk.Set, error)
 }
 
-type FeatureFlagClient interface {
-	BoolVariation(flagKey string, context ldcontext.Context, defaultValue bool) (bool, error)
-}
-
 type Config struct {
 	UserManagementEndpoint string `json:"user_management_endpoint"`
 	CloudEndpoint          string `json:"cloud_endpoint"`
@@ -110,7 +99,6 @@ type Globals struct {
 	CacheClient *redis.Client
 	JwkCtx      context.Context
 	CacheCtx    context.Context
-	LdClient    FeatureFlagClient
 }
 
 var globals = Globals{}
@@ -120,12 +108,6 @@ type GlobalOption func(*Globals)
 func WithCacheClient(cacheClient *redis.Client) GlobalOption {
 	return func(globals *Globals) {
 		globals.CacheClient = cacheClient
-	}
-}
-
-func WithFeatureFlags(ldClient FeatureFlagClient) GlobalOption {
-	return func(globals *Globals) {
-		globals.LdClient = ldClient
 	}
 }
 
@@ -307,14 +289,6 @@ func (conf *Config) RedisClient() *redis.Client {
 	return globals.CacheClient
 }
 
-func (conf *Config) LdClient() FeatureFlagClient {
-	if globals.LdClient == nil {
-		client, _ := ld.MakeClient(conf.LdSdkKey, 5*time.Second)
-		globals.LdClient = client
-	}
-	return globals.LdClient
-}
-
 func getAuth0Token(kong *pdk.PDK) ([]byte, error) {
 	auth0Token, err := kong.Request.GetHeader(REQUEST_AUTHORIZATION_HEADER)
 	if err != nil {
@@ -338,7 +312,6 @@ func (conf *Config) cacheFetchPermissionsToken(rawToken string, auth0Token jwt.T
 	permissionsToken := ""
 	auth0UserID := auth0Token.Subject()
 	cacheClient := conf.RedisClient()
-	useLd := conf.LdClient() != nil
 
 	var useCloudAuth bool
 	var err error
@@ -346,9 +319,6 @@ func (conf *Config) cacheFetchPermissionsToken(rawToken string, auth0Token jwt.T
 
 	org, _ := kong.Request.GetHeader("tenant-id")
 	networkId, _ := kong.Request.GetHeader("x-network-id")
-	// We need the original values here so we can flag against them
-	flagOrg := org
-	flagNetworkId := networkId
 
 	stordAdmin, _ := regexp.Match(".*@stord\\.com$", []byte(auth0UserID))
 	integrations, _ := regexp.Match(".*@clients$", []byte(auth0UserID))
@@ -361,26 +331,9 @@ func (conf *Config) cacheFetchPermissionsToken(rawToken string, auth0Token jwt.T
 		app = "oms"
 	}
 
-	if useLd {
-		referer, _ := kong.Request.GetHeader("referer")
-
-		sub := auth0Token.Subject()
-		builder := ldcontext.NewBuilder(sub).SetString("external_user_id", sub).SetString("app", app).SetString("referer", referer)
-		if flagOrg != "" {
-			builder.SetString("organization", flagOrg)
-		}
-		if flagNetworkId != "" {
-			builder.SetString("network", flagNetworkId)
-		}
-		context := builder.Build()
-
-		useCloudAuth, err = conf.LdClient().BoolVariation("enable-cloud-auth-oms", context, false)
-		if err != nil {
-			kong.Log.Warn("warning: ", err.Error(), " unable to get flag value")
-		}
-	} else {
-		useCloudAuth = false
-	}
+	referer, _ := kong.Request.GetHeader("referer")
+	// V1 shippers cannot use cloud auth
+	useCloudAuth = !strings.Contains(referer, "v1.shipper.stord.com")
 
 	var cachePrefix string
 	if useCloudAuth {
