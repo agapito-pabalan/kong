@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.68.0](https://github.com/stordco/kong/compare/v1.67.0...v1.68.0) (2024-04-08)
+
+
+### Features
+
+* IP-260 add route for updating forecast configs in planning service ([#421](https://github.com/stordco/kong/issues/421)) ([432bc77](https://github.com/stordco/kong/commit/432bc77308df200e8d26ec2ea84c0088463fd909))
+
+
+### Miscellaneous
+
+* Remove feature flag checks ([#410](https://github.com/stordco/kong/issues/410)) ([aa4b75a](https://github.com/stordco/kong/commit/aa4b75a7563766381c4537e6dca82a6028700524))
+
 ## [1.67.0](https://github.com/stordco/kong/compare/v1.66.2...v1.67.0) (2024-03-27)
 
 
