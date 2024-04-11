@@ -169,6 +169,11 @@ func (conf *Config) Access(kong *pdk.PDK) {
 		return
 	}
 
+	match, _ = regexp.MatchString("/networks/.+/items/.+/image", path)
+	if match {
+		return
+	}
+
 	cloudSignatureHeader, err := kong.Request.GetHeader(CLOUD_SIGNATURE_HEADER)
 	if err != nil {
 		kong.Log.Err("error: ", err.Error(), " unable to read header")
