@@ -688,6 +688,10 @@ services:
           - /v1/networks/([^\/]+)/delete_listings
           - /v1/networks/([^\/]+)/listings/([^\/]+)
           - /v1/networks/([^\/]+)/channels/([^\/]+)/listings/([^\/]+)
+      - name: product_catalog_item_image
+        strip_path: false
+        paths:
+          - /networks/([^\/]+)/items/([^\/]+)/image
   - name: tenant-service
     url: http://TENANT_SERVICE_URL
     routes:
