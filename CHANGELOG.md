@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.69.0](https://github.com/stordco/kong/compare/v1.68.0...v1.69.0) (2024-04-12)
+
+
+### Features
+
+* IP-241 add v2 routes for monthly and weekly forecasts ([#426](https://github.com/stordco/kong/issues/426)) ([5488d9d](https://github.com/stordco/kong/commit/5488d9d78e159a6b30cd002b7e17935d6ba63068))
+
+
+### Bug Fixes
+
+* [OMS-2662] bypass auth for new image endpoint ([#425](https://github.com/stordco/kong/issues/425)) ([dde3d28](https://github.com/stordco/kong/commit/dde3d28ae18ef7bc333a77997856db46f585cba7))
+* Add new item image endpoint ([#423](https://github.com/stordco/kong/issues/423)) ([005c03a](https://github.com/stordco/kong/commit/005c03a21a45b199f31cae7ad733dbece97b18d8))
+
 ## [1.68.0](https://github.com/stordco/kong/compare/v1.67.0...v1.68.0) (2024-04-08)
 
 
