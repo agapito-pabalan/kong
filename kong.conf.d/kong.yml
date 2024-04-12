@@ -828,6 +828,10 @@ services:
         strip_path: false
         paths:
           - /v1/search/orders/([^\/]+)/reindex
+      - name: search_service_public_portal_v1_cache_order
+        strip_path: false
+        paths:
+          - /public_portal/v1/cache/orders/([^\/]+)$
   - name: wms-integration-bridge
     url: http://WMS_INTEGRATION_BRIDGE_URL
     routes:
