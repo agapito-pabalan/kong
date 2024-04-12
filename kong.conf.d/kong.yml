@@ -919,3 +919,5 @@ services:
           - /v1/inventory/([^\/]+)/forecasts/configuration$
           - /v1/inventory/([^\/]+)/velocity$
           - /v1/inventory/([^\/]+)/velocity/export$
+          - /v2/inventory/([^\/]+)/forecasts/monthly$
+          - /v2/inventory/([^\/]+)/forecasts/weekly$
