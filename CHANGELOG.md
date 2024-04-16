@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.70.0](https://github.com/stordco/kong/compare/v1.69.0...v1.70.0) (2024-04-16)
+
+
+### Features
+
+* Add endpoint for public portal cache order ([#427](https://github.com/stordco/kong/issues/427)) ([9aed2fb](https://github.com/stordco/kong/commit/9aed2fbea0cb0a9ba9d4e05fc122eb6056b45151))
+* IP-263 add routes for planning v2 forecast export ([#429](https://github.com/stordco/kong/issues/429)) ([544f653](https://github.com/stordco/kong/commit/544f653309649ec8682e056801ab9eaf221bbf52))
+* Remove unneeded endpoint ([#430](https://github.com/stordco/kong/issues/430)) ([1ea747f](https://github.com/stordco/kong/commit/1ea747f7e1fa22ae57829218ece40df85e75011c))
+
 ## [1.69.0](https://github.com/stordco/kong/compare/v1.68.0...v1.69.0) (2024-04-12)
 
 
