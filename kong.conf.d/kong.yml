@@ -920,4 +920,6 @@ services:
           - /v1/inventory/([^\/]+)/velocity$
           - /v1/inventory/([^\/]+)/velocity/export$
           - /v2/inventory/([^\/]+)/forecasts/monthly$
+          - /v2/inventory/([^\/]+)/forecasts/monthly/export$
           - /v2/inventory/([^\/]+)/forecasts/weekly$
+          - /v2/inventory/([^\/]+)/forecasts/weekly/export$
