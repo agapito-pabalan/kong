@@ -923,3 +923,7 @@ services:
           - /v2/inventory/([^\/]+)/forecasts/monthly/export$
           - /v2/inventory/([^\/]+)/forecasts/weekly$
           - /v2/inventory/([^\/]+)/forecasts/weekly/export$
+          - /v2/inventory/([^\/]+)/historicals/monthly$
+          - /v2/inventory/([^\/]+)/historicals/monthly/export$
+          - /v2/inventory/([^\/]+)/historicals/weekly$
+          - /v2/inventory/([^\/]+)/historicals/weekly/export$
