@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.71.0](https://github.com/stordco/kong/compare/v1.70.0...v1.71.0) (2024-04-24)
+
+
+### Features
+
+* IP-245 add routes for planning v2 historical routes ([#431](https://github.com/stordco/kong/issues/431)) ([9283f37](https://github.com/stordco/kong/commit/9283f370b01c88282e7f4ec3866eda4b3a1c9ee2))
+
 ## [1.70.0](https://github.com/stordco/kong/compare/v1.69.0...v1.70.0) (2024-04-16)
 
 
