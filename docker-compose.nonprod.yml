@@ -21,7 +21,7 @@ services:
         DOCUMENTS_SERVICE_URL: http://documents-service
         INVENTORY_SERVICE_URL: http://inventory
         TRADE_PARTNERSHIPS_SERVICE_URL: http://trade-partnerships
-        PRODUCT_CATALOG_SERVICE_URL: http://product-catalog
+        PRODUCT_CATALOG_SERVICE_URL: http://product-catalog-service
         HEALTHCHECK_AGGREGATOR_SERVICE_URL: http://healthcheck-aggregator
         MARKETPLACE_SERVICE_URL: http://marketplace-service
         TENANT_SERVICE_URL: http://tenant-service
