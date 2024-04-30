@@ -373,6 +373,7 @@ services:
         strip_path: false
         paths:
           - /v1/channels
+          - /v1/inbounds
           - /v1/orders
           - /v1/purchase_order_lines
           - /v1/sales_order_lines
