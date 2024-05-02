@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.72.0](https://github.com/stordco/kong/compare/v1.71.0...v1.72.0) (2024-05-01)
+
+
+### Features
+
+* Expose new inbounds route for orders service ([#435](https://github.com/stordco/kong/issues/435)) ([fc420b3](https://github.com/stordco/kong/commit/fc420b395c61d1ff5bc15672b9026d93320eac20))
+
+
+### Miscellaneous
+
+* [SRE-462] update product catalog service URL ([#432](https://github.com/stordco/kong/issues/432)) ([3e76877](https://github.com/stordco/kong/commit/3e76877e6684b653d030f7c8037575e29e9cff59))
+* Delete closeout routes ([#436](https://github.com/stordco/kong/issues/436)) ([4bc7fa2](https://github.com/stordco/kong/commit/4bc7fa25563b2d88896fa6e6cdec59142d756bda))
+
 ## [1.71.0](https://github.com/stordco/kong/compare/v1.70.0...v1.71.0) (2024-04-24)
 
 
