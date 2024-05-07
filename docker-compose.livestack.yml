@@ -3,35 +3,39 @@ services:
     build:
       context: .
       args:
-        - AUTH0_JWKS_URL
-        - REDIS_CACHE_URL
-        - CLOUD_SIGNATURE_KEY
-        - CLOUD_SERVICE_URL
-        - LD_SDK_KEY
-        - OTEL_COLLECTOR_ENDPOINT
-        - SAIPH_URL
-        - RIGEL_URL
-        - USER_MANAGEMENT_URL
-        - MINTAKA_URL
-        - MEISSA_URL
-        - ORDERS_SERVICE_URL
-        - FACILITY_ACTIVITY_SERVICE_URL
-        - DOCUMENTS_SERVICE_URL
-        - INVENTORY_SERVICE_URL
-        - TRADE_PARTNERSHIPS_SERVICE_URL
-        - PRODUCT_CATALOG_SERVICE_URL
-        - HEALTHCHECK_AGGREGATOR_SERVICE_URL
-        - MARKETPLACE_SERVICE_URL
-        - TENANT_SERVICE_URL
-        - SEARCH_SERVICE_URL
-        - WMS_INTEGRATION_BRIDGE_URL
-        - TRANSPORTATION_SERVICE_URL
-        - ORDER_ORCHESTRATION_SERVICE_URL
-        - LOGIWA_READER_URL
-        - STORDBOT_URL
-        - PLANNING_SERVICE_URL
+        AUTH0_JWKS_URL: ${AUTH0_JWKS_URL:-http://localhost:1234}
+        REDIS_CACHE_URL: ${REDIS_CACHE_URL:-http://localhost:1234}
+        CLOUD_SIGNATURE_KEY: ${CLOUD_SIGNATURE_KEY:-env_placeholder_value}
+        CLOUD_SERVICE_URL: ${CLOUD_SERVICE_URL:-http://localhost:1234}
+        LD_SDK_KEY: ${LD_SDK_KEY:-env_placeholder_value}
+        OTEL_COLLECTOR_ENDPOINT: ${OTEL_COLLECTOR_ENDPOINT:-http://localhost:4318}
+        SAIPH_URL: ${SAIPH_URL:-http://localhost:1234}
+        RIGEL_URL: ${RIGEL_URL:-http://localhost:1234}
+        USER_MANAGEMENT_URL: ${USER_MANAGEMENT_URL:-http://localhost:1234}
+        MINTAKA_URL: ${MINTAKA_URL:-http://localhost:1234}
+        MEISSA_URL: ${MEISSA_URL:-http://localhost:1234}
+        ORDERS_SERVICE_URL: ${ORDERS_SERVICE_URL:-http://localhost:1234}
+        FACILITY_ACTIVITY_SERVICE_URL: ${FACILITY_ACTIVITY_SERVICE_URL:-http://localhost:1234}
+        DOCUMENTS_SERVICE_URL: ${DOCUMENTS_SERVICE_URL:-http://localhost:1234}
+        INVENTORY_SERVICE_URL: ${INVENTORY_SERVICE_URL:-http://localhost:1234}
+        TRADE_PARTNERSHIPS_SERVICE_URL: ${TRADE_PARTNERSHIPS_SERVICE_URL:-http://localhost:1234}
+        PRODUCT_CATALOG_SERVICE_URL: ${PRODUCT_CATALOG_SERVICE_URL:-http://localhost:1234}
+        HEALTHCHECK_AGGREGATOR_SERVICE_URL: ${HEALTHCHECK_AGGREGATOR_SERVICE_URL:-http://localhost:1234}
+        MARKETPLACE_SERVICE_URL: ${MARKETPLACE_SERVICE_URL:-http://localhost:1234}
+        TENANT_SERVICE_URL: ${TENANT_SERVICE_URL:-http://localhost:1234}
+        SEARCH_SERVICE_URL: ${SEARCH_SERVICE_URL:-http://localhost:1234}
+        WMS_INTEGRATION_BRIDGE_URL: ${WMS_INTEGRATION_BRIDGE_URL:-http://localhost:1234}
+        TRANSPORTATION_SERVICE_URL: ${TRANSPORTATION_SERVICE_URL:-http://localhost:1234}
+        ORDER_ORCHESTRATION_SERVICE_URL: ${ORDER_ORCHESTRATION_SERVICE_URL:-http://localhost:1234}
+        LOGIWA_READER_URL: ${LOGIWA_READER_URL:-http://localhost:1234}
+        STORDBOT_URL: ${STORDBOT_URL:-http://localhost:1234}
+        PLANNING_SERVICE_URL: ${PLANNING_SERVICE_URL:-http://localhost:1234}
     environment:
       KONG_ADMIN_LISTEN: 0.0.0.0:8001
       KONG_PROXY_LISTEN: 0.0.0.0:8000
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    ports:
+      - "8000:8000/tcp"
+      - "8001:8001/tcp"
+      - "8444:8444/tcp"
