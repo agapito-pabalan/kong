@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.73.0](https://github.com/stordco/kong/compare/v1.72.0...v1.73.0) (2024-05-09)
+
+
+### Features
+
+* Add CX email customization template routes ([#437](https://github.com/stordco/kong/issues/437)) ([a5821c7](https://github.com/stordco/kong/commit/a5821c747919ade836a925ff79bd34afc78d9d14))
+* Inventory planning trends routes ([#440](https://github.com/stordco/kong/issues/440)) ([25b2725](https://github.com/stordco/kong/commit/25b27254fd663e657ee1fc5b5aeeca51e68d62b5))
+
+
+### Miscellaneous
+
+* Set default urls for args when not provided ([#439](https://github.com/stordco/kong/issues/439)) ([b08cdc1](https://github.com/stordco/kong/commit/b08cdc1a432e633f949f08aabbe2ec5490663643))
+
 ## [1.72.0](https://github.com/stordco/kong/compare/v1.71.0...v1.72.0) (2024-05-01)
 
 
