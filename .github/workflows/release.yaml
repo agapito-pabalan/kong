@@ -14,7 +14,7 @@ jobs:
     steps:
       - id: release
         name: Release
-        uses: google-github-actions/release-please-action@v3
+        uses: googleapis/release-please-action@v3
         with:
           command: manifest
           config-file: .release-please-config.json
