@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.73.1](https://github.com/stordco/kong/compare/v1.73.0...v1.73.1) (2024-05-14)
+
+
+### Bug Fixes
+
+* Switch to googleapis ([#441](https://github.com/stordco/kong/issues/441)) ([2872bc5](https://github.com/stordco/kong/commit/2872bc5ecb02dc73cc85a485de67b89ff7ae24ca))
+
 ## [1.73.0](https://github.com/stordco/kong/compare/v1.72.0...v1.73.0) (2024-05-09)
 
 
