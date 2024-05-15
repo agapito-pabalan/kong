@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.73.2](https://github.com/stordco/kong/compare/v1.73.1...v1.73.2) (2024-05-15)
+
+
+### Miscellaneous
+
+* Add new CX routes for templates ([#443](https://github.com/stordco/kong/issues/443)) ([35b4599](https://github.com/stordco/kong/commit/35b4599775f5c497c2c3320767b9203a901d4dec))
+
 ## [1.73.1](https://github.com/stordco/kong/compare/v1.73.0...v1.73.1) (2024-05-14)
 
 
