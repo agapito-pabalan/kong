@@ -475,8 +475,15 @@ services:
           - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/alert_types/([^\/]+)/templates
           - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/alert_types/([^\/]+)/templates/([^\/]+)$
           - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/alert_types/([^\/]+)/templates/([^\/]+)/versions$
+          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/alert_types/([^\/]+)/templates/([^\/]+)/default$
+          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/alert_types/([^\/]+)/templates/([^\/]+)/revision/([^\/]+)$
+          # TODO: just add publish to revision/id/publish with a put, then add revert and control the template through the revisions
+          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/alert_types/([^\/]+)/templates/([^\/]+)/latest_revision$
+          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/alert_types/([^\/]+)/templates/([^\/]+)/latest_revision/publish$
           - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/tracking_portals$
           - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/tracking_portals/([^\/]+)$
+          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/tracking_portals/([^\/]+)/([^\/]+)$
+
   - name: facility-activity-service
     url: http://FACILITY_ACTIVITY_SERVICE_URL
     routes:
