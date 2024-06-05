@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.74.0](https://github.com/stordco/kong/compare/v1.73.2...v1.74.0) (2024-06-05)
+
+
+### Features
+
+* Add new purchase/transfer/sales order routes for search ([#447](https://github.com/stordco/kong/issues/447)) ([a526e98](https://github.com/stordco/kong/commit/a526e98bb9c831414344b70ac8859b190a082c8b))
+
+
+### Miscellaneous
+
+* Add v2 suppliers endpoints for trade_partnerships ([#445](https://github.com/stordco/kong/issues/445)) ([8a21db7](https://github.com/stordco/kong/commit/8a21db7f5aa181e577a60739e67a6aa892e88d2e))
+
 ## [1.73.2](https://github.com/stordco/kong/compare/v1.73.1...v1.73.2) (2024-05-15)
 
 
