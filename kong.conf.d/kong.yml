@@ -842,6 +842,18 @@ services:
         strip_path: false
         paths:
           - /v2/search/orders$
+      - name: search_service_v2_orders_sales
+        strip_path: false
+        paths:
+          - /v2/search/orders/sales$
+      - name: search_service_v2_orders_purchase
+        strip_path: false
+        paths:
+          - /v2/search/orders/purchase$
+      - name: search_service_v2_orders_transfer
+        strip_path: false
+        paths:
+          - /v2/search/orders/transfer$
       - name: search_service_single_order_reindex
         strip_path: false
         paths:
