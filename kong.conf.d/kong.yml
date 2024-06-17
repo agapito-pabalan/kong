@@ -644,6 +644,7 @@ services:
       - name: trade-partnerships-v2
         strip_path: false
         paths:
+          - /v2/networks/([^\/]+)/configurations$
           - /v2/networks/([^\/]+)/suppliers$
           - /v2/networks/([^\/]+)/suppliers/([^\/]+)$
           - /v2/networks/([^\/]+)/suppliers/([^\/]+)/sku_configurations$
