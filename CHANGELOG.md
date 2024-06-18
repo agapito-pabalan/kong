@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.74.1](https://github.com/stordco/kong/compare/v1.74.0...v1.74.1) (2024-06-17)
+
+
+### Miscellaneous
+
+* [OPP-606] add network config ([#448](https://github.com/stordco/kong/issues/448)) ([ee76d59](https://github.com/stordco/kong/commit/ee76d59e7ef0aade35fabff09d62e9ee43c7c901))
+
 ## [1.74.0](https://github.com/stordco/kong/compare/v1.73.2...v1.74.0) (2024-06-05)
 
 
