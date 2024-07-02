@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.75.1](https://github.com/stordco/kong/compare/v1.75.0...v1.75.1) (2024-07-02)
+
+
+### Bug Fixes
+
+* Update production deployment workflow ([4ef552f](https://github.com/stordco/kong/commit/4ef552fac36ad35ca077949d9d97cfdf172358b1))
+
 ## [1.75.0](https://github.com/stordco/kong/compare/v1.74.1...v1.75.0) (2024-07-02)
 
 
