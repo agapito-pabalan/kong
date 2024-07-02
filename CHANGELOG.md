@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.75.0](https://github.com/stordco/kong/compare/v1.74.1...v1.75.0) (2024-07-02)
+
+
+### Features
+
+* Adds public cache orders path ([#450](https://github.com/stordco/kong/issues/450)) ([fd84c11](https://github.com/stordco/kong/commit/fd84c11d3c921f64f8787cc1d1e4162b7b986e30))
+* Setup kong for ephemeral environments ([#452](https://github.com/stordco/kong/issues/452)) ([3b14114](https://github.com/stordco/kong/commit/3b14114beaf50155871d8b843440d840a1a131db))
+
 ## [1.74.1](https://github.com/stordco/kong/compare/v1.74.0...v1.74.1) (2024-06-17)
 
 
