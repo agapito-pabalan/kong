@@ -1,0 +1,160 @@
+affinity:
+  podAntiAffinity:
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - kong
+          topologyKey: topology.kubernetes.io/zone
+        weight: 100
+
+appVersion: github-run-id-1234567890
+
+autoscaling:
+  vertical:
+    updateMode: "Off"
+
+environment:
+  AUTH0_JWKS_URL: https://stord-staging.auth0.com/.well-known/jwks.json
+  CLOUD_SERVICE_URL: https://api.staging.cloud.stord.com
+  CLOUD_SIGNATURE_KEY: "op://Infrastructure Staging/Cloud Signature/key"
+  DOCUMENTS_SERVICE_URL: http://documents-service
+  FACILITY_ACTIVITY_SERVICE_URL: http://facility-activity-service
+  HEALTHCHECK_AGGREGATOR_SERVICE_URL: http://healthcheck-aggregator
+  INVENTORY_SERVICE_URL: http://inventory
+  KONG_DATADOG_AGENT_HOST:
+    valueFrom:
+      fieldRef:
+        fieldPath: status.hostIP
+  KONG_PREFIX: "/kong_prefix"
+  LD_SDK_KEY: "op://Infrastructure Staging/Launch Darkly/sdk_key"
+  LOGIWA_READER_URL: http://logiwa-reader
+  MARKETPLACE_SERVICE_URL: http://marketplace-service
+  MEISSA_URL: http://meissa
+  MINTAKA_URL: http://mintaka
+  ORDERS_SERVICE_URL: http://orders-service
+  ORDER_ORCHESTRATION_SERVICE_URL: http://order-orchestration
+  OTEL_COLLECTOR_ENDPOINT: http://opentelemetry-collector:9411/api/v2/spans
+  PLANNING_SERVICE_URL: http://planning-service
+  PRODUCT_CATALOG_SERVICE_URL: http://product-catalog-service
+  REDIS_CACHE_URL: "op://Infrastructure Staging/Kong/redis"
+  RIGEL_URL: http://rigel
+  SAIPH_URL: http://saiph
+  SEARCH_SERVICE_URL: http://search-service
+  STORDBOT_URL: http://stordbot
+  TENANT_SERVICE_URL: http://tenant-service
+  TRADE_PARTNERSHIPS_SERVICE_URL: http://trade-partnerships
+  TRANSPORTATION_SERVICE_URL: http://transportation-service
+  USER_MANAGEMENT_URL: http://user-management
+  WMS_INTEGRATION_BRIDGE_URL: http://wms-integration-bridge
+
+globalnameOverride: "kong"
+
+image:
+  repository: gcr.io/stord-ci/kong
+  pullPolicy: Always
+  tag: ${DOCKER_IMAGE_TAG}
+
+imagePullSecrets:
+  - name: stord-ci-gcr-access-key
+
+labels:
+  tags.datadoghq.com/env: staging
+  tags.datadoghq.com/service: kong
+  tags.datadoghq.com/version: <VERSION>
+
+nameOverride: "kong"
+
+networking:
+  headless: false
+  external: false
+  internal: true
+  port: 8000
+  virtualService:
+    http:
+      retries:
+        attempts: 3
+        perTryTimeout: 60s
+        retryOn: gateway-error,connect-failure,refused-stream
+      timeout: 180s
+
+podAnnotations:
+  sidecar.istio.io/proxyMemory: "512Mi"
+  sidecar.istio.io/proxyMemoryLimit: "1Gi"
+  sidecar.istio.io/proxyCPU: "100m"
+  sidecar.istio.io/proxyCPULimit: "1"
+
+ports:
+  - name: status
+    containerPort: 8100
+    protocol: TCP
+
+probes:
+  liveness:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    successThreshold: 1
+    failureThreshold: 3
+    timeoutSeconds: 5
+    httpGet:
+      path: /status
+      port: 8100
+  readiness:
+    enabled: true
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    successThreshold: 1
+    failureThreshold: 3
+    timeoutSeconds: 5
+    httpGet:
+      path: /status
+      port: 8100
+
+replicaCount: 2
+
+resources:
+  limits:
+    cpu: 1.5
+    memory: 2Gi
+  requests:
+    cpu: 1
+    memory: 2Gi
+
+securityContext:
+  capabilities:
+    drop:
+      - ALL
+  privileged: false
+  runAsUser: 100
+  runAsGroup: 100
+  runAsNonRoot: true
+  readOnlyRootFilesystem: false
+  allowPrivilegeEscalation: false
+
+startupCommand: ["/stord-entrypoint.sh"]
+
+tolerations:
+  - key: node.kubernetes.io/not-ready
+    operator: Exists
+    effect: NoExecute
+    tolerationSeconds: 300
+  - key: node.kubernetes.io/unreachable
+    operator: Exists
+    effect: NoExecute
+    tolerationSeconds: 300
+
+volumes:
+  kong-prefix-dir:
+    emptyDir: {}
+  kong-tmp:
+    emptyDir: {}
+
+volumeMounts:
+  kong-prefix-dir:
+    mountPath: /kong_prefix/
+  kong-tmp:
+    mountPath: /tmp

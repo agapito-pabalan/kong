@@ -1,0 +1,294 @@
+name: Development
+
+on:
+  repository_dispatch:
+    types:
+      - development-elixir-deploy
+  workflow_dispatch:
+    inputs:
+      name:
+        default: ""
+        description: "Name of the ephemeral environment"
+        required: false
+        type: string
+      deployment_size:
+        default: small
+        description: "The amount of resources allocated"
+        options:
+          - small
+          - medium
+          - large
+        required: true
+        type: choice
+      expiration_hours:
+        default: 12
+        description: "Destroy time in hours"
+        required: true
+        type: number
+
+jobs:
+  Infrastructure:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+
+    outputs:
+      name: ${{ steps.setup.outputs.name }}
+
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
+
+    steps:
+      - id: setup
+        name: Setup
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const cleanName = (context?.payload?.inputs?.name || context.ref)
+              .replace('refs/heads/', '')
+              .replace(/[^a-z0-9\-]+/i, '-')
+              .replace(/-{2,}/, '-')
+              .substring(0, 28)
+              .replace(/^(-+)/, '')
+              .replace(/(-+)$/, '')
+              .toLowerCase()
+
+            if (cleanName === "") {
+              core.setFailed('Unable to determine clean name. Failing early.')
+            } else {
+              core.info(`Clean name is set to ${cleanName}`)
+            }
+
+            const expirationDate = new Date()
+            expirationDate.setHours(expirationDate.getHours() + Number(context?.payload?.inputs?.expiration_hours || 12))
+            const expirationString = expirationDate.toISOString()
+
+            core.info(`Environment will automatically be destroyed at ${expirationString}`)
+
+            core.setOutput('name', cleanName)
+            core.setOutput('expiration_timestamp', expirationString)
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          repository: stordco/infrastructure
+          token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+
+      - name: Login (GCP)
+        uses: google-github-actions/auth@v2
+        with:
+          token_format: access_token
+          service_account: github@stord-development.iam.gserviceaccount.com
+          workload_identity_provider: projects/168613326032/locations/global/workloadIdentityPools/github/providers/github
+
+      - name: Setup (gcloud)
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Setup
+        uses: ./.github/actions/setup-workspace
+        with:
+          gh-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          tf-token: ${{ secrets.TFE_TOKEN }}
+
+      - name: Load secret
+        uses: 1password/load-secrets-action@v2
+        env:
+          CLICKHOUSE_ORG_ID: "op://CI/ClickHouse/Organization ID"
+          CLICKHOUSE_TOKEN_KEY: "op://CI/ClickHouse/Token Key"
+          CLICKHOUSE_TOKEN_SECRET: "op://CI/ClickHouse/Token Secret"
+          CONFLUENT_CLOUD_API_KEY: "op://CI/Confluent Cloud/username"
+          CONFLUENT_CLOUD_API_SECRET: "op://CI/Confluent Cloud/credential"
+          EC_API_KEY: "op://CI/Elastic Cloud API Key/credential"
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Init
+        run: terraform init -input=false
+        working-directory: terraform/projects/stord-development/99-ephemeral-environments
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+
+      - name: Apply
+        run: |
+          terraform apply -auto-approve -input=false -lock-timeout=30s -target=module.stord_ephemeral_environment.confluent_role_binding.this
+          terraform apply -auto-approve -input=false -lock-timeout=30s
+        working-directory: terraform/projects/stord-development/99-ephemeral-environments
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+          TF_VAR_deployment_size: ${{ inputs.deployment_size }}
+          TF_VAR_expiration_timestamp: ${{ steps.setup.outputs.expiration_timestamp }}
+          TF_VAR_name: ${{ steps.setup.outputs.name }}
+          TF_WORKSPACE: ${{ steps.setup.outputs.name }}
+
+  Dispatch:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    needs: [Infrastructure]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Dispatch Other Repositories
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          script: |
+            const { data } = await github.rest.search.code({
+              q: 'development-elixir-deploy org:stordco path:.github/workflows/',
+              per_page: 100,
+            })
+
+            const repositories = data.items
+              .map((i) => i.repository)
+              .filter((repo) => {
+                return repo.full_name !== context.payload.repository.full_name;
+              })
+              .filter((repo, index, list) => {
+                return list.findIndex((r) => r.id === repo.id) === index;
+              });
+
+            core.info(`Found ${repositories.length} repositories`);
+
+            for (const repository of repositories) {
+              core.info(`Dispatching development workflow for ${repository.full_name}`);
+
+              await github.rest.repos.createDispatchEvent({
+                owner: repository.owner.login,
+                repo: repository.name,
+                event_type: 'development-elixir-deploy',
+                client_payload: {
+                  name: "${{ needs.Infrastructure.outputs.branch }}"
+                }
+              });
+            }
+
+  Docker:
+    needs: [Infrastructure]
+
+    outputs:
+      image: ${{ steps.build.outputs.image }}
+      tag: ${{ steps.build.outputs.tag }}
+
+    permissions:
+      contents: read
+      id-token: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - id: gcp
+        name: Login (GCP)
+        uses: google-github-actions/auth@v1
+        with:
+          token_format: access_token
+          service_account: github@stord-ci.iam.gserviceaccount.com
+          workload_identity_provider: ${{ secrets.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
+
+      - name: Login (GCR)
+        uses: docker/login-action@v3
+        with:
+          registry: gcr.io
+          username: oauth2accesstoken
+          password: ${{ steps.gcp.outputs.access_token }}
+
+      - id: build
+        name: Build
+        uses: stordco/actions-elixir/docker-build@v1
+        with:
+          github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          images: gcr.io/stord-ci/kong
+          push: true
+
+  Kubernetes:
+    environment:
+      name: Development
+      url: "https://api-${{ needs.Infrastructure.outputs.name }}.stord.dev"
+
+    name: Kubernetes (${{ matrix.cluster }}/${{ matrix.namespace }})
+
+    needs: [Infrastructure, Docker]
+
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - id: gcp
+        name: Login (GCP)
+        uses: google-github-actions/auth@v1
+        with:
+          token_format: access_token
+          service_account: ${{ format('github@{0}.iam.gserviceaccount.com', matrix.project) }}
+          workload_identity_provider: ${{ secrets.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
+
+      - name: Install (Gcloud)
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          install_components: "gke-gcloud-auth-plugin"
+
+      - name: Login (Kubernetes Cluster)
+        uses: google-github-actions/get-gke-credentials@v1
+        with:
+          cluster_name: ${{ matrix.cluster }}
+          location: ${{ matrix.region }}
+          project_id: ${{ matrix.project }}
+
+      - name: Login (GHCR)
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | helm registry login ghcr.io -u stordco --password-stdin
+
+      - name: Helm Upgrade
+        uses: stordco/actions-helm@v0.1
+        with:
+          args: >-
+            --atomic
+            --cleanup-on-fail
+            --install
+            --timeout 1200s
+            --version ~>5
+            --wait
+          chart: oci://ghcr.io/stordco/helm/stord-application
+          cluster: ${{ matrix.cluster }}
+          command: upgrade
+          name: kong
+          namespace: ${{ matrix.namespace }}
+          values_files: >-
+            helm/${{ matrix.project }}.yaml
+            helm/${{ matrix.namespace }}.yaml
+          values_inline: |
+            appVersion: '${{ needs.Docker.outputs.tag }}'
+            environment:
+              API_HOST: 'https://api-${{ needs.Infrastructure.outputs.name }}.stord.dev'
+            image:
+              tag: '${{ needs.Docker.outputs.tag }}'
+              repository: '${{ needs.Docker.outputs.image }}'
+            labels:
+              'tags.datadoghq.com/version': '${{ needs.Docker.outputs.tag }}'
+            nameOverride: 'kong'
+            networking:
+              route:
+                hostnames: ['api-${{ needs.Infrastructure.outputs.name }}.stord.dev']
+            podAnnotations:
+              'ad.datadoghq.com/tags': |
+                {
+                  "git.commit.sha": "${{ github.sha }}",
+                  "git.repository_url": "github.com/${{ github.repository }}"
+                }
+
+    strategy:
+      matrix:
+        include:
+          - cluster: us-east1-dev-ephemeral-v1
+            namespace: ${{ needs.Infrastructure.outputs.name }}
+            project: stord-development
+            region: us-east1

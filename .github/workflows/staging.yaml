@@ -1,0 +1,150 @@
+# This file is copied from stordco/common-config-elixir.
+
+name: Staging
+
+on:
+  push:
+    branches:
+      - main
+      - code-freeze/**
+  workflow_dispatch:
+
+concurrency:
+  group: Staging
+
+jobs:
+  Docker:
+    outputs:
+      image: ${{ steps.build.outputs.image }}
+      tag: ${{ steps.build.outputs.tag }}
+
+    permissions:
+      contents: read
+      id-token: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - id: gcp
+        name: Login (GCP)
+        uses: google-github-actions/auth@v2
+        with:
+          token_format: access_token
+          service_account: github@stord-ci.iam.gserviceaccount.com
+          workload_identity_provider: ${{ secrets.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
+
+      - name: Login (GCR)
+        uses: docker/login-action@v3
+        with:
+          registry: gcr.io
+          username: oauth2accesstoken
+          password: ${{ steps.gcp.outputs.access_token }}
+
+      - id: build
+        name: Build
+        uses: stordco/actions-elixir/docker-build@v1
+        with:
+          github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          images: gcr.io/stord-ci/kong
+          push: true
+
+  Kubernetes:
+    environment:
+      name: Staging
+
+    name: Kubernetes (${{ matrix.cluster }})
+
+    needs: [Docker]
+
+    permissions:
+      contents: read
+      id-token: write
+      packages: read
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set Helm Release Name and Chart Values
+        id: helm-metadata
+        run: |
+          if [ -z "${{ matrix.helm_release_name }}" ]; then
+            RELEASE_NAME=kong
+            echo "helm-release-name=$RELEASE_NAME" >> "$GITHUB_OUTPUT"
+          else
+            echo "helm-release-name=${{ matrix.helm_release_name }}" >> "$GITHUB_OUTPUT"
+          fi
+
+          if [ -z "${{ matrix.helm_chart_values }}" ]; then
+            HELM_CHART_VALUES=${{ matrix.project }}
+            echo "helm-chart-values=$HELM_CHART_VALUES" >> "$GITHUB_OUTPUT"
+          else
+            echo "helm-chart-values=${{ matrix.helm_chart_values }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - id: gcp
+        name: Login (GCP)
+        uses: google-github-actions/auth@v2
+        with:
+          token_format: access_token
+          service_account: ${{ format('github@{0}.iam.gserviceaccount.com', matrix.project) }}
+          workload_identity_provider: ${{ secrets.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
+
+      - name: Install (Gcloud)
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          install_components: "gke-gcloud-auth-plugin"
+
+      - name: Login (Kubernetes Cluster)
+        uses: google-github-actions/get-gke-credentials@v2
+        with:
+          cluster_name: ${{ matrix.cluster }}
+          location: ${{ matrix.region }}
+          project_id: ${{ matrix.project }}
+
+      - name: Login (GHCR)
+        run: |
+          echo ${{ secrets.GITHUB_TOKEN }} | helm registry login ghcr.io -u stordco --password-stdin
+
+      - name: Helm Upgrade (${{ steps.helm-metadata.outputs.helm-release-name }})
+        uses: stordco/actions-helm@v0.1
+        with:
+          args: >-
+            --atomic
+            --cleanup-on-fail
+            --install
+            --timeout 600s
+            --version ~>5
+            --wait
+          chart: oci://ghcr.io/stordco/helm/stord-application
+          cluster: ${{ matrix.cluster }}
+          command: upgrade
+          name: ${{ steps.helm-metadata.outputs.helm-release-name }}
+          namespace: ${{ matrix.namespace }}
+          values_files: >-
+            helm/${{ matrix.project }}.yaml
+            helm/${{ steps.helm-metadata.outputs.helm-chart-values }}.yaml
+            helm/${{ matrix.namespace }}.yaml
+          values_inline: |
+            appVersion: '${{ needs.Docker.outputs.tag }}'
+            labels:
+              'tags.datadoghq.com/version': '${{ needs.Docker.outputs.tag }}'
+            image:
+              tag: '${{ needs.Docker.outputs.tag }}'
+              repository: '${{ needs.Docker.outputs.image }}'
+            nameOverride: '${{ steps.helm-metadata.outputs.helm-release-name }}'
+            podAnnotations:
+              'ad.datadoghq.com/tags': |
+                {
+                  "git.commit.sha": "${{ github.sha }}",
+                  "git.repository_url": "github.com/${{ github.repository }}"
+                }
+
+    strategy:
+      matrix:
+        include: ${{ fromJSON(vars.OMS_STAGING_GKE) }}

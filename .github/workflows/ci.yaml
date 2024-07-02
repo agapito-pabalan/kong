@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  merge_group:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+  push:
+    branches:
+      - main
+      - code-freeze/**
+  workflow_call:
+    secrets:
+      GOOGLE_WORKLOAD_IDENTITY_PROVIDER:
+        required: true
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  Docker:
+    if: ${{ !startsWith(github.head_ref, 'release-please--branches') }}
+
+    permissions:
+      contents: read
+      id-token: write
+      packages: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - id: gcp
+        name: Login (GCP)
+        uses: google-github-actions/auth@v2
+        with:
+          token_format: access_token
+          service_account: github@stord-ci.iam.gserviceaccount.com
+          workload_identity_provider: ${{ secrets.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
+
+      - name: Login (GCR)
+        uses: docker/login-action@v3
+        with:
+          registry: gcr.io
+          username: oauth2accesstoken
+          password: ${{ steps.gcp.outputs.access_token }}
+
+      - name: Build
+        uses: stordco/actions-elixir/docker-build@v1
+        with:
+          github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
