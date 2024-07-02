@@ -1,5 +1,6 @@
----
-name: Prod
+# This file is copied from stordco/common-config-elixir.
+
+name: Production
 
 on:
   release:
@@ -8,17 +9,14 @@ on:
       - prereleased
   workflow_dispatch:
 
-concurrency: Deploy Prod
+concurrency:
+  group: Production
 
 jobs:
-  Build:
-    defaults:
-      run:
-        shell: bash
-
+  Docker:
     outputs:
-      image: ${{ steps.export.outputs.image }}
-      tag: ${{ steps.export.outputs.tag }}
+      image: ${{ steps.build.outputs.image }}
+      tag: ${{ steps.build.outputs.tag }}
 
     permissions:
       contents: read
@@ -28,105 +26,73 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Login (GCP)
+      - id: gcp
+        name: Login (GCP)
         uses: google-github-actions/auth@v2
         with:
-          service_account: github@stord-production.iam.gserviceaccount.com
+          token_format: access_token
+          service_account: github@stord-ci.iam.gserviceaccount.com
           workload_identity_provider: ${{ secrets.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
 
-      - name: Install (Gcloud)
-        uses: google-github-actions/setup-gcloud@v2
-
       - name: Login (GCR)
-        run: gcloud auth configure-docker
-
-      - id: meta
-        name: Metadata
-        uses: docker/metadata-action@v3
+        uses: docker/login-action@v3
         with:
-          flavor: |
-            latest=true
-          images: gcr.io/stord-production/kong
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha
+          registry: gcr.io
+          username: oauth2accesstoken
+          password: ${{ steps.gcp.outputs.access_token }}
 
-      - id: export
-        name: Export
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const metadata = JSON.parse(`${{ steps.meta.outputs.json }}`)
-            const fullUrl = metadata.tags.find((t) => t.includes(':sha-'))
-            if (fullUrl == null) {
-              core.error('Unable to find sha tag of image')
-            } else {
-              const tag = fullUrl.split(':')[1]
-              core.setOutput('image', fullUrl)
-              core.setOutput('tag', tag)
-            }
-
-      - id: get_secrets
-        uses: stordco/actions-google-secrets//map@v0.0
-        with:
-          add_to_environment: true
-          project_id: stord-production
-          map: |
-            PROD_CLOUD_SIGNATURE_KEY: "stord-gsm:stord-production/stord-secrets--cloudsignaturekey-production--password"
-            PROD_LD_SDK_KEY: "stord-gsm:stord-production/stord-secrets--launchdarkly_api_key"
-
-      - env:
-          PROD_REDIS_CACHE_URL: ${{ secrets.PROD_USER_MANAGEMENT_CACHE_URL }}
-          PROD_CLOUD_SIGNATURE_KEY: ${{ env.PROD_CLOUD_SIGNATURE_KEY }}
-          PROD_LD_SDK_KEY: ${{ env.PROD_LD_SDK_KEY }}
+      - id: build
         name: Build
-        run: |
-          docker-compose -f docker-compose.prod.yml build
+        uses: stordco/actions-elixir/docker-build@v1
+        with:
+          github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          images: gcr.io/stord-ci/kong
+          push: true
 
-      - env:
-          DOCKER_IMAGES: ${{ steps.meta.outputs.tags }}
-        name: Tag
-        run: |
-          for img in $DOCKER_IMAGES; do
-            echo "Tagging kong with $img"
-            docker tag stordco/kong $img
-          done
-
-      - env:
-          DOCKER_IMAGES: ${{ steps.meta.outputs.tags }}
-        name: Push
-        run: |
-          for img in $DOCKER_IMAGES; do
-            echo "Pushing $img"
-            docker push $img
-          done
-
-  Deploy:
+  Kubernetes:
     environment:
-      name: Prod
-      url: https://api.stord.com
+      name: Production
 
-    needs: Build
+    name: Kubernetes (${{ matrix.cluster }})
+
+    needs: [Docker]
 
     permissions:
       contents: read
       id-token: write
+      packages: read
 
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Login (GCP)
+      - name: Set Helm Release Name and Chart Values
+        id: helm-metadata
+        run: |
+          if [ -z "${{ matrix.helm_release_name }}" ]; then
+            RELEASE_NAME=kong
+            echo "helm-release-name=$RELEASE_NAME" >> "$GITHUB_OUTPUT"
+          else
+            echo "helm-release-name=${{ matrix.helm_release_name }}" >> "$GITHUB_OUTPUT"
+          fi
+
+          if [ -z "${{ matrix.helm_chart_values }}" ]; then
+            HELM_CHART_VALUES=${{ matrix.project }}
+            echo "helm-chart-values=$HELM_CHART_VALUES" >> "$GITHUB_OUTPUT"
+          else
+            echo "helm-chart-values=${{ matrix.helm_chart_values }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - id: gcp
+        name: Login (GCP)
         uses: google-github-actions/auth@v2
         with:
-          service_account: github@stord-production.iam.gserviceaccount.com
+          token_format: access_token
+          service_account: ${{ format('github@{0}.iam.gserviceaccount.com', matrix.project) }}
           workload_identity_provider: ${{ secrets.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
 
       - name: Install (Gcloud)
@@ -137,28 +103,89 @@ jobs:
       - name: Login (Kubernetes Cluster)
         uses: google-github-actions/get-gke-credentials@v2
         with:
-          cluster_name: orion-production
-          location: us-east1
-          project_id: stord-production
+          cluster_name: ${{ matrix.cluster }}
+          location: ${{ matrix.region }}
+          project_id: ${{ matrix.project }}
 
-      - name: Helm Add
+      - name: Login (GHCR)
         run: |
-          helm repo add kong https://charts.konghq.com
+          echo ${{ secrets.GITHUB_TOKEN }} | helm registry login ghcr.io -u stordco --password-stdin
 
-      - name: Helm Release
-        run: |
-          helm upgrade \
-            kong kong/kong \
-            --install \
-            --kube-context gke_stord-production_us-east1_orion-production \
-            --namespace default \
-            --set image.tag="${{ needs.build.outputs.tag }}" \
-            --set podLabels.tags\\.datadoghq\\.com/version="${{ github.sha }}" \
-            --values ./helm/values.prod.yaml \
-            --version 1.14.2 \
-            --wait \
-            --timeout=300s
+      - name: Helm Upgrade (${{ steps.helm-metadata.outputs.helm-release-name }})
+        id: helm-upgrade
+        uses: stordco/actions-helm@v0.1
+        with:
+          args: >-
+            --atomic
+            --cleanup-on-fail
+            --install
+            --timeout 600s
+            --version ~>5
+            --wait
+          chart: oci://ghcr.io/stordco/helm/stord-application
+          cluster: ${{ matrix.cluster }}
+          command: upgrade
+          name: ${{ steps.helm-metadata.outputs.helm-release-name }}
+          namespace: ${{ matrix.namespace }}
+          values_files: >-
+            helm/${{ matrix.project }}.yaml
+            helm/${{ steps.helm-metadata.outputs.helm-chart-values }}.yaml
+            helm/${{ matrix.namespace }}.yaml
+          values_inline: |
+            appVersion: '${{ needs.Docker.outputs.tag }}'
+            labels:
+              'tags.datadoghq.com/version': '${{ needs.Docker.outputs.tag }}'
+            image:
+              tag: '${{ needs.Docker.outputs.tag }}'
+              repository: '${{ needs.Docker.outputs.image }}'
+            nameOverride: '${{ steps.helm-metadata.outputs.helm-release-name }}'
+            podAnnotations:
+              'ad.datadoghq.com/tags': |
+                {
+                  "git.commit.sha": "${{ github.sha }}",
+                  "git.repository_url": "github.com/${{ github.repository }}"
+                }
 
-      - name: Monitor Rollout
-        run: |
-          kubectl rollout status deployment/kong-kong --timeout=300s
+      - name: Send Helm upgrade failure notification
+        if: ${{ failure() && steps.helm-upgrade.conclusion == 'failure' }}
+        uses: slackapi/slack-github-action@v1.26.0
+        with:
+          channel-id: "C07485L8ZHD"
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ":alert: *Helm upgrade failed* on release `${{ steps.helm-metadata.outputs.helm-release-name }}` in `Production`."
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Repository:*\n`${{ github.repository }}`"
+                    },
+                    {
+                      "type": "mrkdwn",
+                      "text": "*Release Tag:*\n`${{ github.event.release.tag_name }}`"
+                    }
+                  ]
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View Workflow Run>"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+
+    strategy:
+      matrix:
+        include: ${{ fromJSON(vars.OMS_PRODUCTION_GKE) }}
