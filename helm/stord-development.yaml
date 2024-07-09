@@ -70,10 +70,12 @@ labels:
 nameOverride: "kong"
 
 networking:
-  headless: false
-  external: false
-  internal: true
-  port: 80
+  port: 8000
+  route:
+    hostnames: []
+    parentRef:
+      name: gateway
+      namespace: stord-networking
   virtualService:
     http:
       retries:
@@ -81,6 +83,9 @@ networking:
         perTryTimeout: 60s
         retryOn: gateway-error,connect-failure,refused-stream
       timeout: 180s
+
+nodeSelector:
+  cloud.google.com/gke-spot: "true"
 
 podAnnotations:
   sidecar.istio.io/proxyMemory: "512Mi"
@@ -139,6 +144,10 @@ securityContext:
 startupCommand: ["/stord-entrypoint.sh"]
 
 tolerations:
+  - key: cloud.google.com/gke-spot
+    operator: Equal
+    value: "true"
+    effect: NoSchedule
   - key: node.kubernetes.io/not-ready
     operator: Exists
     effect: NoExecute
