@@ -99,6 +99,9 @@ ports:
     protocol: TCP
 
 probes:
+  gcp:
+    port: 8100
+    path: /status
   liveness:
     enabled: true
     initialDelaySeconds: 5
