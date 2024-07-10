@@ -865,6 +865,10 @@ services:
         strip_path: false
         paths:
           - /public_portal/v1/cache/orders
+      - name: search_service_v1_public_brand_cache
+        strip_path: false
+        paths:
+          - /public_portal/v1/cache/brand
   - name: wms-integration-bridge
     url: $WMS_INTEGRATION_BRIDGE_URL
     routes:
