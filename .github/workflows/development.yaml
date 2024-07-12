@@ -28,7 +28,6 @@ on:
 
 jobs:
   Infrastructure:
-    if: ${{ github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
 
     outputs:
@@ -69,30 +68,35 @@ jobs:
             core.setOutput('name', cleanName)
             core.setOutput('expiration_timestamp', expirationString)
 
-      - name: Checkout
+      - if: ${{ github.event_name == 'workflow_dispatch' }}
+        name: Checkout
         uses: actions/checkout@v4
         with:
           ref: main
           repository: stordco/infrastructure
           token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
-      - name: Login (GCP)
+      - if: ${{ github.event_name == 'workflow_dispatch' }}
+        name: Login (GCP)
         uses: google-github-actions/auth@v2
         with:
           token_format: access_token
           service_account: github@stord-development.iam.gserviceaccount.com
           workload_identity_provider: projects/168613326032/locations/global/workloadIdentityPools/github/providers/github
 
-      - name: Setup (gcloud)
+      - if: ${{ github.event_name == 'workflow_dispatch' }}
+        name: Setup (gcloud)
         uses: google-github-actions/setup-gcloud@v2
 
-      - name: Setup
+      - if: ${{ github.event_name == 'workflow_dispatch' }}
+        name: Setup
         uses: ./.github/actions/setup-workspace
         with:
           gh-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
           tf-token: ${{ secrets.TFE_TOKEN }}
 
-      - name: Load secret
+      - if: ${{ github.event_name == 'workflow_dispatch' }}
+        name: Load secret
         uses: 1password/load-secrets-action@v2
         env:
           CLICKHOUSE_ORG_ID: "op://CI/ClickHouse/Organization ID"
@@ -103,13 +107,15 @@ jobs:
           EC_API_KEY: "op://CI/Elastic Cloud API Key/credential"
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
 
-      - name: Init
+      - if: ${{ github.event_name == 'workflow_dispatch' }}
+        name: Init
         run: terraform init -input=false
         working-directory: terraform/projects/stord-development/99-ephemeral-environments
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
 
-      - name: Apply
+      - if: ${{ github.event_name == 'workflow_dispatch' }}
+        name: Apply
         run: |
           terraform apply -auto-approve -input=false -lock-timeout=30s -target=module.stord_ephemeral_environment.confluent_role_binding.this
           terraform apply -auto-approve -input=false -lock-timeout=30s
@@ -158,7 +164,7 @@ jobs:
                 repo: repository.name,
                 event_type: 'development-elixir-deploy',
                 client_payload: {
-                  name: "${{ needs.Infrastructure.outputs.branch }}"
+                  name: "${{ needs.Infrastructure.outputs.name }}"
                 }
               });
             }
@@ -206,7 +212,7 @@ jobs:
   Kubernetes:
     environment:
       name: Development
-      url: "https://api-${{ needs.Infrastructure.outputs.name }}.stord.dev"
+      url: "https://kong-${{ needs.Infrastructure.outputs.name }}.stord.dev"
 
     name: Kubernetes (${{ matrix.cluster }}/${{ matrix.namespace }})
 
@@ -268,7 +274,7 @@ jobs:
           values_inline: |
             appVersion: '${{ needs.Docker.outputs.tag }}'
             environment:
-              API_HOST: 'https://api-${{ needs.Infrastructure.outputs.name }}.stord.dev'
+              API_HOST: 'https://kong-${{ needs.Infrastructure.outputs.name }}.stord.dev'
             image:
               tag: '${{ needs.Docker.outputs.tag }}'
               repository: '${{ needs.Docker.outputs.image }}'
@@ -277,7 +283,7 @@ jobs:
             nameOverride: 'kong'
             networking:
               route:
-                hostnames: ['api-${{ needs.Infrastructure.outputs.name }}.stord.dev']
+                hostnames: ['kong-${{ needs.Infrastructure.outputs.name }}.stord.dev']
             podAnnotations:
               'ad.datadoghq.com/tags': |
                 {
