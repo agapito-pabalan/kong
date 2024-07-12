@@ -44,7 +44,7 @@ jobs:
         uses: actions/github-script@v7
         with:
           script: |
-            const cleanName = (context?.payload?.inputs?.name || context.ref)
+            const cleanName = (context?.payload?.client_payload?.name || context.ref)
               .replace('refs/heads/', '')
               .replace(/[^a-z0-9\-]+/i, '-')
               .replace(/-{2,}/, '-')
@@ -164,7 +164,7 @@ jobs:
                 repo: repository.name,
                 event_type: 'development-elixir-deploy',
                 client_payload: {
-                  name: "${{ needs.Infrastructure.outputs.name }}"
+                  name: "${{ needs.Infrastructure.outputs.branch }}"
                 }
               });
             }
