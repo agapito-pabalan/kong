@@ -164,7 +164,7 @@ jobs:
                 repo: repository.name,
                 event_type: 'development-elixir-deploy',
                 client_payload: {
-                  name: "${{ needs.Infrastructure.outputs.branch }}"
+                  name: "${{ needs.Infrastructure.outputs.name }}"
                 }
               });
             }
