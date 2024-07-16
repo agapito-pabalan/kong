@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.75.2](https://github.com/stordco/kong/compare/v1.75.1...v1.75.2) (2024-07-12)
+
+
+### Bug Fixes
+
+* Update development deploy workflow ([1de6f10](https://github.com/stordco/kong/commit/1de6f10b659b3d2b5b55ee7f196651f45dae62a3))
+* Update development deploy workflow script ([2ec6003](https://github.com/stordco/kong/commit/2ec6003231204b726709bdbd71e76f17978d87d8))
+* Update development dispatch value name ([44db14e](https://github.com/stordco/kong/commit/44db14e8735bfdad30c9eab8be990e5a3c0c15eb))
+* Update development helm config and nonprod config ([#454](https://github.com/stordco/kong/issues/454)) ([f67f318](https://github.com/stordco/kong/commit/f67f31875b04116a2b59e43bcf8d81adb6894eab))
+
+
+### Miscellaneous
+
+* [OFM-3325] add route for public brand cache ([#456](https://github.com/stordco/kong/issues/456)) ([b6579fb](https://github.com/stordco/kong/commit/b6579fbbd94e4462cfd89d59cfe688ad0971e1c4))
+* Update development gcp probe path ([90cdc4e](https://github.com/stordco/kong/commit/90cdc4e681149fe6b713afb11fedd2e327a4cfa9))
+
 ## [1.75.1](https://github.com/stordco/kong/compare/v1.75.0...v1.75.1) (2024-07-02)
 
 
