@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.76.0](https://github.com/stordco/kong/compare/v1.75.2...v1.76.0) (2024-08-13)
+
+
+### Features
+
+* Add shipment protection routes ([#457](https://github.com/stordco/kong/issues/457)) ([3f75b3d](https://github.com/stordco/kong/commit/3f75b3d68f10575ff3397f58e688421410622a70))
+
 ## [1.75.2](https://github.com/stordco/kong/compare/v1.75.1...v1.75.2) (2024-07-12)
 
 
