@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.77.0](https://github.com/stordco/kong/compare/v1.76.0...v1.77.0) (2024-08-15)
+
+
+### Features
+
+* Consumer experience document upload route ([#459](https://github.com/stordco/kong/issues/459)) ([2d9afb6](https://github.com/stordco/kong/commit/2d9afb6f32315ff8cffadfb819dd4d4b40423f12))
+
 ## [1.76.0](https://github.com/stordco/kong/compare/v1.75.2...v1.76.0) (2024-08-13)
 
 
