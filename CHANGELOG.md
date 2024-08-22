@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.78.0](https://github.com/stordco/kong/compare/v1.77.0...v1.78.0) (2024-08-19)
+
+
+### Features
+
+* Add create claim endpoint ([#461](https://github.com/stordco/kong/issues/461)) ([e3742f7](https://github.com/stordco/kong/commit/e3742f72abb4a7a97f254be67d3133c3a0cde0c2))
+
 ## [1.77.0](https://github.com/stordco/kong/compare/v1.76.0...v1.77.0) (2024-08-15)
 
 
