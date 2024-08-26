@@ -374,6 +374,7 @@ services:
       - name: orders-root
         strip_path: false
         paths:
+          - /v1/networks/([^\/]+)/webhooks
           - /v1/channels
           - /v1/inbounds
           - /v1/orders
