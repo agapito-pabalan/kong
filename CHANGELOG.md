@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.79.0](https://github.com/stordco/kong/compare/v1.78.0...v1.79.0) (2024-08-28)
+
+
+### Features
+
+* Add public documents route ([#464](https://github.com/stordco/kong/issues/464)) ([f02e61e](https://github.com/stordco/kong/commit/f02e61e190f66e3cd6a4c6c22d6bc4c8373fef9f))
+
+
+### Miscellaneous
+
+* [OFM-4551] add v1/webhooks for svix ([#468](https://github.com/stordco/kong/issues/468)) ([a15ccbb](https://github.com/stordco/kong/commit/a15ccbb85c2604e6fd5c7a315ecd73d849965520))
+* [SRE-903] remove stordbot resources ([#467](https://github.com/stordco/kong/issues/467)) ([c388ee9](https://github.com/stordco/kong/commit/c388ee967ad3c5227b5c18f425a08eecf3db28ac))
+* Update deployment for new observability properties ([b87f34d](https://github.com/stordco/kong/commit/b87f34d443cba052063000cb63c7164d46bd10d1))
+
 ## [1.78.0](https://github.com/stordco/kong/compare/v1.77.0...v1.78.0) (2024-08-19)
 
 
