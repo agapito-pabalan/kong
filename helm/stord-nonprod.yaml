@@ -61,11 +61,6 @@ image:
 imagePullSecrets:
   - name: stord-ci-gcr-access-key
 
-labels:
-  tags.datadoghq.com/env: staging
-  tags.datadoghq.com/service: kong
-  tags.datadoghq.com/version: <VERSION>
-
 nameOverride: "kong"
 
 networking:
@@ -83,6 +78,11 @@ networking:
 
 nodeSelector:
   cloud.google.com/gke-spot: "true"
+
+observability:
+  name: kong
+  repository: github.com/stordco/kong
+  environment: staging
 
 podAnnotations:
   sidecar.istio.io/proxyMemory: "512Mi"

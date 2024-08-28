@@ -61,11 +61,6 @@ image:
 imagePullSecrets:
   - name: gcr-ci-access-key
 
-labels:
-  tags.datadoghq.com/env: production
-  tags.datadoghq.com/service: kong
-  tags.datadoghq.com/version: <VERSION>
-
 nameOverride: "kong"
 
 networking:
@@ -80,6 +75,11 @@ networking:
         perTryTimeout: 60s
         retryOn: gateway-error,connect-failure,refused-stream
       timeout: 180s
+
+observability:
+  name: kong
+  repository: github.com/stordco/kong
+  environment: production
 
 podAnnotations:
   sidecar.istio.io/proxyMemory: "1Gi"

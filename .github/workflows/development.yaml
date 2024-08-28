@@ -278,18 +278,13 @@ jobs:
             image:
               tag: '${{ needs.Docker.outputs.tag }}'
               repository: '${{ needs.Docker.outputs.image }}'
-            labels:
-              'tags.datadoghq.com/version': '${{ needs.Docker.outputs.tag }}'
             nameOverride: 'kong'
             networking:
               route:
                 hostnames: ['kong-${{ needs.Infrastructure.outputs.name }}.stord.dev']
-            podAnnotations:
-              'ad.datadoghq.com/tags': |
-                {
-                  "git.commit.sha": "${{ github.sha }}",
-                  "git.repository_url": "github.com/${{ github.repository }}"
-                }
+            observability:
+              commit: "${{ github.sha }}"
+              version: "${{ needs.Docker.outputs.tag }}"
 
     strategy:
       matrix:

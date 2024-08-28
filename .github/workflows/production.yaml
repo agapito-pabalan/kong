@@ -133,18 +133,13 @@ jobs:
             helm/${{ matrix.namespace }}.yaml
           values_inline: |
             appVersion: '${{ needs.Docker.outputs.tag }}'
-            labels:
-              'tags.datadoghq.com/version': '${{ needs.Docker.outputs.tag }}'
             image:
               tag: '${{ needs.Docker.outputs.tag }}'
               repository: '${{ needs.Docker.outputs.image }}'
             nameOverride: '${{ steps.helm-metadata.outputs.helm-release-name }}'
-            podAnnotations:
-              'ad.datadoghq.com/tags': |
-                {
-                  "git.commit.sha": "${{ github.sha }}",
-                  "git.repository_url": "github.com/${{ github.repository }}"
-                }
+            observability:
+              commit: "${{ github.sha }}"
+              version: "${{ needs.Docker.outputs.tag }}"
 
       - name: Send Helm upgrade failure notification
         if: ${{ failure() && steps.helm-upgrade.conclusion == 'failure' }}

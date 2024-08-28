@@ -62,11 +62,6 @@ image:
   pullPolicy: Always
   tag: ${DOCKER_IMAGE_TAG}
 
-labels:
-  tags.datadoghq.com/env: development
-  tags.datadoghq.com/service: kong
-  tags.datadoghq.com/version: <VERSION>
-
 nameOverride: "kong"
 
 networking:
@@ -86,6 +81,11 @@ networking:
 
 nodeSelector:
   cloud.google.com/gke-spot: "true"
+
+observability:
+  name: kong
+  repository: github.com/stordco/kong
+  environment: development
 
 podAnnotations:
   sidecar.istio.io/proxyMemory: "512Mi"
