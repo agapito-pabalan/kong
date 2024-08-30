@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.80.0](https://github.com/stordco/kong/compare/v1.79.0...v1.80.0) (2024-08-30)
+
+
+### Features
+
+* Add bill to ([#470](https://github.com/stordco/kong/issues/470)) ([f85efea](https://github.com/stordco/kong/commit/f85efea6698487f4038021b929e690ed92ef5906))
+
 ## [1.79.0](https://github.com/stordco/kong/compare/v1.78.0...v1.79.0) (2024-08-28)
 
 
