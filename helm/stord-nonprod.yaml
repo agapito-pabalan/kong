@@ -30,6 +30,11 @@ environment:
       fieldRef:
         fieldPath: status.hostIP
   KONG_PREFIX: "/kong_prefix"
+  KONG_PLUGINSERVER_USER_MANAGEMENT_BRIDGE_SOCKET: "/kong_prefix/user_management_bridge.socket"
+  KONG_PLUGINSERVER_USER_MANAGEMENT_BRIDGE_QUERY_CMD: "/usr/local/bin/user_management_bridge -dump -kong-prefix /kong_prefix"
+  KONG_PLUGINSERVER_USER_MANAGEMENT_BRIDGE_START_CMD: "/usr/local/bin/user_management_bridge -kong-prefix /kong_prefix"
+  KONG_TRACING_INSTRUMENTATIONS: all
+  KONG_TRACING_SAMPLING_RATE: "1.0"
   LD_SDK_KEY: "op://Infrastructure Staging/Launch Darkly/sdk_key"
   LOGIWA_READER_URL: http://logiwa-reader
   MARKETPLACE_SERVICE_URL: http://marketplace-service
@@ -37,7 +42,7 @@ environment:
   MINTAKA_URL: http://mintaka
   ORDERS_SERVICE_URL: http://orders-service
   ORDER_ORCHESTRATION_SERVICE_URL: http://order-orchestration
-  OTEL_COLLECTOR_ENDPOINT: http://opentelemetry-collector:9411/api/v2/spans
+  OTEL_COLLECTOR_ENDPOINT: http://opentelemetry.stord-monitoring.svc.cluster.local:4318/v1/traces
   PLANNING_SERVICE_URL: http://planning-service
   PRODUCT_CATALOG_SERVICE_URL: http://product-catalog-service
   REDIS_CACHE_URL: "op://Infrastructure Staging/Kong/redis"

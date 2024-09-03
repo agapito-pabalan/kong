@@ -1,11 +1,17 @@
-FROM golang:1.21-alpine as go-builder
+FROM golang:1.23.0-bullseye AS go-builder
 
 WORKDIR /go-plugins
 
-RUN apk add --no-cache git gcc libc-dev binutils-gold
+RUN apt-get update && apt-get install -y \
+    binutils-gold \
+    gcc \
+    git \
+    libc-dev \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN go mod init kong-go-plugin
-RUN go get -d -v github.com/Kong/go-pdk@v0.8.0
-RUN go get -d -v github.com/Kong/go-pdk/server@v0.8.0
+RUN go get -d -v github.com/Kong/go-pdk@v0.11.0
+RUN go get -d -v github.com/Kong/go-pdk/server@v0.11.0
 RUN go get -d -v github.com/lestrrat-go/jwx/jwt
 RUN go get -d -v github.com/lestrrat-go/jwx/jwk
 RUN go get -d -v github.com/go-redis/redis/v8
@@ -15,25 +21,15 @@ RUN go get github.com/launchdarkly/go-server-sdk/v7
 COPY /plugins/user_management_bridge/user_management_bridge.go .
 RUN go build  -o /go-plugins/user_management_bridge /go-plugins/user_management_bridge.go
 
-FROM kong:2.7.2-alpine as lua-builder
-
-WORKDIR /lua-plugins
+FROM kong:3.7.1 AS release
 
 USER root
 
-COPY /plugins/traceheaders .
-RUN luarocks make && luarocks pack kong-plugin-traceheaders 1.0.0-0
-
-FROM kong:2.7.2-alpine as release
-
-USER root
-
-RUN apk add --no-cache gettext
+RUN apt-get update && apt-get install -y \
+    gettext \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --from=go-builder /go-plugins/user_management_bridge /usr/local/bin/user_management_bridge
-
-COPY --from=lua-builder /lua-plugins/kong-plugin-traceheaders-1.0.0-0.all.rock /tmp
-RUN luarocks install /tmp/kong-plugin-traceheaders-1.0.0-0.all.rock && rm /tmp/kong-plugin-traceheaders-1.0.0-0.all.rock
 
 COPY stord-entrypoint.sh /stord-entrypoint.sh
 
@@ -54,7 +50,7 @@ ENV KONG_NGINX_PROXY_CLIENT_BODY_BUFFER_SIZE="32M"
 ENV KONG_NGINX_PROXY_CLIENT_HEADER_BUFFER_SIZE="64k"
 ENV KONG_NGINX_PROXY_LARGE_CLIENT_HEADER_BUFFERS="8 64k"
 ENV KONG_NGINX_WORKER_PROCESSES="2"
-ENV KONG_PLUGINS="user_management_bridge,cors,request-size-limiting,correlation-id,traceheaders,zipkin"
+ENV KONG_PLUGINS="correlation-id,opentelemetry,user_management_bridge,cors,request-size-limiting"
 ENV KONG_PLUGINSERVER_NAMES="user_management_bridge"
 ENV KONG_PLUGINSERVER_USER_MANAGEMENT_BRIDGE_QUERY_CMD="/usr/local/bin/user_management_bridge -dump"
 ENV KONG_PLUGINSERVER_USER_MANAGEMENT_BRIDGE_START_CMD="/usr/local/bin/user_management_bridge"

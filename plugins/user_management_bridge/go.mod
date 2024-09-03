@@ -1,14 +1,14 @@
 module user_management_bridge_plugin
 
-go 1.19
+go 1.23
 
 require (
-	github.com/Kong/go-pdk v0.8.0
+	github.com/Kong/go-pdk v0.11.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-redis/redismock/v8 v8.11.5
 	github.com/launchdarkly/go-sdk-common/v3 v3.1.0
 	github.com/lestrrat-go/jwx v1.2.26
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 )
 
 require (
@@ -29,9 +29,9 @@ require (
 	github.com/mailru/easyjson v0.7.6 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/ugorji/go/codec v1.2.1 // indirect
+	github.com/ugorji/go/codec v1.2.12 // indirect
 	golang.org/x/crypto v0.9.0 // indirect
 	golang.org/x/exp v0.0.0-20220823124025-807a23277127 // indirect
-	google.golang.org/protobuf v1.26.0 // indirect
+	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

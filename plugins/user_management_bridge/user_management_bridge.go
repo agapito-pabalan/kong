@@ -5,7 +5,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
+	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -177,7 +179,7 @@ func (conf *Config) Access(kong *pdk.PDK) {
 	cloudSignatureHeader, err := kong.Request.GetHeader(CLOUD_SIGNATURE_HEADER)
 	if err != nil {
 		kong.Log.Err("error: ", err.Error(), " unable to read header")
-		kong.Response.Exit(500, err.Error(), nil)
+		kong.Response.Exit(500, []byte(err.Error()), nil)
 		return
 	}
 
@@ -190,13 +192,13 @@ func (conf *Config) Access(kong *pdk.PDK) {
 		requestTime, err := time.Parse(time.RFC1123, timestamp)
 		if err != nil {
 			kong.Log.Err("error: ", err.Error(), " invalid request-timestamp")
-			kong.Response.Exit(400, err.Error(), nil)
+			kong.Response.Exit(400, []byte(err.Error()), nil)
 			return
 		}
 		processing_period := time.Duration(PROCESSING_PERIOD) * time.Minute
 		if time.Since(requestTime) > processing_period {
 			kong.Log.Err("error: request-timestamp is out of sync")
-			kong.Response.Exit(400, "invalid request-timestamp", nil)
+			kong.Response.Exit(400, []byte("invalid request-timestamp"), nil)
 			return
 		}
 
@@ -204,7 +206,7 @@ func (conf *Config) Access(kong *pdk.PDK) {
 		verified, err := jws.Verify([]byte(cloudSignatureHeader), jwa.HS256, []byte(conf.CloudSignatureKey))
 		if err != nil {
 			kong.Log.Err("error: ", err.Error(), " failed to verify cloud signature")
-			kong.Response.Exit(400, err.Error(), nil)
+			kong.Response.Exit(400, []byte(err.Error()), nil)
 			return
 		}
 
@@ -213,14 +215,14 @@ func (conf *Config) Access(kong *pdk.PDK) {
 
 		if !bytes.Equal(expected, verified) {
 			kong.Log.Err("error: payload does not match cloud signature")
-			kong.Response.Exit(400, "Invalid Cloud Signature", nil)
+			kong.Response.Exit(400, []byte("Invalid Cloud Signature"), nil)
 			return
 		}
 
 		err = kong.ServiceRequest.SetHeader(REQUIRES_AUTH_HEADER, "true")
 		if err != nil {
 			kong.Log.Err("error: ", err.Error(), " unable to insert \"requires-auth\" header")
-			kong.Response.Exit(500, err.Error(), nil)
+			kong.Response.Exit(500, []byte(err.Error()), nil)
 			return
 		}
 
@@ -237,7 +239,7 @@ func (conf *Config) Access(kong *pdk.PDK) {
 	auth0Token, err := getAuth0Token(kong)
 	if err != nil {
 		kong.Log.Warn("warning: ", err.Error())
-		kong.Response.Exit(401, "Unauthorized", nil)
+		kong.Response.Exit(401, []byte("Unauthorized"), nil)
 		return
 	}
 
@@ -246,21 +248,21 @@ func (conf *Config) Access(kong *pdk.PDK) {
 	keyset, err := globals.AutoRefresh.Fetch(globals.JwkCtx, conf.Auth0Url)
 	if err != nil {
 		kong.Log.Err("failed to fetch Auth0 JWKS keys: ", err)
-		kong.Response.Exit(500, err.Error(), nil)
+		kong.Response.Exit(500, []byte(err.Error()), nil)
 		return
 	}
 
 	parsedAuth0Token, err := jwt.Parse(auth0Token, jwt.WithKeySet(keyset), jwt.WithValidate(true), jwt.WithAcceptableSkew(2*time.Minute))
 	if err != nil {
 		kong.Log.Warn("warning: invalid Auth0 token - ", err.Error())
-		kong.Response.Exit(401, "Unauthorized", nil)
+		kong.Response.Exit(401, []byte("Unauthorized"), nil)
 		return
 	}
 
 	permissionsToken, err := conf.cacheFetchPermissionsToken(string(auth0Token), parsedAuth0Token, kong)
 	if err != nil {
 		kong.Log.Warn("warning: ", err.Error(), " unable to exchange Auth0 token for permissions token")
-		kong.Response.Exit(401, "Unauthorized", nil)
+		kong.Response.Exit(401, []byte("Unauthorized"), nil)
 		return
 	}
 
@@ -272,14 +274,14 @@ func (conf *Config) Access(kong *pdk.PDK) {
 	err = kong.ServiceRequest.SetHeader(REQUEST_AUTHORIZATION_HEADER, tokenHeaderValueStr)
 	if err != nil {
 		kong.Log.Err("error: ", err.Error(), " unable to insert user_management token in authorization header")
-		kong.Response.Exit(500, err.Error(), nil)
+		kong.Response.Exit(500, []byte(err.Error()), nil)
 		return
 	}
 
 	err = kong.ServiceRequest.SetHeader(REQUIRES_AUTH_HEADER, "true")
 	if err != nil {
 		kong.Log.Err("error: ", err.Error(), " unable to insert \"requires-auth\" header")
-		kong.Response.Exit(500, err.Error(), nil)
+		kong.Response.Exit(500, []byte(err.Error()), nil)
 		return
 	}
 
@@ -465,6 +467,17 @@ const Version = "1.0.0"
 const Priority = 1
 
 func main() {
+	f, err := os.OpenFile("/tmp/user-management-bridge.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if err != nil {
+		log.Fatalf("error opening file: %v", err)
+	}
+	defer f.Close()
+	log.SetOutput(f)
+
 	InitializeGlobals()
-	server.StartServer(New, Version, Priority)
+	err = server.StartServer(New, Version, Priority)
+	if err != nil {
+		log.Fatalf("error starting server: %v", err)
+	}
+	log.Println("plugin server started")
 }
