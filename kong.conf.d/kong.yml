@@ -501,6 +501,7 @@ services:
           - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/tracking_portals/([^\/]+)$
           - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/tracking_portals/([^\/]+)/([^\/]+)$
           - /v1/consumer_experience/([^\/]+)/shipment_protection
+          - /v1/consumer_experience/([^\/]+)/storefronts
   - name: facility-activity-service
     url: $FACILITY_ACTIVITY_SERVICE_URL
     routes:
