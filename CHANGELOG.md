@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.81.0](https://github.com/stordco/kong/compare/v1.80.0...v1.81.0) (2024-09-11)
+
+
+### Features
+
+* **documents-service:** Remove POST v2/documents endpoint ([#473](https://github.com/stordco/kong/issues/473)) ([24ed437](https://github.com/stordco/kong/commit/24ed4374a5cf7e5f3c1214831c9f21e7401e3c8e))
+
+
+### Miscellaneous
+
+* [OFM-4441] add storefront routes ([#474](https://github.com/stordco/kong/issues/474)) ([d5237b9](https://github.com/stordco/kong/commit/d5237b920393e9772031f9d4baa8bcd05a9fab7b))
+* Upgrade to latest kong and golang versions ([#469](https://github.com/stordco/kong/issues/469)) ([f3bebfe](https://github.com/stordco/kong/commit/f3bebfe6383fe9ed34827a39d19a124bed7ed570))
+
 ## [1.80.0](https://github.com/stordco/kong/compare/v1.79.0...v1.80.0) (2024-08-30)
 
 
