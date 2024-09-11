@@ -533,10 +533,6 @@ services:
   - name: documents-service
     url: $DOCUMENTS_SERVICE_URL
     routes:
-      - name: documents_service_v2_documents
-        strip_path: false
-        paths:
-          - /v2/documents$
       - name: documents_service_v2_public_images
         strip_path: false
         paths:
