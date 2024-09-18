@@ -583,6 +583,7 @@ services:
         strip_path: false
         paths:
           - /public/v1/networks/([^\/]+)/inventory/advice
+          - /public/v1/networks/([^\/]+)/inventory/listings/availability
       - name: inventory-api-spec
         strip_path: false
         paths:
