@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.82.0](https://github.com/stordco/kong/compare/v1.81.0...v1.82.0) (2024-09-18)
+
+
+### Features
+
+* [OFM-4331] Add inventory listings availability route ([#475](https://github.com/stordco/kong/issues/475)) ([71787ae](https://github.com/stordco/kong/commit/71787ae700411be1b059242c5805c50c0afe3492))
+
 ## [1.81.0](https://github.com/stordco/kong/compare/v1.80.0...v1.81.0) (2024-09-11)
 
 
