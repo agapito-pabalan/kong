@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.82.1](https://github.com/stordco/kong/compare/v1.82.0...v1.82.1) (2024-09-24)
+
+
+### Bug Fixes
+
+* Remove v1/orders endpoint ([#477](https://github.com/stordco/kong/issues/477)) ([94ded95](https://github.com/stordco/kong/commit/94ded959c35d389a8cd34dcb688b8aaaeb59e90f))
+
 ## [1.82.0](https://github.com/stordco/kong/compare/v1.81.0...v1.82.0) (2024-09-18)
 
 
