@@ -1,0 +1,48 @@
+services:
+  kong:
+    build:
+      context: .
+    ports:
+      - "8000:8000/tcp"
+      - "8444:8444/tcp"
+    environment:
+      AUTH0_JWKS_URL: ${AUTH0_JWKS_URL:-https://auth.staging.stord.com/.well-known/jwks.json}
+      REDIS_CACHE_URL: ${REDIS_CACHE_URL:-http://redis.localhost}
+      CLOUD_SIGNATURE_KEY: ${CLOUD_SIGNATURE_KEY:-env_placeholder_value}
+      CLOUD_SERVICE_URL: ${CLOUD_SERVICE_URL:-http://cloud_service.localhost}
+      LD_SDK_KEY: ${LD_SDK_KEY:-env_placeholder_value}
+      OTEL_COLLECTOR_ENDPOINT: ${OTEL_COLLECTOR_ENDPOINT:-http://localhost:4318}
+      ORDERS_SERVICE_URL: ${ORDERS_SERVICE_URL:-http://orders_service.localhost}
+      FACILITY_ACTIVITY_SERVICE_URL: ${FACILITY_ACTIVITY_SERVICE_URL:-http://facility_activity_service.localhost}
+      DOCUMENTS_SERVICE_URL: ${DOCUMENTS_SERVICE_URL:-http://documents_service.localhost}
+      INVENTORY_SERVICE_URL: ${INVENTORY_SERVICE_URL:-http://inventory.localhost}
+      TRADE_PARTNERSHIPS_SERVICE_URL: ${TRADE_PARTNERSHIPS_SERVICE_URL:-http://trade_partnerships.localhost}
+      PRODUCT_CATALOG_SERVICE_URL: ${PRODUCT_CATALOG_SERVICE_URL:-http://product_catalog_service.localhost}
+      HEALTHCHECK_AGGREGATOR_SERVICE_URL: ${HEALTHCHECK_AGGREGATOR_SERVICE_URL:-http://healthcheck_aggregator.localhost}
+      MARKETPLACE_SERVICE_URL: ${MARKETPLACE_SERVICE_URL:-http://marketplace_service.localhost}
+      TENANT_SERVICE_URL: ${TENANT_SERVICE_URL:-http://tenant_service.localhost}
+      SEARCH_SERVICE_URL: ${SEARCH_SERVICE_URL:-http://search_service.localhost}
+      WMS_INTEGRATION_BRIDGE_URL: ${WMS_INTEGRATION_BRIDGE_URL:-http://wms_integration_bridge.localhost}
+      TRANSPORTATION_SERVICE_URL: ${TRANSPORTATION_SERVICE_URL:-http://transportation_service.localhost}
+      ORDER_ORCHESTRATION_SERVICE_URL: ${ORDER_ORCHESTRATION_SERVICE_URL:-http://order_orchestration.localhost}
+      STORDBOT_URL: ${STORDBOT_URL:-http://stordbot.localhost}
+      PLANNING_SERVICE_URL: ${PLANNING_SERVICE_URL:-http://planning_service.localhost}
+      SAIPH_URL: ${SAIPH_URL:-http://saiph.localhost}
+      USER_MANAGEMENT_URL: ${USER_MANAGEMENT_URL:-http://user_management.localhost}
+      LOGIWA_READER_URL: ${LOGIWA_READER_URL:-http://logiwa_reader.localhost}
+      MINTAKA_URL: ${MINTAKA_URL:-http://mintaka.localhost}
+      MEISSA_URL: ${MEISSA_URL:-http://meissa.localhost}
+      RIGEL_URL: ${RIGEL_URL:-http://rigel.localhost}
+
+      OTEL_RESOURCE_ATTRIBUTE_DEPLOYMENT_ENVIRONMENT: ${OTEL_RESOURCE_ATTRIBUTE_DEPLOYMENT_ENVIRONMENT:-env_placeholder_value}
+      OTEL_RESOURCE_ATTRIBUTE_GIT_COMMIT_SHA: ${OTEL_RESOURCE_ATTRIBUTE_GIT_COMMIT_SHA:-env_placeholder_value}
+      OTEL_RESOURCE_ATTRIBUTE_GIT_REPOSITORY_URL: ${OTEL_RESOURCE_ATTRIBUTE_GIT_REPOSITORY_URL:-env_placeholder_value}
+      OTEL_RESOURCE_ATTRIBUTE_K8S_CONTAINER_NAME: ${OTEL_RESOURCE_ATTRIBUTE_K8S_CONTAINER_NAME:-env_placeholder_value}
+      OTEL_RESOURCE_ATTRIBUTE_K8S_POD_IP: ${OTEL_RESOURCE_ATTRIBUTE_K8S_POD_IP:-env_placeholder_value}
+      OTEL_RESOURCE_ATTRIBUTE_K8S_POD_UID: ${OTEL_RESOURCE_ATTRIBUTE_K8S_POD_UID:-env_placeholder_value}
+      OTEL_RESOURCE_ATTRIBUTE_SERVICE_NAME: ${OTEL_RESOURCE_ATTRIBUTE_SERVICE_NAME:-env_placeholder_value}
+      OTEL_RESOURCE_ATTRIBUTE_SERVICE_VERSION: ${OTEL_RESOURCE_ATTRIBUTE_SERVICE_VERSION:-env_placeholder_value}
+
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
