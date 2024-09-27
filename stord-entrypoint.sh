@@ -9,7 +9,7 @@ export KONG_DECLARATIVE_CONFIG=${KONG_DECLARATIVE_CONFIG:-"/etc/kong/kong.yaml"}
 envsubst < ${KONG_DECLARATIVE_CONFIG} > /tmp/kong.interpolated.yaml
 export KONG_DECLARATIVE_CONFIG=/tmp/kong.interpolated.yaml
 
-touch /tmp/user-management-bridge.log
+touch /tmp/auth.log
 
 
-exec /bin/sh -c "tail -f /tmp/user-management-bridge.log & /docker-entrypoint.sh kong docker-start"
+exec /bin/sh -c "tail -f /tmp/auth.log & /docker-entrypoint.sh kong docker-start"

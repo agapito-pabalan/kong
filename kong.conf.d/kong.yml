@@ -12,10 +12,9 @@ plugins:
         - '^https:\/\/.*\.stord\.com$'
         - '^https:\/\/.*\.stord-.*\.pages\.dev$'
         - '^https:\/\/.*\.stord.dev$'
-  - name: user_management_bridge
+  - name: auth
     config:
       cloud_endpoint: $CLOUD_SERVICE_URL/v1/auth/token
-      user_management_endpoint: $USER_MANAGEMENT_URL/v1/jwt/permissions
       cloud_signature_key: $CLOUD_SIGNATURE_KEY
       ld_sdk_key: $LD_SDK_KEY
       auth0_url: $AUTH0_JWKS_URL
@@ -937,13 +936,6 @@ services:
           - /v1/automations/([^\/]+)/action_configs/([^\/]+)$
           - /v1/automations/([^\/]+)/condition_configs$
           - /v1/automations/([^\/]+)/condition_configs/([^\/]+)$
-  - name: logiwa-reader
-    url: $LOGIWA_READER_URL
-    routes:
-      - name: logiwa_webhooks
-        strip_path: false
-        paths:
-          - /webhook/v1/logiwa/([^\/]+)$
   - name: planning-service
     url: $PLANNING_SERVICE_URL
     routes:

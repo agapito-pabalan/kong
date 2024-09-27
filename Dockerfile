@@ -18,8 +18,8 @@ RUN go get -d -v github.com/go-redis/redis/v8
 RUN go get github.com/launchdarkly/go-sdk-common/v3/ldcontext
 RUN go get github.com/launchdarkly/go-server-sdk/v7
 
-COPY /plugins/user_management_bridge/user_management_bridge.go .
-RUN go build  -o /go-plugins/user_management_bridge /go-plugins/user_management_bridge.go
+COPY /plugins/auth/auth.go .
+RUN go build -o /go-plugins/auth /go-plugins/auth.go
 
 FROM kong:3.7.1 AS release
 
@@ -29,7 +29,7 @@ RUN apt-get update && apt-get install -y \
     gettext \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=go-builder /go-plugins/user_management_bridge /usr/local/bin/user_management_bridge
+COPY --from=go-builder /go-plugins/auth /usr/local/bin/auth
 
 COPY stord-entrypoint.sh /stord-entrypoint.sh
 
@@ -50,10 +50,10 @@ ENV KONG_NGINX_PROXY_CLIENT_BODY_BUFFER_SIZE="32M"
 ENV KONG_NGINX_PROXY_CLIENT_HEADER_BUFFER_SIZE="64k"
 ENV KONG_NGINX_PROXY_LARGE_CLIENT_HEADER_BUFFERS="8 64k"
 ENV KONG_NGINX_WORKER_PROCESSES="2"
-ENV KONG_PLUGINS="correlation-id,opentelemetry,user_management_bridge,cors,request-size-limiting"
-ENV KONG_PLUGINSERVER_NAMES="user_management_bridge"
-ENV KONG_PLUGINSERVER_USER_MANAGEMENT_BRIDGE_QUERY_CMD="/usr/local/bin/user_management_bridge -dump"
-ENV KONG_PLUGINSERVER_USER_MANAGEMENT_BRIDGE_START_CMD="/usr/local/bin/user_management_bridge"
+ENV KONG_PLUGINS="correlation-id,opentelemetry,auth,cors,request-size-limiting"
+ENV KONG_PLUGINSERVER_NAMES="auth"
+ENV KONG_PLUGINSERVER_AUTH_QUERY_CMD="/usr/local/bin/auth -dump"
+ENV KONG_PLUGINSERVER_AUTH_START_CMD="/usr/local/bin/auth"
 ENV KONG_PORTAL_API_ACCESS_LOG="/dev/stdout"
 ENV KONG_PORTAL_API_ERROR_LOG="/dev/stderr"
 ENV KONG_PORT_MAPS="80:8000"

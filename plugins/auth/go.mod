@@ -1,4 +1,4 @@
-module user_management_bridge_plugin
+module auth_plugin
 
 go 1.23
 

@@ -30,9 +30,9 @@ environment:
       fieldRef:
         fieldPath: status.hostIP
   KONG_PREFIX: "/kong_prefix"
-  KONG_PLUGINSERVER_USER_MANAGEMENT_BRIDGE_SOCKET: "/kong_prefix/user_management_bridge.socket"
-  KONG_PLUGINSERVER_USER_MANAGEMENT_BRIDGE_QUERY_CMD: "/usr/local/bin/user_management_bridge -dump -kong-prefix /kong_prefix"
-  KONG_PLUGINSERVER_USER_MANAGEMENT_BRIDGE_START_CMD: "/usr/local/bin/user_management_bridge -kong-prefix /kong_prefix"
+  KONG_PLUGINSERVER_AUTH_SOCKET: "/kong_prefix/auth.socket"
+  KONG_PLUGINSERVER_AUTH_QUERY_CMD: "/usr/local/bin/auth -dump -kong-prefix /kong_prefix"
+  KONG_PLUGINSERVER_AUTH_START_CMD: "/usr/local/bin/auth -kong-prefix /kong_prefix"
   KONG_TRACING_INSTRUMENTATIONS: all
   KONG_TRACING_SAMPLING_RATE: "1.0"
   LD_SDK_KEY: "op://Infrastructure Development/Launch Darkly/sdk_key"

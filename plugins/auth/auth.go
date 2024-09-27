@@ -29,32 +29,6 @@ const REQUIRES_AUTH_HEADER string = "requires-auth"
 const CLOUD_SIGNATURE_HEADER string = "x-cloud-signature"
 const PROCESSING_PERIOD int = 1
 
-type UserManagementResponseAttributes struct {
-	PermissionsJwt string `json:"permissionsJwt"`
-}
-
-type UserManagementResponse struct {
-	Attributes UserManagementResponseAttributes `json:"attributes"`
-	Type       string                           `json:"type"`
-}
-
-type ResponseEnvelope struct {
-	Data UserManagementResponse `json:"data"`
-}
-
-type Response struct {
-	Message string `json:"message"`
-}
-
-type UserManagementRequestAttributes struct {
-	Auth0UserID string `json:"auth0UserId"`
-}
-
-type UserManagementRequest struct {
-	Attributes UserManagementRequestAttributes `json:"attributes"`
-	Type       string                          `json:"type"`
-}
-
 type CloudServiceRequest struct {
 	Type         string `json:"type"`
 	App          string `json:"app"`
@@ -77,17 +51,12 @@ type CloudResponseEnvelope struct {
 	Data CloudResponse `json:"data"`
 }
 
-type RequestEnvelope struct {
-	Data UserManagementRequest `json:"data"`
-}
-
 type JwksAutoRefresh interface {
 	Configure(url string, options ...jwk.AutoRefreshOption)
 	Fetch(ctx context.Context, url string) (jwk.Set, error)
 }
 
 type Config struct {
-	UserManagementEndpoint string `json:"user_management_endpoint"`
 	CloudEndpoint          string `json:"cloud_endpoint"`
 	CloudSignatureKey      string `json:"cloud_signature_key"`
 	LdSdkKey               string `json:"ld_sdk_key"`
@@ -141,39 +110,22 @@ func (conf *Config) Access(kong *pdk.PDK) {
 
 	path, _ := kong.Request.GetPath()
 
-	match, _ := regexp.MatchString("/.well-known/acme-challenge", path)
-	if match {
-		return
+	skipAuthPaths := []string{
+		"/.well-known/acme-challenge",
+		"/_health",
+		"/webhook",
+		"/connections/auth",
+		"/docs/",
+		"/public_portal/",
+		"/networks/.+/items/.+/image",
 	}
 
-	match, _ = regexp.MatchString("/_health", path)
-	if match {
-		return
-	}
+	for _, pathRegex := range skipAuthPaths {
+		match, _ := regexp.MatchString(pathRegex, path)
 
-	match, _ = regexp.MatchString("/webhook", path)
-	if match {
-		return
-	}
-
-	match, _ = regexp.MatchString("/connections/auth", path)
-	if match {
-		return
-	}
-
-	match, _ = regexp.MatchString("/docs/", path)
-	if match {
-		return
-	}
-
-	match, _ = regexp.MatchString("/public_portal/", path)
-	if match {
-		return
-	}
-
-	match, _ = regexp.MatchString("/networks/.+/items/.+/image", path)
-	if match {
-		return
+		if match {
+			return
+		}
 	}
 
 	cloudSignatureHeader, err := kong.Request.GetHeader(CLOUD_SIGNATURE_HEADER)
@@ -273,7 +225,7 @@ func (conf *Config) Access(kong *pdk.PDK) {
 
 	err = kong.ServiceRequest.SetHeader(REQUEST_AUTHORIZATION_HEADER, tokenHeaderValueStr)
 	if err != nil {
-		kong.Log.Err("error: ", err.Error(), " unable to insert user_management token in authorization header")
+		kong.Log.Err("error: ", err.Error(), " unable to insert token in authorization header")
 		kong.Response.Exit(500, []byte(err.Error()), nil)
 		return
 	}
@@ -285,7 +237,7 @@ func (conf *Config) Access(kong *pdk.PDK) {
 		return
 	}
 
-	kong.Log.Debug("Success! Called UserManagement API and swapped [", auth0Token, "] for [", permissionsToken, "]")
+	kong.Log.Debug("Success! Swapped [", auth0Token, "] for [", permissionsToken, "]")
 }
 
 func (conf *Config) RedisClient() *redis.Client {
@@ -312,15 +264,14 @@ func getAuth0Token(kong *pdk.PDK) ([]byte, error) {
 }
 
 // cacheFetchPermissionsToken exchanges the Auth0 token for a permissions token
-// by calling the UserManagement API. It will first attempt to retrieve the
+// by calling the cloud-service API. It will first attempt to retrieve the
 // permissions token from the cache. If it is not found, it will call the
-// UserManagement API and store the permissions token in the cache.
+// cloud-service API and store the permissions token in the cache.
 func (conf *Config) cacheFetchPermissionsToken(rawToken string, auth0Token jwt.Token, kong *pdk.PDK) (string, error) {
 	permissionsToken := ""
 	auth0UserID := auth0Token.Subject()
 	cacheClient := conf.RedisClient()
 
-	var useCloudAuth bool
 	var err error
 	var app string
 
@@ -338,20 +289,11 @@ func (conf *Config) cacheFetchPermissionsToken(rawToken string, auth0Token jwt.T
 		app = "oms"
 	}
 
-	referer, _ := kong.Request.GetHeader("referer")
-	// V1 shippers cannot use cloud auth
-	useCloudAuth = !strings.Contains(referer, "v1.shipper.stord.com")
-
-	var cachePrefix string
-	if useCloudAuth {
-		cachePrefix = "kong:cloud:" + app + ":"
-		if networkId != "" {
-			cachePrefix += "network:" + networkId + ":"
-		} else {
-			cachePrefix += "tenant:" + org + ":"
-		}
+	cachePrefix := "kong:cloud:" + app + ":"
+	if networkId != "" {
+		cachePrefix += "network:" + networkId + ":"
 	} else {
-		cachePrefix = ""
+		cachePrefix += "tenant:" + org + ":"
 	}
 
 	cacheKey := cachePrefix + auth0UserID
@@ -362,11 +304,7 @@ func (conf *Config) cacheFetchPermissionsToken(rawToken string, auth0Token jwt.T
 		return permissionsToken, nil
 	}
 
-	if useCloudAuth {
-		permissionsToken, err = conf.exchangeAuth0ForCloudToken(app, org, networkId, rawToken)
-	} else {
-		permissionsToken, err = conf.exchangeAuth0ForUserManagementToken(auth0UserID)
-	}
+	permissionsToken, err = conf.exchangeAuth0ForCloudToken(app, org, networkId, rawToken)
 
 	if err != nil {
 		return "", err
@@ -380,41 +318,6 @@ func (conf *Config) cacheFetchPermissionsToken(rawToken string, auth0Token jwt.T
 	}
 
 	return permissionsToken, nil
-}
-
-// exchangeAuth0ForUserManagementToken exchanges the Auth0 token for a permissions token
-// by calling the UserManagement API.
-func (conf *Config) exchangeAuth0ForUserManagementToken(auth0UserID string) (string, error) {
-	requestEnvelope := RequestEnvelope{Data: UserManagementRequest{
-		Attributes: UserManagementRequestAttributes{
-			Auth0UserID: auth0UserID,
-		},
-		Type: REQUEST_JWT_TYPE,
-	}}
-
-	requestBody, err := json.Marshal(requestEnvelope)
-	if err != nil {
-		return "", err
-	}
-
-	response, err := http.Post(conf.UserManagementEndpoint, "application/vnd.api+json", bytes.NewBuffer(requestBody))
-	if err != nil {
-		return "", err
-	}
-
-	if response.StatusCode < 200 || response.StatusCode > 299 {
-		return "", fmt.Errorf("unexpected status code from UserManagement: %d", response.StatusCode)
-	}
-
-	var responseEnvelope ResponseEnvelope
-
-	err = json.NewDecoder(response.Body).Decode(&responseEnvelope)
-
-	if err != nil {
-		return "", err
-	}
-
-	return responseEnvelope.Data.Attributes.PermissionsJwt, nil
 }
 
 // exchangeAuth0ForCloudToken exchanges the Auth0 token for a permissions token
@@ -467,7 +370,7 @@ const Version = "1.0.0"
 const Priority = 1
 
 func main() {
-	f, err := os.OpenFile("/tmp/user-management-bridge.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	f, err := os.OpenFile("/tmp/auth.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 	if err != nil {
 		log.Fatalf("error opening file: %v", err)
 	}
