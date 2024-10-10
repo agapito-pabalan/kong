@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.83.0](https://github.com/stordco/kong/compare/v1.82.1...v1.83.0) (2024-10-10)
+
+
+### Features
+
+* Add public items to product catalog ([#484](https://github.com/stordco/kong/issues/484)) ([b18f88a](https://github.com/stordco/kong/commit/b18f88aeadb47b7bdef35a7795250c0b4a4659e0))
+
+
+### Bug Fixes
+
+* Add /bff/v1/shopify/(locations|connections) to marketplace routes ([#483](https://github.com/stordco/kong/issues/483)) ([538d05a](https://github.com/stordco/kong/commit/538d05a3e788bd2b5d1dd24d8d27f24f3fe41a84))
+* **livestack:** Restore docker-compose.yml file so livestack can use it ([#480](https://github.com/stordco/kong/issues/480)) ([27c62bf](https://github.com/stordco/kong/commit/27c62bf5563cc35610876b858b183f3b5f82f873))
+* Remove user management references ([#479](https://github.com/stordco/kong/issues/479)) ([04f19f9](https://github.com/stordco/kong/commit/04f19f9902dce4ed440031be189eb0b587ab9e27))
+
 ## [1.82.1](https://github.com/stordco/kong/compare/v1.82.0...v1.82.1) (2024-09-24)
 
 
