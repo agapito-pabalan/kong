@@ -672,20 +672,9 @@ services:
         paths:
           - /integrations/v1/units_of_measure$
           - /integrations/v1/add_aliases$
-      - name: product_catalog_v1_catalogs
-        strip_path: false
-        paths:
-          - /v1/catalogs$
-          - /v1/catalogs/([^\/]+)$
-      - name: product_catalog_v1_kits
-        strip_path: false
-        paths:
           - /v1/kits$
           - /v1/kits/([^\/]+)$
           - /v1/([^\/]+)/bill_of_materials$
-      - name: product_catalog_v1_bff
-        strip_path: false
-        paths:
           - /integrations/v1/([^\/]+)/kits/([^\/]+)$
           - /bff/v1/kits$
           - /bff/v1/kits/([^\/]+)$
@@ -703,9 +692,6 @@ services:
           - /bff/v1/networks/([^\/]+)/bundle_details/([^\/]+)$
           - /bff/v1/support/([^\/]+)/soft_delete_item/([^\/]+)$
           - /bff/v1/support/([^\/]+)/soft_delete_kit/([^\/]+)$
-      - name: product_catalog_v1_items
-        strip_path: false
-        paths:
           - /integrations/v1/items$
           - /integrations/v1/([^\/]+)/items/([^\/]+)$
           - /v1/items$
@@ -713,6 +699,7 @@ services:
           - /v1/items_bulk
           - /v1/unit_conversions
           - /bff/v1/items_search(|\?[^\/]+)$
+          - /public/v1/networks/([^\/]+)/products/items
       - name: product_catalog_v1_listings
         strip_path: false
         paths:
