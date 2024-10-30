@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.84.0](https://github.com/stordco/kong/compare/v1.83.0...v1.84.0) (2024-10-30)
+
+
+### Features
+
+* Add v2/activities ([#486](https://github.com/stordco/kong/issues/486)) ([094d706](https://github.com/stordco/kong/commit/094d706d5fca43982de07de8fc9625b9407f82ff))
+
 ## [1.83.0](https://github.com/stordco/kong/compare/v1.82.1...v1.83.0) (2024-10-10)
 
 
