@@ -457,6 +457,7 @@ services:
         strip_path: false
         paths:
           - /v1/activities$
+          - /v2/activities$
       - name: orders_public_v1
         strip_path: false
         paths:
