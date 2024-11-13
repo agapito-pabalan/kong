@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.85.0](https://github.com/stordco/kong/compare/v1.84.0...v1.85.0) (2024-11-13)
+
+
+### Features
+
+* Add subscriptions webhook endpoints ([#488](https://github.com/stordco/kong/issues/488)) ([eac10bd](https://github.com/stordco/kong/commit/eac10bde02a37e5be0ccadbe2c9d203761e264c5))
+
+
+### Bug Fixes
+
+* Add subscription app endpoints ([#490](https://github.com/stordco/kong/issues/490)) ([164782b](https://github.com/stordco/kong/commit/164782b2a00cc80e4c18f18455578026e85c6776))
+
 ## [1.84.0](https://github.com/stordco/kong/compare/v1.83.0...v1.84.0) (2024-10-30)
 
 
