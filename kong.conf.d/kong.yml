@@ -756,6 +756,7 @@ services:
           - /connections/auth/shopify/install$
           - /webhook/v1/shopify/estimated_delivery_date$
           - /webhook/v1/shopify/([^\/]+)/([^\/]+)$
+          - /webhook/v1/subscriptions/([^\/]+)$
           - /v1/connections/shopify/([^\/]+)$
           - /v1/connections/shopify/orders/([^\/]+)$
           - /v1/connections/shopify/validate_connection/([^\/]+)$
