@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.85.1](https://github.com/stordco/kong/compare/v1.85.0...v1.85.1) (2024-11-14)
+
+
+### Bug Fixes
+
+* Add new shopify extension routes ([#491](https://github.com/stordco/kong/issues/491)) ([d3932c6](https://github.com/stordco/kong/commit/d3932c61e2e12175c684cad48d26eea6bb6dd7ae))
+
 ## [1.85.0](https://github.com/stordco/kong/compare/v1.84.0...v1.85.0) (2024-11-13)
 
 
