@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.85.2](https://github.com/stordco/kong/compare/v1.85.1...v1.85.2) (2024-11-19)
+
+
+### Miscellaneous
+
+* [OFM-4888] add subscriptions update_protection route ([#493](https://github.com/stordco/kong/issues/493)) ([5b0b584](https://github.com/stordco/kong/commit/5b0b584d76f80158caa8d31c75bcea7f1a5b4636))
+* Update subscriptions update_protection path ([#495](https://github.com/stordco/kong/issues/495)) ([00bf6a3](https://github.com/stordco/kong/commit/00bf6a31036a65c017b623f68cee91605646c230))
+
 ## [1.85.1](https://github.com/stordco/kong/compare/v1.85.0...v1.85.1) (2024-11-14)
 
 
