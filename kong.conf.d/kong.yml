@@ -809,7 +809,10 @@ services:
           - /v1/subscription_apps/([^\/]+)$
           - /v1/subscriptions$
           - /v1/subscriptions/([^\/]+)$
-          - /public_portal/v1/subscriptions/([^\/]+)/update_protection$
+      - name: marketplace_v1_public_subscriptions
+        strip_path: false
+        paths:
+          - /public_portal/v1/subscriptions/update_protection$
   - name: search-service
     url: $SEARCH_SERVICE_URL
     routes:
