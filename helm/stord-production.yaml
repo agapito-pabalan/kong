@@ -38,22 +38,16 @@ environment:
   LD_SDK_KEY: "op://Infrastructure Production/Launch Darkly/sdk_key"
   LOGIWA_READER_URL: http://logiwa-reader
   MARKETPLACE_SERVICE_URL: http://marketplace-service
-  MEISSA_URL: http://meissa
-  MINTAKA_URL: http://mintaka
   ORDERS_SERVICE_URL: http://orders-service
   ORDER_ORCHESTRATION_SERVICE_URL: http://order-orchestration
   OTEL_COLLECTOR_ENDPOINT: http://opentelemetry.stord-monitoring.svc.cluster.local:4318/v1/traces
   PLANNING_SERVICE_URL: http://planning-service
   PRODUCT_CATALOG_SERVICE_URL: http://product-catalog-service
   REDIS_CACHE_URL: "op://Infrastructure Production/Kong/redis"
-  RIGEL_URL: http://rigel
-  SAIPH_URL: http://saiph
   SEARCH_SERVICE_URL: http://search-service
-  STORDBOT_URL: http://stordbot
   TENANT_SERVICE_URL: http://tenant-service
   TRADE_PARTNERSHIPS_SERVICE_URL: http://trade-partnerships
   TRANSPORTATION_SERVICE_URL: http://transportation-service
-  USER_MANAGEMENT_URL: http://user-management
   WMS_INTEGRATION_BRIDGE_URL: http://wms-integration-bridge
 
 globalnameOverride: "kong"

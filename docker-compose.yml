@@ -25,14 +25,8 @@ services:
       WMS_INTEGRATION_BRIDGE_URL: ${WMS_INTEGRATION_BRIDGE_URL:-http://wms_integration_bridge.localhost}
       TRANSPORTATION_SERVICE_URL: ${TRANSPORTATION_SERVICE_URL:-http://transportation_service.localhost}
       ORDER_ORCHESTRATION_SERVICE_URL: ${ORDER_ORCHESTRATION_SERVICE_URL:-http://order_orchestration.localhost}
-      STORDBOT_URL: ${STORDBOT_URL:-http://stordbot.localhost}
       PLANNING_SERVICE_URL: ${PLANNING_SERVICE_URL:-http://planning_service.localhost}
-      SAIPH_URL: ${SAIPH_URL:-http://saiph.localhost}
-      USER_MANAGEMENT_URL: ${USER_MANAGEMENT_URL:-http://user_management.localhost}
       LOGIWA_READER_URL: ${LOGIWA_READER_URL:-http://logiwa_reader.localhost}
-      MINTAKA_URL: ${MINTAKA_URL:-http://mintaka.localhost}
-      MEISSA_URL: ${MEISSA_URL:-http://meissa.localhost}
-      RIGEL_URL: ${RIGEL_URL:-http://rigel.localhost}
 
       OTEL_RESOURCE_ATTRIBUTE_DEPLOYMENT_ENVIRONMENT: ${OTEL_RESOURCE_ATTRIBUTE_DEPLOYMENT_ENVIRONMENT:-env_placeholder_value}
       OTEL_RESOURCE_ATTRIBUTE_GIT_COMMIT_SHA: ${OTEL_RESOURCE_ATTRIBUTE_GIT_COMMIT_SHA:-env_placeholder_value}
