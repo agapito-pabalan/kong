@@ -148,6 +148,7 @@ services:
           - /public_portal/v1/consumer_experience/orders/([^\/]+)/authenticate$
           - /public_portal/v1/consumer_experience/orders/([^\/]+)/document_upload$
           - /public_portal/v1/consumer_experience/orders/([^\/]+)/claims$
+          - /public_portal/v1/consumer_experience/orders/([^\/]+)/config$
           - /v1/consumer_experience/([^\/]+)/delivery_options$
           - /v1/consumer_experience/([^\/]+)/delivery_options/([^\/]+)$
           - /v1/consumer_experience/([^\/]+)/configurations$
