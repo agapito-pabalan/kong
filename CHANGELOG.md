@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.86.0](https://github.com/stordco/kong/compare/v1.85.2...v1.86.0) (2024-12-11)
+
+
+### Features
+
+* Cx returns routes ([#497](https://github.com/stordco/kong/issues/497)) ([6083fc2](https://github.com/stordco/kong/commit/6083fc2388e2ea52aa693a46842b66b663f8b991))
+
+
+### Bug Fixes
+
+* Add domo url ([#499](https://github.com/stordco/kong/issues/499)) ([b036a86](https://github.com/stordco/kong/commit/b036a868bb3640594b61e6f371c54b0532e665d3))
+* More v1 cleanup ([#482](https://github.com/stordco/kong/issues/482)) ([73f4bae](https://github.com/stordco/kong/commit/73f4baedeb2111aadc78c08193ae69411ca3c3ca))
+
+
+### Miscellaneous
+
+* Add /public_portal/v1/consumer_experience/orders/:order_id/config to orders_service ([#498](https://github.com/stordco/kong/issues/498)) ([9c9040b](https://github.com/stordco/kong/commit/9c9040b48167545c27eb6c8e0ac1eb221390afba))
+
 ## [1.85.2](https://github.com/stordco/kong/compare/v1.85.1...v1.85.2) (2024-11-19)
 
 
