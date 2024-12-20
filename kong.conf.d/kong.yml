@@ -150,7 +150,7 @@ services:
           - /public_portal/v1/consumer_experience/orders/([^\/]+)/claims$
           - /public_portal/v1/consumer_experience/orders/([^\/]+)/config$
           - /public_portal/v1/consumer_experience/orders/([^\/]+)/returns$
-          - /public_portal/v1/consumer_experience/returns/webhooks/twoboxes"
+          - /public_portal/v1/consumer_experience/returns/webhooks/twoboxes$
           - /v1/consumer_experience/([^\/]+)/delivery_options$
           - /v1/consumer_experience/([^\/]+)/delivery_options/([^\/]+)$
           - /v1/consumer_experience/([^\/]+)/configurations$
