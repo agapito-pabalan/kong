@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.86.1](https://github.com/stordco/kong/compare/v1.86.0...v1.86.1) (2024-12-20)
+
+
+### Bug Fixes
+
+* Add returns endpoint ([#501](https://github.com/stordco/kong/issues/501)) ([0b1f499](https://github.com/stordco/kong/commit/0b1f499ef8e0dc2f9c7727c46d40b6c809139932))
+* Fix twoboxes path ([#504](https://github.com/stordco/kong/issues/504)) ([90cf44b](https://github.com/stordco/kong/commit/90cf44b80227cb9178dc2563c904b53d0beb8da3))
+
+
+### Miscellaneous
+
+* Add twoboxes webhook path ([#503](https://github.com/stordco/kong/issues/503)) ([3e751c4](https://github.com/stordco/kong/commit/3e751c4fc86e004165581b88863d6531a6468c9b))
+
 ## [1.86.0](https://github.com/stordco/kong/compare/v1.85.2...v1.86.0) (2024-12-11)
 
 
