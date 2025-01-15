@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.86.2](https://github.com/stordco/kong/compare/v1.86.1...v1.86.2) (2025-01-15)
+
+
+### Miscellaneous
+
+* Loosen public products route ([#505](https://github.com/stordco/kong/issues/505)) ([a149316](https://github.com/stordco/kong/commit/a1493169993bf269a63faa5308ec7b7df7a22170))
+
 ## [1.86.1](https://github.com/stordco/kong/compare/v1.86.0...v1.86.1) (2024-12-20)
 
 
