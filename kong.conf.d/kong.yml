@@ -375,7 +375,7 @@ services:
           - /v1/items_bulk
           - /v1/unit_conversions
           - /bff/v1/items_search(|\?[^\/]+)$
-          - /public/v1/networks/([^\/]+)/products/items
+          - /public/v1/networks/([^\/]+)/products
       - name: product_catalog_v1_listings
         strip_path: false
         paths:
