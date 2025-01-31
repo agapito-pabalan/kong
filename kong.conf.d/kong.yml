@@ -82,6 +82,7 @@ services:
           - /bff/v1/orders/([^\/]+)/reset_activities$
           - /bff/v1/orders/reset_activities
           - /bff/v1/orders/([^\/]+)/events$
+          - /bff/v1/orders/([^\/]+)/order_line_fulfillment_events$
           - /bff/v1/networks/([^\/]+)/work_orders
           - /bff/v1/networks/([^\/]+)/backorder_configuration
           - /bff/v1/networks/([^\/]+)/order_routing_configuration
