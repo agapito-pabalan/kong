@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.86.3](https://github.com/stordco/kong/compare/v1.86.2...v1.86.3) (2025-01-31)
+
+
+### Bug Fixes
+
+* **orders:** Add /bff/v1/orders/:id/order_line_fulfillment_events ([#507](https://github.com/stordco/kong/issues/507)) ([369655b](https://github.com/stordco/kong/commit/369655b546dff75ac6fb6c5c9fe80230317badf3))
+
 ## [1.86.2](https://github.com/stordco/kong/compare/v1.86.1...v1.86.2) (2025-01-15)
 
 
