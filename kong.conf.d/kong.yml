@@ -430,6 +430,7 @@ services:
         paths:
           - /connections/auth/shopify/callback$
           - /connections/auth/shopify/install$
+          - /connections/auth/shopify/reconnect_url$
           - /webhook/v1/shopify/estimated_delivery_date$
           - /webhook/v1/shopify/([^\/]+)/([^\/]+)$
           - /webhook/v1/subscriptions/([^\/]+)$
