@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.86.4](https://github.com/stordco/kong/compare/v1.86.3...v1.86.4) (2025-02-12)
+
+
+### Bug Fixes
+
+* Add new reconnect_url endpoint ([#510](https://github.com/stordco/kong/issues/510)) ([beba8d6](https://github.com/stordco/kong/commit/beba8d6b18fc13cc9ffb712e5571bf77ae59f72e))
+
 ## [1.86.3](https://github.com/stordco/kong/compare/v1.86.2...v1.86.3) (2025-01-31)
 
 
