@@ -491,6 +491,10 @@ services:
   - name: search-service
     url: $SEARCH_SERVICE_URL
     routes:
+      - name: global_customer_search
+        strip_path: false
+        paths:
+          - /v1/global_customer_search$
       - name: search_service_v1_products
         strip_path: false
         paths:
