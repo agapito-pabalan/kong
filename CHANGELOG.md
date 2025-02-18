@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.87.0](https://github.com/stordco/kong/compare/v1.86.4...v1.87.0) (2025-02-18)
+
+
+### Features
+
+* Global customer search ([#509](https://github.com/stordco/kong/issues/509)) ([5bc1992](https://github.com/stordco/kong/commit/5bc1992e47ef398e8717c6390c1786c261fb1f4e))
+
+
+### Bug Fixes
+
+* Add new endpoint to skip cloud auth ([#512](https://github.com/stordco/kong/issues/512)) ([07fcedf](https://github.com/stordco/kong/commit/07fcedfd676e8a20993075c414bcac027553bfa6))
+
 ## [1.86.4](https://github.com/stordco/kong/compare/v1.86.3...v1.86.4) (2025-02-12)
 
 
