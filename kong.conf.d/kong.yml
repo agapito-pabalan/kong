@@ -144,6 +144,7 @@ services:
       - name: consumer_experience_v1
         strip_path: false
         paths:
+          - /public_portal/v1/consumer_experience/orders/([^\/]+)$
           - /public_portal/v1/consumer_experience/orders/([^\/]+)/shipments$
           - /public_portal/v1/consumer_experience/orders/([^\/]+)/shipments/([^\/]+)$
           - /public_portal/v1/consumer_experience/orders/([^\/]+)/authenticate$
