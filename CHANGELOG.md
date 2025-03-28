@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.89.0](https://github.com/stordco/kong/compare/v1.88.0...v1.89.0) (2025-03-28)
+
+
+### Features
+
+* Add public inventory adjustments route ([#517](https://github.com/stordco/kong/issues/517)) ([233fa15](https://github.com/stordco/kong/commit/233fa156f176cf8ab80a8ee44a72c901ee3bac96))
+
 ## [1.88.0](https://github.com/stordco/kong/compare/v1.87.0...v1.88.0) (2025-03-28)
 
 
