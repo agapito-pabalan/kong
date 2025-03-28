@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.88.0](https://github.com/stordco/kong/compare/v1.87.0...v1.88.0) (2025-03-28)
+
+
+### Features
+
+* Add carrier service ([#516](https://github.com/stordco/kong/issues/516)) ([736915d](https://github.com/stordco/kong/commit/736915d8ed1047c9b0f956326102fb55148992a6))
+
+
+### Bug Fixes
+
+* Add new cx portal order details endpoint ([#514](https://github.com/stordco/kong/issues/514)) ([2b369d9](https://github.com/stordco/kong/commit/2b369d9dc52f29269d4de57208e09d2b78b495c3))
+
 ## [1.87.0](https://github.com/stordco/kong/compare/v1.86.4...v1.87.0) (2025-02-18)
 
 
