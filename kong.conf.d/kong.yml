@@ -333,6 +333,7 @@ services:
           - /bff/v1/shippers
           - /bff/v1/networks/([^\/]+)/bulk_facility_import
           - /bff/v1/domo/url$
+          - /bff/v1/insights/([^\/]+)/embed_url
       - name: trade-partnerships-v2
         strip_path: false
         paths:
