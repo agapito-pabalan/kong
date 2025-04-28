@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.89.1](https://github.com/stordco/kong/compare/v1.89.0...v1.89.1) (2025-04-25)
+
+
+### Miscellaneous
+
+* Add general insights embed_url support ([#520](https://github.com/stordco/kong/issues/520)) ([644a0a0](https://github.com/stordco/kong/commit/644a0a0444b76d5f1d529a3c4fe2388fc6ae1334))
+
 ## [1.89.0](https://github.com/stordco/kong/compare/v1.88.0...v1.89.0) (2025-03-28)
 
 
