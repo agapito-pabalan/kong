@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.90.0](https://github.com/stordco/kong/compare/v1.89.1...v1.90.0) (2025-05-09)
+
+
+### Features
+
+* Add endpoint for shopify fulfillments redirects ([#524](https://github.com/stordco/kong/issues/524)) ([4e35c80](https://github.com/stordco/kong/commit/4e35c8030c2795d68a6306b6f618dd03418ded09))
+
+
+### Bug Fixes
+
+* Expose the shopify order fulfillment route ([#525](https://github.com/stordco/kong/issues/525)) ([e31dd73](https://github.com/stordco/kong/commit/e31dd73d11a22b97f6fb72d71c108b974553fc82))
+
+
+### Miscellaneous
+
+* Relax bff/v1/networks/:network_id/orders ([#522](https://github.com/stordco/kong/issues/522)) ([d90d4b6](https://github.com/stordco/kong/commit/d90d4b61ed4edaa82aa152aac90afc531c30c288))
+
 ## [1.89.1](https://github.com/stordco/kong/compare/v1.89.0...v1.89.1) (2025-04-25)
 
 
