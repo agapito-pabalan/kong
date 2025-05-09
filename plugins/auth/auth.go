@@ -57,12 +57,12 @@ type JwksAutoRefresh interface {
 }
 
 type Config struct {
-	CloudEndpoint          string `json:"cloud_endpoint"`
-	CloudSignatureKey      string `json:"cloud_signature_key"`
-	LdSdkKey               string `json:"ld_sdk_key"`
-	Auth0Url               string `json:"auth0_url"`
-	CacheUrl               string `json:"cache_url"`
-	JwksRefreshInterval    int    `json:"jwks_refresh_interval"`
+	CloudEndpoint       string `json:"cloud_endpoint"`
+	CloudSignatureKey   string `json:"cloud_signature_key"`
+	LdSdkKey            string `json:"ld_sdk_key"`
+	Auth0Url            string `json:"auth0_url"`
+	CacheUrl            string `json:"cache_url"`
+	JwksRefreshInterval int    `json:"jwks_refresh_interval"`
 }
 
 type Globals struct {
@@ -120,6 +120,7 @@ func (conf *Config) Access(kong *pdk.PDK) {
 		"/networks/.+/items/.+/image",
 		"/shopify_extensions/v2",
 		"/v1/connections/shopify/by_nonce",
+		"/v1/connections/shopify/.+/order_fulfillments/.+/details$",
 	}
 
 	for _, pathRegex := range skipAuthPaths {
