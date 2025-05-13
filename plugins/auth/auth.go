@@ -120,7 +120,6 @@ func (conf *Config) Access(kong *pdk.PDK) {
 		"/networks/.+/items/.+/image",
 		"/shopify_extensions/v2",
 		"/v1/connections/shopify/by_nonce",
-		"/v1/connections/shopify/.+/order_fulfillments/.+/details$",
 	}
 
 	for _, pathRegex := range skipAuthPaths {
