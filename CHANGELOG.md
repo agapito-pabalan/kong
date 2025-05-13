@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.90.1](https://github.com/stordco/kong/compare/v1.90.0...v1.90.1) (2025-05-13)
+
+
+### Bug Fixes
+
+* Remove order_fulfillments/:id/details from skipAuthPaths ([#526](https://github.com/stordco/kong/issues/526)) ([8301134](https://github.com/stordco/kong/commit/8301134a3fef0d8d67881150ccdafd14289007f3))
+
 ## [1.90.0](https://github.com/stordco/kong/compare/v1.89.1...v1.90.0) (2025-05-09)
 
 
