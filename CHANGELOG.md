@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.90.2](https://github.com/stordco/kong/compare/v1.90.1...v1.90.2) (2025-05-15)
+
+
+### Miscellaneous
+
+* Relax public order_number routes ([#528](https://github.com/stordco/kong/issues/528)) ([b839f7c](https://github.com/stordco/kong/commit/b839f7c7c81d5d3eb0afdef8963a3056f6b8dec2))
+
 ## [1.90.1](https://github.com/stordco/kong/compare/v1.90.0...v1.90.1) (2025-05-13)
 
 
