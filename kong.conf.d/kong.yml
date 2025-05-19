@@ -58,6 +58,8 @@ services:
           - /v1/orders/([^\/]+)/sales_order_lines
           - /v1/orders/([^\/]+)/tags
           - /v1/networks/([^\/]+)/backordered_items
+          - /v1/networks/([^\/]+)/reports/([^\/]+)$
+          - /bff/admin/v1/reports/([^\/]+)$
           - /bff/v1/complete_order
           - /bff/v1/accountant/snapshots
           - /bff/v1/cancel_order_lines
