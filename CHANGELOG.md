@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.91.0](https://github.com/stordco/kong/compare/v1.90.2...v1.91.0) (2025-05-19)
+
+
+### Features
+
+* [OFM-6087] Add reports endpoints to kong ([#530](https://github.com/stordco/kong/issues/530)) ([fb48501](https://github.com/stordco/kong/commit/fb4850150b9a388a71a373d3ab75a9ffd90dc80e))
+
 ## [1.90.2](https://github.com/stordco/kong/compare/v1.90.1...v1.90.2) (2025-05-15)
 
 
