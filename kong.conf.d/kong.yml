@@ -93,6 +93,7 @@ services:
           - /bff/v1/networks/([^\/]+)/configurations/consolidate_fulfillments
           - /bff/v1/networks/([^\/]+)/billing_accounts
           - /bff/v1/networks/([^\/]+)/consumer_experience/alerts/([^\/]+)/test/([^\/]+)
+          - /bff/v1/networks/([^\/]+)/orders/([^\/]+)/mark_as_delivered
           - /integrations/v1/orders/([^\/]+)$
           - /bff/v1/update_order_tags
           - /bff/v2/facility_availability
