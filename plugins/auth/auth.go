@@ -118,6 +118,7 @@ func (conf *Config) Access(kong *pdk.PDK) {
 		"/docs/",
 		"/public_portal/",
 		"/networks/.+/items/.+/image",
+		"/networks/.+/kits/.+/image",
 		"/shopify_extensions/v2",
 		"/v1/connections/shopify/by_nonce",
 	}

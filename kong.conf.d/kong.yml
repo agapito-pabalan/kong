@@ -392,6 +392,10 @@ services:
         strip_path: false
         paths:
           - /networks/([^\/]+)/items/([^\/]+)/image
+      - name: product_catalog_kit_image
+        strip_path: false
+        paths:
+          - /networks/([^\/]+)/kits/([^\/]+)/image
   - name: tenant-service
     url: $TENANT_SERVICE_URL
     routes:
