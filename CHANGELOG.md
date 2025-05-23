@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.92.0](https://github.com/stordco/kong/compare/v1.91.0...v1.92.0) (2025-05-23)
+
+
+### Features
+
+* [OFM-6276] Adding new unauthenticated kit images endpoint ([#533](https://github.com/stordco/kong/issues/533)) ([b5bbe50](https://github.com/stordco/kong/commit/b5bbe50278e37439134224d956b3918311a18a88))
+* Expose mark as delivered endpoint ([#535](https://github.com/stordco/kong/issues/535)) ([a35978f](https://github.com/stordco/kong/commit/a35978fd12e627ca0c362f0b8df465a3e95c3756))
+
+
+### Miscellaneous
+
+* Add new marketplace shopify orders route ([#532](https://github.com/stordco/kong/issues/532)) ([61a1b1f](https://github.com/stordco/kong/commit/61a1b1f485a3d98e348ab83fbff8c0199e2ae606))
+
 ## [1.91.0](https://github.com/stordco/kong/compare/v1.90.2...v1.91.0) (2025-05-19)
 
 
