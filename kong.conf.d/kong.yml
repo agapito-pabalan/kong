@@ -178,6 +178,7 @@ services:
           - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/tracking_portals/([^\/]+)/([^\/]+)$
           - /v1/consumer_experience/([^\/]+)/shipment_protection
           - /v1/consumer_experience/([^\/]+)/storefronts
+          - /v1/consumer_experience/([^\/]+)/storefronts/([^\/]+)/default_delivery_option_set
           - /v1/consumer_experience/([^\/]+)/returns
   - name: facility-activity-service
     url: $FACILITY_ACTIVITY_SERVICE_URL
