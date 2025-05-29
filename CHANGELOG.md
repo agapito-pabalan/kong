@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.93.0](https://github.com/stordco/kong/compare/v1.92.0...v1.93.0) (2025-05-28)
+
+
+### Features
+
+* :wrench: expose delivery option set api ([#536](https://github.com/stordco/kong/issues/536)) ([f687fcd](https://github.com/stordco/kong/commit/f687fcd68143cf591d8bb40d20307571a0aa1559))
+
 ## [1.92.0](https://github.com/stordco/kong/compare/v1.91.0...v1.92.0) (2025-05-23)
 
 
