@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.94.0](https://github.com/stordco/kong/compare/v1.93.0...v1.94.0) (2025-06-04)
+
+
+### Features
+
+* [OFM-6211] Add Consumer delivery date session increment impression endpoint ([#538](https://github.com/stordco/kong/issues/538)) ([bbe61c1](https://github.com/stordco/kong/commit/bbe61c1d9722dd4ac758298e8f7b37c89639e96b))
+
 ## [1.93.0](https://github.com/stordco/kong/compare/v1.92.0...v1.93.0) (2025-05-28)
 
 
