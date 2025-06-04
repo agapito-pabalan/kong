@@ -155,6 +155,7 @@ services:
           - /public_portal/v1/consumer_experience/orders/([^\/]+)/config$
           - /public_portal/v1/consumer_experience/orders/([^\/]+)/returns$
           - /public_portal/v1/consumer_experience/returns/webhooks/twoboxes$
+          - /public_portal/v1/consumer_experience/consumer_delivery_date_session/increment/([^\/]+)/([^\/]+)$
           - /v1/consumer_experience/([^\/]+)/delivery_options$
           - /v1/consumer_experience/([^\/]+)/delivery_options/([^\/]+)$
           - /v1/consumer_experience/([^\/]+)/configurations$
