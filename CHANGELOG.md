@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.94.1](https://github.com/stordco/kong/compare/v1.94.0...v1.94.1) (2025-06-04)
+
+
+### Bug Fixes
+
+* [OFM-6359] Move session counter increment endpoint ([#543](https://github.com/stordco/kong/issues/543)) ([8af68cc](https://github.com/stordco/kong/commit/8af68ccc76d29b0df17cb8c83a686d191240e5ea))
+
+
+### Miscellaneous
+
+* Add network shipments endpoints to orders-service ([#541](https://github.com/stordco/kong/issues/541)) ([cf391fb](https://github.com/stordco/kong/commit/cf391fbcc06cf95a402ad7fdf274a24e15120772))
+
 ## [1.94.0](https://github.com/stordco/kong/compare/v1.93.0...v1.94.0) (2025-06-04)
 
 
