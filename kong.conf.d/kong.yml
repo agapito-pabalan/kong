@@ -357,6 +357,7 @@ services:
         paths:
           - /integrations/v1/units_of_measure$
           - /integrations/v1/add_aliases$
+          - /integrations/v1/([^\/]+)/item_and_kit_data_by_skus$
           - /v1/kits$
           - /v1/kits/([^\/]+)$
           - /v1/([^\/]+)/bill_of_materials$
