@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.94.2](https://github.com/stordco/kong/compare/v1.94.1...v1.94.2) (2025-06-10)
+
+
+### Miscellaneous
+
+* [OFM-6410] add integrations/item_and_kit_data_by_skus to product catalog ([#546](https://github.com/stordco/kong/issues/546)) ([c4a4067](https://github.com/stordco/kong/commit/c4a40674f4d0b795a8053d827180d87e22fa2460))
+
 ## [1.94.1](https://github.com/stordco/kong/compare/v1.94.0...v1.94.1) (2025-06-04)
 
 
