@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.94.3](https://github.com/stordco/kong/compare/v1.94.2...v1.94.3) (2025-06-11)
+
+
+### Miscellaneous
+
+* **orders-service:** Add parcel proxy endpoints ([#545](https://github.com/stordco/kong/issues/545)) ([8dbccb1](https://github.com/stordco/kong/commit/8dbccb1629016081629e5fd48518518c7502a7ad))
+
 ## [1.94.2](https://github.com/stordco/kong/compare/v1.94.1...v1.94.2) (2025-06-10)
 
 
