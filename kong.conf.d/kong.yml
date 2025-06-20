@@ -266,9 +266,7 @@ services:
       - name: inventory-public-api-routes
         strip_path: false
         paths:
-          - /public/v1/networks/([^\/]+)/inventory/advice
-          - /public/v1/networks/([^\/]+)/inventory/listings/availability
-          - /public/v1/networks/([^\/]+)/inventory/adjustments
+          - /public/v1/networks/([^\/]+)/inventory/
       - name: inventory-api-spec
         strip_path: false
         paths:
