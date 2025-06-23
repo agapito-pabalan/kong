@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.95.0](https://github.com/stordco/kong/compare/v1.94.3...v1.95.0) (2025-06-20)
+
+
+### Features
+
+* Add bundle availability endpoint ([#549](https://github.com/stordco/kong/issues/549)) ([69b7a9f](https://github.com/stordco/kong/commit/69b7a9f46800ee8759dcc2e31340536e4ad57234))
+
 ## [1.94.3](https://github.com/stordco/kong/compare/v1.94.2...v1.94.3) (2025-06-11)
 
 
