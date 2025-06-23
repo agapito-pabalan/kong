@@ -148,7 +148,7 @@ services:
       - name: orders_parcel_v1
         strip_path: false
         paths:
-          - /parcel/v1/shippers/([^\/]+)/
+          - /parcel/v1/
       - name: consumer_experience_v1
         strip_path: false
         paths:
