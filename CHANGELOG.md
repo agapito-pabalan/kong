@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.95.1](https://github.com/stordco/kong/compare/v1.95.0...v1.95.1) (2025-06-25)
+
+
+### Miscellaneous
+
+* [OFM-6470] open up public orders route to allow documents ([#553](https://github.com/stordco/kong/issues/553)) ([365396c](https://github.com/stordco/kong/commit/365396ccf25ebd22336b1c9558c2490da5375ed9))
+* [PB-1638] update parcel proxy to be more chillll ([#551](https://github.com/stordco/kong/issues/551)) ([227e277](https://github.com/stordco/kong/commit/227e27792c04e62d9986078b8de7369471e5ea1d))
+
 ## [1.95.0](https://github.com/stordco/kong/compare/v1.94.3...v1.95.0) (2025-06-20)
 
 
