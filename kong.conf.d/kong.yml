@@ -135,7 +135,7 @@ services:
         strip_path: false
         paths:
           - /public/v1/estimated_delivery_date$
-          - /public/v1/networks/([^\/]+)/orders/([^\/]+)/
+          - /public/v1/networks/([^\/]+)/orders/([^\/]+)
           - /public/v1/shipment_protection_cost
       - name: orders_shopify_extensions_v1
         strip_path: false
