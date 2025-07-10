@@ -389,6 +389,7 @@ services:
           - /v1/unit_conversions
           - /bff/v1/items_search(|\?[^\/]+)$
           - /public/v1/networks/([^\/]+)/products
+          - /bff/v1/([^\/]+)/products/exceptions$
       - name: product_catalog_v1_listings
         strip_path: false
         paths:
