@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.96.0](https://github.com/stordco/kong/compare/v1.95.1...v1.96.0) (2025-07-10)
+
+
+### Features
+
+* [ofm-6624] expose api for total exceptions ([#556](https://github.com/stordco/kong/issues/556)) ([9a03b1a](https://github.com/stordco/kong/commit/9a03b1aeefbaa1d7d3b33c2c34258fcd45a1537b))
+
+
+### Miscellaneous
+
+* Add /v1/consumer_experience/estimated_delivery_date ([#554](https://github.com/stordco/kong/issues/554)) ([cb3830a](https://github.com/stordco/kong/commit/cb3830ae7050ec7c401eb68262303f3119540b06))
+
 ## [1.95.1](https://github.com/stordco/kong/compare/v1.95.0...v1.95.1) (2025-06-25)
 
 
