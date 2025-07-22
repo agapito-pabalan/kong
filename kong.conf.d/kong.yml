@@ -59,6 +59,7 @@ services:
           - /v1/networks/([^\/]+)/backordered_items
           - /v1/networks/([^\/]+)/reports/([^\/]+)$
           - /v1/networks/([^\/]+)/order_forecasts/([^\/]+)$
+          - /v1/networks/([^\/]+)/order_forecasts/([^\/]+)/notes$
           - /v1/networks/([^\/]+)/shipments
           - /v1/networks/([^\/]+)/webhooks
           - /bff/admin/v1/reports/([^\/]+)$
