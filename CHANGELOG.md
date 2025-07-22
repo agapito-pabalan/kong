@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.99.0](https://github.com/stordco/kong/compare/v1.98.0...v1.99.0) (2025-07-22)
+
+
+### Features
+
+* [ofm-6478] expose apis for forecasts ([#562](https://github.com/stordco/kong/issues/562)) ([18e25eb](https://github.com/stordco/kong/commit/18e25eb31ebb1d1b893b253c21ed980e3a75f91b))
+* [ofm-6478] expose apis for forecasts ([#564](https://github.com/stordco/kong/issues/564)) ([6193f21](https://github.com/stordco/kong/commit/6193f21e185eac9715cc59ae14825448aa1228da))
+
 ## [1.98.0](https://github.com/stordco/kong/compare/v1.97.0...v1.98.0) (2025-07-22)
 
 
