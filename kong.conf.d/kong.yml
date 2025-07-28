@@ -100,6 +100,7 @@ services:
           - /bff/v1/update_order_tags
           - /bff/v2/facility_availability
           - /bff/v2/orders/add_order_lines
+          - /bff/v2/orders/swap_order_line
           - /bff/v2/orders/cancel_order_lines
           - /v2/orders/sales
           - /v2/orders/purchase
