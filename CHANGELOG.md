@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.100.0](https://github.com/stordco/kong/compare/v1.99.0...v1.100.0) (2025-08-07)
+
+
+### Features
+
+* [CX-723] Add shopify extension estimated delivery date delivery option endpoint ([#568](https://github.com/stordco/kong/issues/568)) ([0ebc0b1](https://github.com/stordco/kong/commit/0ebc0b1d0166a8c1e3443dcd1ca7971fc6f8efbf))
+* [ofm-6621] expose swap order line ([#565](https://github.com/stordco/kong/issues/565)) ([5625551](https://github.com/stordco/kong/commit/56255515eb80e56c09a78e8fa6bce68bedf523a5))
+* [TR-178] add collective routes ([#569](https://github.com/stordco/kong/issues/569)) ([a117f73](https://github.com/stordco/kong/commit/a117f7325da6812b13059e7fce262be439dc0974))
+* Add workflow token support endpoints ([#567](https://github.com/stordco/kong/issues/567)) ([01a71eb](https://github.com/stordco/kong/commit/01a71ebcb1fad0291e61c63dbfaa49730802706b))
+
 ## [1.99.0](https://github.com/stordco/kong/compare/v1.98.0...v1.99.0) (2025-07-22)
 
 
