@@ -154,6 +154,10 @@ services:
         strip_path: false
         paths:
           - /parcel/v1/
+      - name: orders_collective_v1
+        strip_path: false
+        paths:
+          - /collective/v1/
       - name: consumer_experience_v1
         strip_path: false
         paths:
