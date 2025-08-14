@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.101.0](https://github.com/stordco/kong/compare/v1.100.0...v1.101.0) (2025-08-11)
+
+
+### Features
+
+* [OFM-6592] Add manual atp override routes to orders ([#570](https://github.com/stordco/kong/issues/570)) ([7b2c654](https://github.com/stordco/kong/commit/7b2c654f07acd994f5a971a421ab6cbd851fca02))
+
 ## [1.100.0](https://github.com/stordco/kong/compare/v1.99.0...v1.100.0) (2025-08-07)
 
 
