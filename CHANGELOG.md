@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.102.0](https://github.com/stordco/kong/compare/v1.101.0...v1.102.0) (2025-09-02)
+
+
+### Features
+
+* Add route for manually holding an order ([#572](https://github.com/stordco/kong/issues/572)) ([32522a7](https://github.com/stordco/kong/commit/32522a7e0f00109dcc2d127fd82639d4772fec0d))
+
 ## [1.101.0](https://github.com/stordco/kong/compare/v1.100.0...v1.101.0) (2025-08-11)
 
 
