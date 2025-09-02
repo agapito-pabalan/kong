@@ -114,6 +114,7 @@ services:
           - /v2/orders/add_order_lines
           - /v2/orders/([^\/]+)/process_outbounds$
           - /v2/orders/([^\/]+)/process_order$
+          - /v2/networks/([^\/]+)/orders/([^\/]+)/hold_order
           - /v2/orders/([^\/]+)/destination$
           - /v2/orders/([^\/]+)/bill_to_customer$
           - /v2/orders/([^\/]+)/order_lines_update$
