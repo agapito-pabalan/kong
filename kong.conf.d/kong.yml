@@ -457,6 +457,7 @@ services:
       - name: marketplace_v1_shopify_connections
         strip_path: false
         paths:
+          - /non-oms/connections/auth/shopify/callback$
           - /connections/auth/shopify/callback$
           - /connections/auth/shopify/install$
           - /connections/auth/shopify/reconnect_url$
