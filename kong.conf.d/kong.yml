@@ -458,6 +458,7 @@ services:
         strip_path: false
         paths:
           - /non-oms/connections/auth/shopify/callback$
+          - /non-oms/connections/auth/shopify/install$
           - /connections/auth/shopify/callback$
           - /connections/auth/shopify/install$
           - /connections/auth/shopify/reconnect_url$
