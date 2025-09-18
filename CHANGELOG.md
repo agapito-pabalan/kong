@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.103.1](https://github.com/stordco/kong/compare/v1.103.0...v1.103.1) (2025-09-17)
+
+
+### Bug Fixes
+
+* [OFM-7011] Add shopify networkless installation route ([#576](https://github.com/stordco/kong/issues/576)) ([198d957](https://github.com/stordco/kong/commit/198d957176de25389a7c06391b4f61c9d3f529ab))
+
 ## [1.103.0](https://github.com/stordco/kong/compare/v1.102.0...v1.103.0) (2025-09-11)
 
 
