@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.104.0](https://github.com/stordco/kong/compare/v1.103.1...v1.104.0) (2025-09-29)
+
+
+### Features
+
+* [OFM-7106] Add new route for WMS link in kong.yml ([#579](https://github.com/stordco/kong/issues/579)) ([8d8b4c8](https://github.com/stordco/kong/commit/8d8b4c875b7985c1aca17cdb7b1e17185ff247e7))
+
 ## [1.103.1](https://github.com/stordco/kong/compare/v1.103.0...v1.103.1) (2025-09-17)
 
 
