@@ -3,8 +3,10 @@ package main
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -198,6 +200,18 @@ func (conf *Config) Access(kong *pdk.PDK) {
 		return
 	}
 
+	tokenStr := string(auth0Token)
+
+	if conf.isCloudJWT(tokenStr) {
+		err = conf.handleDelegationToken(kong, tokenStr)
+		if err != nil {
+			kong.Log.Warn("warning: delegation token error - ", err.Error())
+			kong.Response.Exit(401, []byte("Unauthorized"), nil)
+		}
+		return
+	}
+
+	// Continue with existing Auth0 flow
 	globals.AutoRefresh.Configure(conf.Auth0Url, jwk.WithMinRefreshInterval(time.Duration(conf.JwksRefreshInterval)*time.Minute))
 
 	keyset, err := globals.AutoRefresh.Fetch(globals.JwkCtx, conf.Auth0Url)
@@ -239,8 +253,6 @@ func (conf *Config) Access(kong *pdk.PDK) {
 		kong.Response.Exit(500, []byte(err.Error()), nil)
 		return
 	}
-
-	kong.Log.Debug("Success! Swapped [", auth0Token, "] for [", permissionsToken, "]")
 }
 
 func (conf *Config) RedisClient() *redis.Client {
@@ -264,6 +276,242 @@ func getAuth0Token(kong *pdk.PDK) ([]byte, error) {
 	}
 
 	return []byte(headerValueArr[1]), nil
+}
+
+// isCloudJWT checks if the token is a Cloud JWT by examining the sso_provider claim
+func (conf *Config) isCloudJWT(token string) bool {
+	parts := strings.Split(token, ".")
+	if len(parts) != 3 {
+		return false
+	}
+
+	claims, err := base64.RawURLEncoding.DecodeString(parts[1])
+	if err != nil {
+		return false
+	}
+
+	var claimsMap map[string]interface{}
+	if err := json.Unmarshal(claims, &claimsMap); err != nil {
+		return false
+	}
+
+	// Check for Cloud SSO provider
+	if provider, ok := claimsMap["sso_provider"].(string); ok {
+		return provider == "cloud"
+	}
+	return false
+}
+
+func (conf *Config) fetchCloudPublicKeys() (jwk.Set, error) {
+	cacheKey := "kong:cloud:jwks"
+	cachedKeys, err := conf.RedisClient().Get(globals.CacheCtx, cacheKey).Result()
+	if err == nil {
+		keyset, err := jwk.Parse([]byte(cachedKeys))
+		if err == nil {
+			return keyset, nil
+		}
+	}
+
+	// Extract base URL from CloudEndpoint
+	// CloudEndpoint might be like "https://api.cloud.stord.com/v1/auth/token"
+	// We need just "https://api.cloud.stord.com" for JWKS
+	baseURL := conf.CloudEndpoint
+	if idx := strings.Index(baseURL, "/v1/"); idx != -1 {
+		baseURL = baseURL[:idx]
+	} else if idx := strings.LastIndex(baseURL, "/"); idx != -1 && idx > 8 { // After https://
+		// If there's a path but not /v1/, remove the last path segment
+		baseURL = baseURL[:idx]
+	}
+
+	jwksURL := baseURL + "/.well-known/jwks.json"
+
+	resp, err := http.Get(jwksURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch JWKS from %s: %w", jwksURL, err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		body, _ := ioutil.ReadAll(resp.Body)
+		return nil, fmt.Errorf("JWKS fetch failed with status %d: %s", resp.StatusCode, string(body))
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read JWKS response: %w", err)
+	}
+
+	keyset, err := jwk.Parse(body)
+	if err != nil {
+		bodyPreview := string(body)
+		if len(bodyPreview) > 200 {
+			bodyPreview = bodyPreview[:200] + "..."
+		}
+		return nil, fmt.Errorf("failed to parse JWKS (body preview: %s): %w", bodyPreview, err)
+	}
+
+	// Cache for 1 hour
+	conf.RedisClient().SetEX(globals.CacheCtx, cacheKey, string(body), time.Hour)
+
+	return keyset, nil
+}
+
+// validateCloudJWT validates a Cloud/Orion JWT using the fetched public keys
+func (conf *Config) validateCloudJWT(token string) (jwt.Token, error) {
+	keyset, err := conf.fetchCloudPublicKeys()
+	if err != nil {
+		return nil, err
+	}
+
+	parsedToken, err := jwt.Parse(
+		[]byte(token),
+		jwt.WithKeySet(keyset),
+		jwt.WithValidate(true),
+		jwt.WithAcceptableSkew(2*time.Minute),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return parsedToken, nil
+}
+
+
+// handleDelegationToken handles Cloud/Orion delegation tokens
+func (conf *Config) handleDelegationToken(kong *pdk.PDK, token string) error {
+	// Validate token
+	parsedToken, err := conf.validateCloudJWT(token)
+	if err != nil {
+		return err
+	}
+
+	// Exchange Cloud token for Orion JWT
+	kong.Log.Debug("Exchanging Cloud token for Orion JWT")
+	orionToken, err := conf.exchangeCloudForOrionToken(token, parsedToken, kong)
+	if err != nil {
+		kong.Log.Err("Failed to exchange Cloud token for Orion JWT: ", err.Error())
+		return fmt.Errorf("token exchange failed: %w", err)
+	}
+	kong.Log.Debug("Successfully exchanged for Orion JWT")
+
+	// Set headers for downstream services with the Orion token
+	err = kong.ServiceRequest.SetHeader(REQUEST_AUTHORIZATION_HEADER, BEARER_PREFIX+orionToken)
+	if err != nil {
+		return err
+	}
+
+	err = kong.ServiceRequest.SetHeader(REQUIRES_AUTH_HEADER, "true")
+	if err != nil {
+		return err
+	}
+
+	userID := parsedToken.Subject()
+	sessionID := extractSessionID(parsedToken)
+	cacheKey := fmt.Sprintf("kong:delegation:%s:%s", userID, sessionID)
+
+	expiration := parsedToken.Expiration()
+	ttl := time.Until(expiration)
+	conf.RedisClient().SetEX(globals.CacheCtx, cacheKey, orionToken, ttl)
+
+	return nil
+}
+
+// exchangeCloudForOrionToken exchanges a Cloud JWT for an Orion JWT
+// by calling the Cloud Service API endpoint
+func (conf *Config) exchangeCloudForOrionToken(cloudToken string, parsedToken jwt.Token, kong *pdk.PDK) (string, error) {
+	// Extract org_id from the Cloud token
+	var orgID string
+	if org, ok := parsedToken.Get("org_id"); ok {
+		orgID, _ = org.(string)
+	} else if org, ok := parsedToken.Get("org"); ok {
+		orgID, _ = org.(string)
+	}
+
+	if orgID == "" {
+		return "", fmt.Errorf("no org_id found in Cloud token")
+	}
+
+	cacheKey := fmt.Sprintf("kong:cloud:orion:%s", orgID)
+	cacheClient := conf.RedisClient()
+
+	cachedToken, err := cacheClient.Get(globals.CacheCtx, cacheKey).Result()
+	if err == nil && cachedToken != "" {
+		// TODO: Could validate the cached token is still valid
+		return cachedToken, nil
+	}
+
+	requestEnvelope := CloudRequestEnvelope{Data: CloudServiceRequest{
+		Type: "orion",
+		App:  "oms",
+		Organization: orgID,
+	}}
+
+	requestBody, err := json.Marshal(requestEnvelope)
+	if err != nil {
+		return "", err
+	}
+
+	req, err := http.NewRequest("POST", conf.CloudEndpoint, bytes.NewBuffer(requestBody))
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Authorization", "Bearer "+cloudToken)
+	req.Header.Set("Content-Type", "application/json")
+
+	response, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode < 200 || response.StatusCode > 299 {
+		body, _ := ioutil.ReadAll(response.Body)
+		return "", fmt.Errorf("unexpected status code from Cloud: %d, body: %s", response.StatusCode, string(body))
+	}
+
+	var tokenEnvelope CloudResponseEnvelope
+	body, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		return "", err
+	}
+
+	err = json.Unmarshal(body, &tokenEnvelope)
+	if err != nil {
+		return "", err
+	}
+
+	orionToken := tokenEnvelope.Data.Token
+	if orionToken == "" {
+		return "", fmt.Errorf("no token in Cloud service response")
+	}
+
+	// Cache the token for 5 minutes (shorter than the actual expiry for safety)
+	ttl := 5 * time.Minute
+	err = cacheClient.SetEX(globals.CacheCtx, cacheKey, orionToken, ttl).Err()
+	if err != nil {
+		kong.Log.Warn("warning: unable to cache Orion token: ", err.Error())
+	}
+
+	return orionToken, nil
+}
+
+// extractSessionID extracts the session ID from a delegation token
+func extractSessionID(token jwt.Token) string {
+	if delegationContext, ok := token.Get("delegation_context"); ok {
+		if ctx, ok := delegationContext.(map[string]interface{}); ok {
+			if sessionID, ok := ctx["session_id"].(string); ok {
+				return sessionID
+			}
+		}
+	}
+	if delegation, ok := token.Get("delegation"); ok {
+		if del, ok := delegation.(map[string]interface{}); ok {
+			if sessionID, ok := del["session_id"].(string); ok {
+				return sessionID
+			}
+		}
+	}
+	return "unknown"
 }
 
 // cacheFetchPermissionsToken exchanges the Auth0 token for a permissions token
