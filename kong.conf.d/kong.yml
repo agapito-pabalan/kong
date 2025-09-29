@@ -62,6 +62,7 @@ services:
           - /v1/networks/([^\/]+)/shipments
           - /v1/networks/([^\/]+)/webhooks
           - /v1/networks/([^\/]+)/manual_atp_overrides
+          - /v1/wms_link/links
           - /bff/admin/v1/reports/([^\/]+)$
           - /bff/v1/complete_order
           - /bff/v1/accountant/snapshots
