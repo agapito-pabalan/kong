@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.105.0](https://github.com/stordco/kong/compare/v1.104.0...v1.105.0) (2025-09-29)
+
+
+### Features
+
+* [TR-248] handle exchanging delegation tokens for orion tokens ([#578](https://github.com/stordco/kong/issues/578)) ([78ebdfd](https://github.com/stordco/kong/commit/78ebdfd746c9e705f5b3acddd3e88d14bf671ae0))
+
 ## [1.104.0](https://github.com/stordco/kong/compare/v1.103.1...v1.104.0) (2025-09-29)
 
 
