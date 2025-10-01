@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.106.0](https://github.com/stordco/kong/compare/v1.105.0...v1.106.0) (2025-10-01)
+
+
+### Features
+
+* Add transfer order lines endpoint ([#582](https://github.com/stordco/kong/issues/582)) ([62246c2](https://github.com/stordco/kong/commit/62246c2cf62dbde4b85df53ee8c70fbc23dcb723))
+
 ## [1.105.0](https://github.com/stordco/kong/compare/v1.104.0...v1.105.0) (2025-09-29)
 
 
