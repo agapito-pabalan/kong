@@ -55,6 +55,7 @@ services:
           - /v1/sales_order_lines
           - /v1/orders/([^\/]+)/purchase_order_lines
           - /v1/orders/([^\/]+)/sales_order_lines
+          - /v1/orders/([^\/]+)/transfer_order_lines
           - /v1/orders/([^\/]+)/tags
           - /v1/networks/([^\/]+)/backordered_items
           - /v1/networks/([^\/]+)/reports/([^\/]+)$
