@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.107.0](https://github.com/stordco/kong/compare/v1.106.0...v1.107.0) (2025-10-01)
+
+
+### Features
+
+* Add order shipments endpoint ([#584](https://github.com/stordco/kong/issues/584)) ([ef2b349](https://github.com/stordco/kong/commit/ef2b349aae358c7e374ceb685699b28c08b413f9))
+
 ## [1.106.0](https://github.com/stordco/kong/compare/v1.105.0...v1.106.0) (2025-10-01)
 
 
