@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.108.0](https://github.com/stordco/kong/compare/v1.107.0...v1.108.0) (2025-10-09)
+
+
+### Features
+
+* [OFM-7176] Expose order/financials endpoint in kong ([#586](https://github.com/stordco/kong/issues/586)) ([3609d57](https://github.com/stordco/kong/commit/3609d57e15e62d867cc1b711ddea08b553b7c0dc))
+
 ## [1.107.0](https://github.com/stordco/kong/compare/v1.106.0...v1.107.0) (2025-10-01)
 
 
