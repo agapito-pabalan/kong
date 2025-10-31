@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.109.0](https://github.com/stordco/kong/compare/v1.108.0...v1.109.0) (2025-10-31)
+
+
+### Features
+
+* [CX-917] two boxes webhook auth url ([#588](https://github.com/stordco/kong/issues/588)) ([766c377](https://github.com/stordco/kong/commit/766c3777e15a5b5cc90c6e6a2135a60266c36390))
+* [OFM-7572] Expose WMS web hooks ([#590](https://github.com/stordco/kong/issues/590)) ([c4bfacb](https://github.com/stordco/kong/commit/c4bfacb952470ad346ddc950f95090cc7fe5d915))
+
 ## [1.108.0](https://github.com/stordco/kong/compare/v1.107.0...v1.108.0) (2025-10-09)
 
 
