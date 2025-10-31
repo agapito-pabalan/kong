@@ -74,6 +74,8 @@ services:
           - /bff/v1/order_details
           - /bff/v1/support/update_sales_order_based_on_activities
           - /bff/v1/support/networks/([^\/]+)/workflow_tokens
+          - /wms_link/v1/logiwa/webhooks/movement_info
+          - /wms_link/v1/logiwa/webhooks/receipts
           - /bff/v1/support/networks/([^\/]+)/workflow_tokens/([^\/]+)
           - /bff/v1/support/networks/([^\/]+)/workflow_tokens/([^\/]+)/resubmit
           - /bff/v1/facility_activities/([^\/]+)$
