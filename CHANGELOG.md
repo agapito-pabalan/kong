@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.110.0](https://github.com/stordco/kong/compare/v1.109.0...v1.110.0) (2025-10-31)
+
+
+### Features
+
+* [OFM-7572] Expose WMS web hooks ([#591](https://github.com/stordco/kong/issues/591)) ([5cdae36](https://github.com/stordco/kong/commit/5cdae36438a3576bacd43e2c323851228342d646))
+
 ## [1.109.0](https://github.com/stordco/kong/compare/v1.108.0...v1.109.0) (2025-10-31)
 
 
