@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.111.0](https://github.com/stordco/kong/compare/v1.110.0...v1.111.0) (2025-11-13)
+
+
+### Features
+
+* Expose notifications v1 routes ([#593](https://github.com/stordco/kong/issues/593)) ([825a4fd](https://github.com/stordco/kong/commit/825a4fda08a0d3b07381177d486e5c6f5eb16ede))
+
 ## [1.110.0](https://github.com/stordco/kong/compare/v1.109.0...v1.110.0) (2025-10-31)
 
 
