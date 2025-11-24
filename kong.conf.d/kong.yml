@@ -516,7 +516,7 @@ services:
           - /bff/v1/webflow/connections/request$
           - /bff/v1/webflow/connections/request/([^\/]+)$
           - /bff/v1/shopify/locations$
-          - /bff/v1/shopify/connections$
+          - /bff/v1/shopify/connections
       - name: marketplace_v1_rutter
         strip_path: false
         paths:
