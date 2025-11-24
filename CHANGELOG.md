@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.111.1](https://github.com/stordco/kong/compare/v1.111.0...v1.111.1) (2025-11-24)
+
+
+### Miscellaneous
+
+* Loosen shopify connections route to support new verification p… ([#596](https://github.com/stordco/kong/issues/596)) ([f7e5ad8](https://github.com/stordco/kong/commit/f7e5ad89a42c55103f4d6126a3286079bf60fbf9))
+
 ## [1.111.0](https://github.com/stordco/kong/compare/v1.110.0...v1.111.0) (2025-11-13)
 
 
