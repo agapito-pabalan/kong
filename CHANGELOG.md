@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.111.2](https://github.com/stordco/kong/compare/v1.111.1...v1.111.2) (2025-11-24)
+
+
+### Bug Fixes
+
+* Update golang version for compatibility ([#598](https://github.com/stordco/kong/issues/598)) ([8fe0b22](https://github.com/stordco/kong/commit/8fe0b2285fc3f6be0f4be5ffe62c3e7fd6cc02b1))
+
 ## [1.111.1](https://github.com/stordco/kong/compare/v1.111.0...v1.111.1) (2025-11-24)
 
 
