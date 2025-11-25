@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.111.4](https://github.com/stordco/kong/compare/v1.111.3...v1.111.4) (2025-11-25)
+
+
+### Miscellaneous
+
+* Add public trailerloads routes to FAS ([#602](https://github.com/stordco/kong/issues/602)) ([be3c47b](https://github.com/stordco/kong/commit/be3c47bf0e57325bd17662ab73fb617ebae7dfb0))
+
 ## [1.111.3](https://github.com/stordco/kong/compare/v1.111.2...v1.111.3) (2025-11-25)
 
 
