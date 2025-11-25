@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.111.3](https://github.com/stordco/kong/compare/v1.111.2...v1.111.3) (2025-11-25)
+
+
+### Miscellaneous
+
+* [OFM-7835] add trailerloads GET route ([#600](https://github.com/stordco/kong/issues/600)) ([521afdf](https://github.com/stordco/kong/commit/521afdf5857fe31f72063072aede9c816e4c2360))
+
 ## [1.111.2](https://github.com/stordco/kong/compare/v1.111.1...v1.111.2) (2025-11-24)
 
 
