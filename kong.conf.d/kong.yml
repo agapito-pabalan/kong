@@ -224,6 +224,7 @@ services:
           - /integrations/v2/receipt_confirmations$
           - /integrations/v2/facility_activities/status$
           - /integrations/v2/trailerloads/([^\/]+)$
+          - /public/v1/networks/([^\/]+)/facility_activities/trailerloads
           - /bff/v1/networks/([^\/]+)/order_numbers/([^\/]+)/shipment_confirmations$
           - /bff/v1/receipt_confirmations/([^\/]+)/cancellations$
           - /bff/v1/shipment_confirmations/([^\/]+)/cancellations$
