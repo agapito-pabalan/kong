@@ -474,12 +474,7 @@ services:
           - /webhook/v1/shopify/estimated_delivery_date$
           - /webhook/v1/shopify/([^\/]+)/([^\/]+)$
           - /webhook/v1/subscriptions/([^\/]+)$
-          - /v1/connections/shopify/([^\/]+)$
-          - /v1/connections/shopify/orders/([^\/]+)$
-          - /v1/connections/shopify/validate_connection/([^\/]+)$
-          - /v1/connections/shopify/([^\/]+)/dispatch_action/([^\/]+)$
-          - /v1/connections/shopify/([^\/]+)/carrier_service$
-          - /v1/connections/shopify/([^\/]+)/order_fulfillments/([^\/]+)/details$
+          - /v1/connections/shopify
           # The routes above are all scoped to connections/shopify/:connection_id and have a few potential issues
           # The one below is scoped to a network, with the intent that we can have network-scoped requests
           # that are simple to authorize and can handle N connections
