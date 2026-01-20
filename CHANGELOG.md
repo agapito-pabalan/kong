@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.112.0](https://github.com/stordco/kong/compare/v1.111.4...v1.112.0) (2026-01-19)
+
+
+### Features
+
+* Expose diagnostics endpoint for the UI ([#604](https://github.com/stordco/kong/issues/604)) ([3013edd](https://github.com/stordco/kong/commit/3013edd4f7db86fe541794ea23704a176d8d3913))
+
 ## [1.111.4](https://github.com/stordco/kong/compare/v1.111.3...v1.111.4) (2025-11-25)
 
 
