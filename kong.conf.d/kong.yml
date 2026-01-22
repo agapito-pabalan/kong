@@ -373,6 +373,13 @@ services:
           - /v2/networks/([^\/]+)/suppliers/([^\/]+)/sku_configurations/([^\/]+)$
           - /v2/networks/([^\/]+)/suppliers/([^\/]+)/contacts$
           - /v2/networks/([^\/]+)/suppliers/([^\/]+)/contacts/([^\/]+)$
+      - name: trade-partnerships-bff-v2
+        strip_path: false
+        paths:
+          - /bff/v2/([^\/]+)/fulfillment_groups$
+          - /bff/v2/([^\/]+)/fulfillment_groups/([^\/]+)$
+          - /bff/v2/([^\/]+)/fulfillment_groups/([^\/]+)/facilities$
+          - /bff/v2/([^\/]+)/fulfillment_groups/([^\/]+)/channels$
   - name: product-catalog-service
     url: $PRODUCT_CATALOG_SERVICE_URL
     routes:
