@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.113.0](https://github.com/stordco/kong/compare/v1.112.0...v1.113.0) (2026-01-22)
+
+
+### Features
+
+* [OFM-8166] Expose FG endpoints ([#606](https://github.com/stordco/kong/issues/606)) ([49d8e13](https://github.com/stordco/kong/commit/49d8e13fed056e6fc7e081f48ed7ccc69744853e))
+
 ## [1.112.0](https://github.com/stordco/kong/compare/v1.111.4...v1.112.0) (2026-01-19)
 
 
