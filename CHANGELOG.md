@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.114.0](https://github.com/stordco/kong/compare/v1.113.0...v1.114.0) (2026-01-23)
+
+
+### Features
+
+* [OFM-8374] Add endpoint to republish activity update events ([#608](https://github.com/stordco/kong/issues/608)) ([b8e6e42](https://github.com/stordco/kong/commit/b8e6e42a4b11b8e464929e353d481b91bb1971fb))
+
 ## [1.113.0](https://github.com/stordco/kong/compare/v1.112.0...v1.113.0) (2026-01-22)
 
 
