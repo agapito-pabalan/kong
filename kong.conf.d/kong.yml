@@ -229,6 +229,7 @@ services:
           - /bff/v1/receipt_confirmations/([^\/]+)/cancellations$
           - /bff/v1/shipment_confirmations/([^\/]+)/cancellations$
           - /bff/v1/support/reopen_outbound$
+          - /bff/v1/support/republish_activity_update_event$
           - /bff/v2/networks/([^\/]+)/receipt_confirmations$
           - /bff/v2/networks/([^\/]+)/shipment_confirmations$
           - /public/v1/receipt_confirmations$
