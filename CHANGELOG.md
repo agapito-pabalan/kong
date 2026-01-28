@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.115.0](https://github.com/stordco/kong/compare/v1.114.0...v1.115.0) (2026-01-28)
+
+
+### Features
+
+* [OFM-8173] Route for fulfillmentgroup bff ([#610](https://github.com/stordco/kong/issues/610)) ([18d0169](https://github.com/stordco/kong/commit/18d01697d5e65767bdd97763bbd42326fced69f5))
+
 ## [1.114.0](https://github.com/stordco/kong/compare/v1.113.0...v1.114.0) (2026-01-23)
 
 
