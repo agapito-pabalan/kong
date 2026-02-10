@@ -75,9 +75,6 @@ networking:
         retryOn: gateway-error,connect-failure,refused-stream
       timeout: 180s
 
-nodeSelector:
-  cloud.google.com/gke-spot: "true"
-
 observability:
   name: kong
   repository: github.com/stordco/kong
