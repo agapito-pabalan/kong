@@ -381,6 +381,7 @@ services:
           - /bff/v2/([^\/]+)/fulfillment_groups/([^\/]+)$
           - /bff/v2/([^\/]+)/fulfillment_groups/([^\/]+)/facilities$
           - /bff/v2/([^\/]+)/fulfillment_groups/([^\/]+)/channels$
+          - /bff/v2/([^\/]+)/fulfillment_groups/([^\/]+)/usage$
   - name: product-catalog-service
     url: $PRODUCT_CATALOG_SERVICE_URL
     routes:
