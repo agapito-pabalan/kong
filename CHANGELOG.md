@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.116.0](https://github.com/stordco/kong/compare/v1.115.0...v1.116.0) (2026-02-16)
+
+
+### Features
+
+* Add Fulfillment Group Usage endpoint ([#614](https://github.com/stordco/kong/issues/614)) ([78ffb9e](https://github.com/stordco/kong/commit/78ffb9e91c2ea9eb374f634bacd48910296882a2))
+* Add fulfillment groups atp endpoint ([#615](https://github.com/stordco/kong/issues/615)) ([a74e471](https://github.com/stordco/kong/commit/a74e471de981de5b611bf57b9237bd149ee49aaf))
+
+
+### Miscellaneous
+
+* SRE-1705 remove spot nodeselector in staging ([#612](https://github.com/stordco/kong/issues/612)) ([b7d0560](https://github.com/stordco/kong/commit/b7d0560b02fbf87fd91f8443651e53731a38a523))
+
 ## [1.115.0](https://github.com/stordco/kong/compare/v1.114.0...v1.115.0) (2026-01-28)
 
 
