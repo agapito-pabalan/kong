@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.117.0](https://github.com/stordco/kong/compare/v1.116.0...v1.117.0) (2026-02-16)
+
+
+### Features
+
+* [OFM-8587] Expose order_ingestion_requests endpoint ([#616](https://github.com/stordco/kong/issues/616)) ([9c1b37d](https://github.com/stordco/kong/commit/9c1b37db2b7672c8cd833ccfd9fe27611f0ff308))
+
 ## [1.116.0](https://github.com/stordco/kong/compare/v1.115.0...v1.116.0) (2026-02-16)
 
 
