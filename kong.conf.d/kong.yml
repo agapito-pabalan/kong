@@ -489,6 +489,7 @@ services:
           # The one below is scoped to a network, with the intent that we can have network-scoped requests
           # that are simple to authorize and can handle N connections
           - /v1/networks/([^\/]+)/connections/shopify/orders
+          - /v1/networks/([^\/]+)/connections/shopify/order_ingestion_requests
       - name: marketplace_v1_connections
         strip_path: false
         paths:
