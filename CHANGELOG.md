@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.117.1](https://github.com/stordco/kong/compare/v1.117.0...v1.117.1) (2026-02-19)
+
+
+### Miscellaneous
+
+* Remove unnecessary fulfillment group atp route ([#618](https://github.com/stordco/kong/issues/618)) ([ba2e196](https://github.com/stordco/kong/commit/ba2e1968ba2203bb2999a924d5cd95a8b5d2f1d2))
+
 ## [1.117.0](https://github.com/stordco/kong/compare/v1.116.0...v1.117.0) (2026-02-16)
 
 
