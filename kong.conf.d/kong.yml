@@ -290,7 +290,6 @@ services:
         strip_path: false
         paths:
           - /public/v1/networks/([^\/]+)/inventory/
-          - /public/v1/fulfillment-groups-atp
       - name: inventory-api-spec
         strip_path: false
         paths:
