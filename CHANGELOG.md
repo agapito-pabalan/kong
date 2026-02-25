@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.117.2](https://github.com/stordco/kong/compare/v1.117.1...v1.117.2) (2026-02-25)
+
+
+### Miscellaneous
+
+* [RES-169] capture order routes under consumer experience ([#620](https://github.com/stordco/kong/issues/620)) ([662e3ab](https://github.com/stordco/kong/commit/662e3ab2f423359e7661738f9c519db7570c9846))
+
 ## [1.117.1](https://github.com/stordco/kong/compare/v1.117.0...v1.117.1) (2026-02-19)
 
 
