@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.117.3](https://github.com/stordco/kong/compare/v1.117.2...v1.117.3) (2026-03-10)
+
+
+### Miscellaneous
+
+* [RES-113] return eligibility endpoint on public portal ([#622](https://github.com/stordco/kong/issues/622)) ([a6fee0b](https://github.com/stordco/kong/commit/a6fee0b1d8c60a646f47b80c8c965c7c45838763))
+* [TR-371] update go version and auth plugin deps ([#624](https://github.com/stordco/kong/issues/624)) ([1f997d8](https://github.com/stordco/kong/commit/1f997d8648a89a5701e5bcaa75b57d14c5657cd2))
+
 ## [1.117.2](https://github.com/stordco/kong/compare/v1.117.1...v1.117.2) (2026-02-25)
 
 
