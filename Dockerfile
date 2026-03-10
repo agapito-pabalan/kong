@@ -1,4 +1,4 @@
-FROM golang:1.24.0-bullseye AS go-builder
+FROM golang:1.24.1-bullseye AS go-builder
 
 WORKDIR /go-plugins
 
@@ -9,14 +9,8 @@ RUN apt-get update && apt-get install -y \
     libc-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN go mod init kong-go-plugin
-RUN go get -d -v github.com/Kong/go-pdk@v0.11.0
-RUN go get -d -v github.com/Kong/go-pdk/server@v0.11.0
-RUN go get -d -v github.com/lestrrat-go/jwx/jwt
-RUN go get -d -v github.com/lestrrat-go/jwx/jwk
-RUN go get -d -v github.com/go-redis/redis/v8
-RUN go get github.com/launchdarkly/go-sdk-common/v3/ldcontext
-RUN go get github.com/launchdarkly/go-server-sdk/v7
+COPY /plugins/auth/go.mod /plugins/auth/go.sum ./
+RUN go mod download
 
 COPY /plugins/auth/auth.go .
 RUN go build -o /go-plugins/auth /go-plugins/auth.go

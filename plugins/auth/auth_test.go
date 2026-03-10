@@ -11,24 +11,24 @@ import (
 	"time"
 
 	"github.com/Kong/go-pdk/test"
-	"github.com/go-redis/redismock/v8"
-	"github.com/launchdarkly/go-sdk-common/v3/ldcontext"
-	"github.com/lestrrat-go/jwx/jwa"
-	"github.com/lestrrat-go/jwx/jwk"
-	"github.com/lestrrat-go/jwx/jws"
-	"github.com/lestrrat-go/jwx/jwt"
+	"github.com/go-redis/redismock/v9"
+	"github.com/lestrrat-go/jwx/v2/jwa"
+	"github.com/lestrrat-go/jwx/v2/jwk"
+	"github.com/lestrrat-go/jwx/v2/jws"
+	"github.com/lestrrat-go/jwx/v2/jwt"
 	"github.com/stretchr/testify/assert"
 )
 
-// a mock struct for jwk.AutoRefresh
-type JwksAutoRefreshMock struct {
+// a mock struct for jwk.Cache
+type JwksCacheMock struct {
 	keySet jwk.Set
 }
 
-func (m *JwksAutoRefreshMock) Configure(url string, options ...jwk.AutoRefreshOption) {
+func (m *JwksCacheMock) Register(url string, options ...jwk.RegisterOption) error {
+	return nil
 }
 
-func (m *JwksAutoRefreshMock) Fetch(ctx context.Context, url string) (jwk.Set, error) {
+func (m *JwksCacheMock) Get(ctx context.Context, url string) (jwk.Set, error) {
 	return m.keySet, nil
 }
 
@@ -43,18 +43,18 @@ func generateJwkKeys(subject string) ([]byte, jwk.Set, error) {
 
 	keySet := jwk.NewSet()
 	// Add some bogus keys
-	k1, _ := jwk.New([]byte("abracadavra"))
-	keySet.Add(k1)
-	k2, _ := jwk.New([]byte("opensasame"))
-	keySet.Add(k2)
+	k1, _ := jwk.FromRaw([]byte("abracadavra"))
+	keySet.AddKey(k1)
+	k2, _ := jwk.FromRaw([]byte("opensasame"))
+	keySet.AddKey(k2)
 	// Add the real thing
-	pubkey, _ := jwk.PublicRawKeyOf(privKey)
-	k3, _ := jwk.New(pubkey)
+	pubkey := privKey.Public()
+	k3, _ := jwk.FromRaw(pubkey)
 	k3.Set(jwk.KeyIDKey, kid)
 	k3.Set(jwk.AlgorithmKey, jwa.RS256)
-	keySet.Add(k3)
+	keySet.AddKey(k3)
 
-	signingKey, err := jwk.New(privKey)
+	signingKey, err := jwk.FromRaw(privKey)
 	if err != nil {
 		fmt.Printf("failed to create JWK: %s\n", err)
 		return nil, nil, err
@@ -68,20 +68,9 @@ func generateJwkKeys(subject string) ([]byte, jwk.Set, error) {
 	token.Set(jwt.ExpirationKey, now.Add(120*time.Second).Unix())
 
 	// Sign the token and generate a payload
-	signedJwt, _ := jwt.Sign(token, jwa.RS256, signingKey)
+	signedJwt, _ := jwt.Sign(token, jwt.WithKey(jwa.RS256, signingKey))
 
 	return signedJwt, keySet, nil
-}
-
-type MockFeatureFlags struct {
-	values map[string]bool
-}
-
-func (mock *MockFeatureFlags) BoolVariation(flagKey string, context ldcontext.Context, defaultValue bool) (bool, error) {
-	if val, ok := mock.values[flagKey]; ok {
-		return val, nil
-	}
-	return defaultValue, nil
 }
 
 func getTestConfig(keySet jwk.Set, handlerFunc http.HandlerFunc) (*Config, redismock.ClientMock, *httptest.Server) {
@@ -89,14 +78,14 @@ func getTestConfig(keySet jwk.Set, handlerFunc http.HandlerFunc) (*Config, redis
 	httpMock := httptest.NewServer(http.HandlerFunc(handlerFunc))
 
 	config := &Config{
-		Auth0Url:               "http://localhost:8000",
-		CacheUrl:               "localhost:6379",
-		JwksRefreshInterval:    1000,
-		CloudSignatureKey:      "cloudSignatureKey",
-		CloudEndpoint:          fmt.Sprintf("%s/cloudEndpoint", httpMock.URL),
+		Auth0Url:            "http://localhost:8000",
+		CacheUrl:            "localhost:6379",
+		JwksRefreshInterval: 1000,
+		CloudSignatureKey:   "cloudSignatureKey",
+		CloudEndpoint:       fmt.Sprintf("%s/cloudEndpoint", httpMock.URL),
 	}
 	InitializeGlobals(
-		WithAutoRefresh(&JwksAutoRefreshMock{
+		WithCache(&JwksCacheMock{
 			keySet: keySet,
 		}),
 		WithCacheClient(redisClient),
@@ -123,7 +112,7 @@ func TestCacheMiss(t *testing.T) {
 
 	cacheKey := "kong:cloud:oms_admin:tenant:stord:" + subject
 	redisMock.ExpectGet(cacheKey).RedisNil()
-	redisMock.ExpectSetEX(cacheKey, "RESULT", 60*time.Second).SetVal("1")
+	redisMock.ExpectSetEx(cacheKey, "RESULT", 60*time.Second).SetVal("1")
 
 	env, err := test.New(t, test.Request{
 		Method:  "GET",
@@ -188,7 +177,7 @@ func TestCloudSignatureValid(t *testing.T) {
 	path := "/v1/items"
 	timestamp := time.Now().Format(time.RFC1123)
 	rawSignature := fmt.Sprintf("%s.%s.%s", method, path, timestamp)
-	signature, err := jws.Sign([]byte(rawSignature), jwa.HS256, []byte("cloudSignatureKey"))
+	signature, err := jws.Sign([]byte(rawSignature), jws.WithKey(jwa.HS256, []byte("cloudSignatureKey")))
 
 	assert.NoError(t, err)
 
@@ -257,7 +246,7 @@ func TestCloudSignatureInvalidTimestamp(t *testing.T) {
 	path := "/v1/items"
 	timestamp := (time.Now().Add(time.Duration(-5) * time.Minute)).Format(time.RFC1123)
 	rawSignature := fmt.Sprintf("%s.%s.%s", method, path, timestamp)
-	signature, _ := jws.Sign([]byte(rawSignature), jwa.HS256, []byte("cloudSignatureKey"))
+	signature, _ := jws.Sign([]byte(rawSignature), jws.WithKey(jwa.HS256, []byte("cloudSignatureKey")))
 
 	env, err := test.New(t, test.Request{
 		Method: "GET",
@@ -296,7 +285,7 @@ func TestCloudEnabled(t *testing.T) {
 
 	cacheKey := "kong:cloud:oms_admin:tenant:stord:" + subject
 	redisMock.ExpectGet(cacheKey).RedisNil()
-	redisMock.ExpectSetEX(cacheKey, "RESULT", 60*time.Second).SetVal("1")
+	redisMock.ExpectSetEx(cacheKey, "RESULT", 60*time.Second).SetVal("1")
 
 	env, err := test.New(t, test.Request{
 		Method:  "GET",

@@ -6,7 +6,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"os"
@@ -16,11 +16,11 @@ import (
 
 	"github.com/Kong/go-pdk"
 	"github.com/Kong/go-pdk/server"
-	"github.com/go-redis/redis/v8"
-	"github.com/lestrrat-go/jwx/jwa"
-	"github.com/lestrrat-go/jwx/jwk"
-	"github.com/lestrrat-go/jwx/jws"
-	"github.com/lestrrat-go/jwx/jwt"
+	"github.com/lestrrat-go/jwx/v2/jwa"
+	"github.com/lestrrat-go/jwx/v2/jwk"
+	"github.com/lestrrat-go/jwx/v2/jws"
+	"github.com/lestrrat-go/jwx/v2/jwt"
+	"github.com/redis/go-redis/v9"
 )
 
 const REQUEST_JWT_TYPE string = "permissionsJwt"
@@ -53,9 +53,9 @@ type CloudResponseEnvelope struct {
 	Data CloudResponse `json:"data"`
 }
 
-type JwksAutoRefresh interface {
-	Configure(url string, options ...jwk.AutoRefreshOption)
-	Fetch(ctx context.Context, url string) (jwk.Set, error)
+type JwksCache interface {
+	Register(url string, options ...jwk.RegisterOption) error
+	Get(ctx context.Context, url string) (jwk.Set, error)
 }
 
 type Config struct {
@@ -68,7 +68,7 @@ type Config struct {
 }
 
 type Globals struct {
-	AutoRefresh JwksAutoRefresh
+	Cache       JwksCache
 	CacheClient *redis.Client
 	JwkCtx      context.Context
 	CacheCtx    context.Context
@@ -84,9 +84,9 @@ func WithCacheClient(cacheClient *redis.Client) GlobalOption {
 	}
 }
 
-func WithAutoRefresh(autoRefresh JwksAutoRefresh) GlobalOption {
+func WithCache(cache JwksCache) GlobalOption {
 	return func(globals *Globals) {
-		globals.AutoRefresh = autoRefresh
+		globals.Cache = cache
 	}
 }
 
@@ -98,8 +98,8 @@ func InitializeGlobals(opts ...GlobalOption) {
 		opt(&globals)
 	}
 
-	if globals.AutoRefresh == nil {
-		globals.AutoRefresh = jwk.NewAutoRefresh(globals.JwkCtx)
+	if globals.Cache == nil {
+		globals.Cache = jwk.NewCache(globals.JwkCtx)
 	}
 }
 
@@ -160,7 +160,7 @@ func (conf *Config) Access(kong *pdk.PDK) {
 		}
 
 		// then we verify the cloud signature
-		verified, err := jws.Verify([]byte(cloudSignatureHeader), jwa.HS256, []byte(conf.CloudSignatureKey))
+		verified, err := jws.Verify([]byte(cloudSignatureHeader), jws.WithKey(jwa.HS256, []byte(conf.CloudSignatureKey)))
 		if err != nil {
 			kong.Log.Err("error: ", err.Error(), " failed to verify cloud signature")
 			kong.Response.Exit(400, []byte(err.Error()), nil)
@@ -212,9 +212,13 @@ func (conf *Config) Access(kong *pdk.PDK) {
 	}
 
 	// Continue with existing Auth0 flow
-	globals.AutoRefresh.Configure(conf.Auth0Url, jwk.WithMinRefreshInterval(time.Duration(conf.JwksRefreshInterval)*time.Minute))
+	if err := globals.Cache.Register(conf.Auth0Url, jwk.WithMinRefreshInterval(time.Duration(conf.JwksRefreshInterval)*time.Minute)); err != nil {
+		kong.Log.Err("failed to register Auth0 JWKS cache: ", err)
+		kong.Response.Exit(500, []byte("Internal Server Error"), nil)
+		return
+	}
 
-	keyset, err := globals.AutoRefresh.Fetch(globals.JwkCtx, conf.Auth0Url)
+	keyset, err := globals.Cache.Get(globals.JwkCtx, conf.Auth0Url)
 	if err != nil {
 		kong.Log.Err("failed to fetch Auth0 JWKS keys: ", err)
 		kong.Response.Exit(500, []byte(err.Error()), nil)
@@ -332,11 +336,11 @@ func (conf *Config) fetchCloudPublicKeys() (jwk.Set, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		body, _ := ioutil.ReadAll(resp.Body)
+		body, _ := io.ReadAll(resp.Body)
 		return nil, fmt.Errorf("JWKS fetch failed with status %d: %s", resp.StatusCode, string(body))
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read JWKS response: %w", err)
 	}
@@ -351,7 +355,9 @@ func (conf *Config) fetchCloudPublicKeys() (jwk.Set, error) {
 	}
 
 	// Cache for 1 hour
-	conf.RedisClient().SetEX(globals.CacheCtx, cacheKey, string(body), time.Hour)
+	if err := conf.RedisClient().SetEx(globals.CacheCtx, cacheKey, string(body), time.Hour).Err(); err != nil {
+		log.Printf("warning: failed to cache JWKS in Redis: %v", err)
+	}
 
 	return keyset, nil
 }
@@ -375,7 +381,6 @@ func (conf *Config) validateCloudJWT(token string) (jwt.Token, error) {
 
 	return parsedToken, nil
 }
-
 
 // handleDelegationToken handles Cloud/Orion delegation tokens
 func (conf *Config) handleDelegationToken(kong *pdk.PDK, token string) error {
@@ -411,7 +416,9 @@ func (conf *Config) handleDelegationToken(kong *pdk.PDK, token string) error {
 
 	expiration := parsedToken.Expiration()
 	ttl := time.Until(expiration)
-	conf.RedisClient().SetEX(globals.CacheCtx, cacheKey, orionToken, ttl)
+	if err := conf.RedisClient().SetEx(globals.CacheCtx, cacheKey, orionToken, ttl).Err(); err != nil {
+		kong.Log.Warn("warning: failed to cache delegation token in Redis: ", err.Error())
+	}
 
 	return nil
 }
@@ -441,8 +448,8 @@ func (conf *Config) exchangeCloudForOrionToken(cloudToken string, parsedToken jw
 	}
 
 	requestEnvelope := CloudRequestEnvelope{Data: CloudServiceRequest{
-		Type: "orion",
-		App:  "oms",
+		Type:         "orion",
+		App:          "oms",
 		Organization: orgID,
 	}}
 
@@ -465,12 +472,12 @@ func (conf *Config) exchangeCloudForOrionToken(cloudToken string, parsedToken jw
 	defer response.Body.Close()
 
 	if response.StatusCode < 200 || response.StatusCode > 299 {
-		body, _ := ioutil.ReadAll(response.Body)
+		body, _ := io.ReadAll(response.Body)
 		return "", fmt.Errorf("unexpected status code from Cloud: %d, body: %s", response.StatusCode, string(body))
 	}
 
 	var tokenEnvelope CloudResponseEnvelope
-	body, err := ioutil.ReadAll(response.Body)
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		return "", err
 	}
@@ -487,7 +494,7 @@ func (conf *Config) exchangeCloudForOrionToken(cloudToken string, parsedToken jw
 
 	// Cache the token for 5 minutes (shorter than the actual expiry for safety)
 	ttl := 5 * time.Minute
-	err = cacheClient.SetEX(globals.CacheCtx, cacheKey, orionToken, ttl).Err()
+	err = cacheClient.SetEx(globals.CacheCtx, cacheKey, orionToken, ttl).Err()
 	if err != nil {
 		kong.Log.Warn("warning: unable to cache Orion token: ", err.Error())
 	}
@@ -563,7 +570,7 @@ func (conf *Config) cacheFetchPermissionsToken(rawToken string, auth0Token jwt.T
 
 	processing_period := time.Duration(PROCESSING_PERIOD) * time.Minute
 	cachedTokenTTL := auth0Token.Expiration().Sub(auth0Token.IssuedAt().Add(processing_period))
-	err = cacheClient.SetEX(globals.CacheCtx, cacheKey, permissionsToken, cachedTokenTTL).Err()
+	err = cacheClient.SetEx(globals.CacheCtx, cacheKey, permissionsToken, cachedTokenTTL).Err()
 	if err != nil {
 		kong.Log.Warn("warning: ", err.Error(), " unable to store internal token in cache")
 	}
