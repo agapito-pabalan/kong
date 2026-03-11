@@ -293,6 +293,10 @@ services:
         strip_path: false
         paths:
           - /public/v1/networks/([^\/]+)/inventory/
+      - name: inventory-lots-routes
+        strip_path: false
+        paths:
+          - /v1/networks/([^\/]+)/items/([^\/]+)/lots
       - name: inventory-api-spec
         strip_path: false
         paths:
