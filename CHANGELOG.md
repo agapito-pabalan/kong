@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.117.4](https://github.com/stordco/kong/compare/v1.117.3...v1.117.4) (2026-03-11)
+
+
+### Miscellaneous
+
+* [TR-726] Add /v1/addresses/verify to orders_service routes ([#625](https://github.com/stordco/kong/issues/625)) ([28e2932](https://github.com/stordco/kong/commit/28e293260cc069018c0a93e859dde5178523af03))
+
 ## [1.117.3](https://github.com/stordco/kong/compare/v1.117.2...v1.117.3) (2026-03-10)
 
 
