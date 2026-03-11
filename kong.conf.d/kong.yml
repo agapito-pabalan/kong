@@ -582,6 +582,10 @@ services:
         strip_path: false
         paths:
           - /v1/search/([^\/]+)/network_stats/([^\/]+)$
+      - name: search_service_v1_shipment_protection_stats
+        strip_path: false
+        paths:
+          - /v1/search/([^\/]+)/shipment_protection_stats/([^\/]+)$
       - name: search_service_v0_delivery_tracking
         strip_path: false
         paths:
