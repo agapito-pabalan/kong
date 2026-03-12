@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.118.0](https://github.com/stordco/kong/compare/v1.117.4...v1.118.0) (2026-03-11)
+
+
+### Features
+
+* [OFM-8881] Expose lots routes from inventory ([#629](https://github.com/stordco/kong/issues/629)) ([835601b](https://github.com/stordco/kong/commit/835601bc5a85a0a39c0a1f2fb6d325ff83233c9a))
+* [PROT-56] Add Shipment Protection Stats Endpoint ([#627](https://github.com/stordco/kong/issues/627)) ([5928626](https://github.com/stordco/kong/commit/59286268f6ad27defe584b58584b7b5e97b3c219))
+
 ## [1.117.4](https://github.com/stordco/kong/compare/v1.117.3...v1.117.4) (2026-03-11)
 
 
