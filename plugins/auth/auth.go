@@ -202,6 +202,16 @@ func (conf *Config) Access(kong *pdk.PDK) {
 
 	tokenStr := string(auth0Token)
 
+	// App key path — exchange via cloud-service, same pattern as Auth0 exchange
+	if isAppKey(tokenStr) {
+		err = conf.handleAppKeyToken(kong, tokenStr)
+		if err != nil {
+			kong.Log.Warn("warning: app key auth error - ", err.Error())
+			kong.Response.Exit(401, []byte("Unauthorized"), nil)
+		}
+		return
+	}
+
 	if conf.isCloudJWT(tokenStr) {
 		err = conf.handleDelegationToken(kong, tokenStr)
 		if err != nil {
@@ -519,6 +529,147 @@ func extractSessionID(token jwt.Token) string {
 		}
 	}
 	return "unknown"
+}
+
+// isAppKey checks if the token is a cloud-service app key (stord_ak_ prefix)
+func isAppKey(token string) bool {
+	return strings.HasPrefix(token, "stord_ak_")
+}
+
+// extractAppKeyHeader returns a safe cache identifier from an app key.
+// Takes the first segment after stord_ak_ (split on _) so the full key
+// is never stored in cache keys. Works for both production keys
+// (stord_ak_{header}_{secret}) and local dev keys (stord_ak_ai_admin).
+func extractAppKeyHeader(appKey string) string {
+	prefix := "stord_ak_"
+	if !strings.HasPrefix(appKey, prefix) || len(appKey) <= len(prefix) {
+		return appKey
+	}
+	keyBody := appKey[len(prefix):]
+	if idx := strings.Index(keyBody, "_"); idx > 0 {
+		return keyBody[:idx]
+	}
+	return keyBody
+}
+
+// handleAppKeyToken exchanges an app key for an Orion JWT via cloud-service.
+// This mirrors the Auth0 token exchange flow — Kong authenticates the app key
+// through cloud-service (the sole identity authority), caches the resulting
+// Orion token, and sets downstream headers. The app key never reaches OMS.
+func (conf *Config) handleAppKeyToken(kong *pdk.PDK, appKey string) error {
+	org, _ := kong.Request.GetHeader("tenant-id")
+	networkId, _ := kong.Request.GetHeader("x-network-id")
+
+	// App keys are service-to-service. Kong only fronts OMS services today,
+	// so oms_admin is the correct default. When other services need app key
+	// exchange through Kong, support an x-cloud-app header to override:
+	//   x-cloud-app: parcel
+	app := "oms_admin"
+	if cloudApp, _ := kong.Request.GetHeader("x-cloud-app"); cloudApp != "" {
+		app = cloudApp
+	}
+
+	// Build cache key scoped by app + org/network + key prefix
+	cachePrefix := "kong:appkey:" + app + ":"
+	if networkId != "" {
+		cachePrefix += "network:" + networkId + ":"
+	} else if org != "" {
+		cachePrefix += "tenant:" + org + ":"
+	}
+	// App keys follow the format stord_ak_{publicHeader}_{secret}.
+	// Use the public header as the cache identifier — never the full key.
+	keyIdentifier := extractAppKeyHeader(appKey)
+	cacheKey := cachePrefix + keyIdentifier
+
+	// Check cache first
+	cacheClient := conf.RedisClient()
+	cachedToken, err := cacheClient.Get(globals.CacheCtx, cacheKey).Result()
+	if err == nil && cachedToken != "" {
+		kong.Log.Debug("app key token cache hit")
+		err = kong.ServiceRequest.SetHeader(REQUEST_AUTHORIZATION_HEADER, BEARER_PREFIX+cachedToken)
+		if err != nil {
+			return err
+		}
+		return kong.ServiceRequest.SetHeader(REQUIRES_AUTH_HEADER, "true")
+	}
+
+	// Exchange app key for Orion token via cloud-service
+	kong.Log.Debug("exchanging app key for Orion token")
+	orionToken, err := conf.exchangeAppKeyForOrionToken(appKey, app, org, networkId)
+	if err != nil {
+		return fmt.Errorf("app key exchange failed: %w", err)
+	}
+
+	// Cache for 5 minutes (shorter than token expiry for safety)
+	ttl := 5 * time.Minute
+	if cacheErr := cacheClient.SetEx(globals.CacheCtx, cacheKey, orionToken, ttl).Err(); cacheErr != nil {
+		kong.Log.Warn("warning: unable to cache app key token: ", cacheErr.Error())
+	}
+
+	err = kong.ServiceRequest.SetHeader(REQUEST_AUTHORIZATION_HEADER, BEARER_PREFIX+orionToken)
+	if err != nil {
+		return err
+	}
+	return kong.ServiceRequest.SetHeader(REQUIRES_AUTH_HEADER, "true")
+}
+
+// exchangeAppKeyForOrionToken calls cloud-service's /v1/auth/token endpoint
+// with the app key to get an Orion JWT. Cloud-service authenticates the app key,
+// checks service_grants on the target app, and returns a scoped Orion token.
+func (conf *Config) exchangeAppKeyForOrionToken(appKey string, app string, org string, networkId string) (string, error) {
+	requestEnvelope := CloudRequestEnvelope{Data: CloudServiceRequest{
+		Type: "orion",
+		App:  app,
+	}}
+
+	// oms_admin has no realms (networks are realms of the "oms" app).
+	// Always use organization for oms_admin, defaulting to "stord" — same
+	// as cacheFetchPermissionsToken does for internal @stord.com users.
+	if app == "oms_admin" {
+		if org != "" {
+			requestEnvelope.Data.Organization = org
+		} else {
+			requestEnvelope.Data.Organization = "stord"
+		}
+	} else if networkId != "" {
+		requestEnvelope.Data.ResourcePath = "/networks/" + networkId
+	} else if org != "" {
+		requestEnvelope.Data.Organization = org
+	}
+
+	requestBody, err := json.Marshal(requestEnvelope)
+	if err != nil {
+		return "", err
+	}
+
+	req, err := http.NewRequest("POST", conf.CloudEndpoint, bytes.NewBuffer(requestBody))
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Authorization", BEARER_PREFIX+appKey)
+	req.Header.Set("Content-Type", "application/json")
+
+	response, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode < 200 || response.StatusCode > 299 {
+		body, _ := io.ReadAll(response.Body)
+		return "", fmt.Errorf("cloud-service returned %d: %s", response.StatusCode, string(body))
+	}
+
+	var responseEnvelope CloudResponseEnvelope
+	if err := json.NewDecoder(response.Body).Decode(&responseEnvelope); err != nil {
+		return "", err
+	}
+
+	if responseEnvelope.Data.Token == "" {
+		return "", fmt.Errorf("no token in cloud-service response")
+	}
+
+	return responseEnvelope.Data.Token, nil
 }
 
 // cacheFetchPermissionsToken exchanges the Auth0 token for a permissions token

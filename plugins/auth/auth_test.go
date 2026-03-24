@@ -303,3 +303,275 @@ func TestCloudEnabled(t *testing.T) {
 		t.Error(err)
 	}
 }
+
+// --- App Key Tests ---
+
+func TestIsAppKey(t *testing.T) {
+	assert.True(t, isAppKey("stord_ak_abc123_secret"))
+	assert.True(t, isAppKey("stord_ak_"))
+	assert.False(t, isAppKey("stord_ak"))
+	assert.False(t, isAppKey("Bearer eyJhbGciOi..."))
+	assert.False(t, isAppKey(""))
+}
+
+func TestExtractAppKeyHeader(t *testing.T) {
+	// Production keys: stord_ak_{header}_{secret} — extracts first segment
+	assert.Equal(t, "pubHdr123", extractAppKeyHeader("stord_ak_pubHdr123_secretpart"))
+	assert.Equal(t, "hdr", extractAppKeyHeader("stord_ak_hdr_secret_with_underscores"))
+
+	// Local/dev keys: first segment before _
+	assert.Equal(t, "ai", extractAppKeyHeader("stord_ak_ai_admin"))
+
+	// Single segment, no underscore after prefix
+	assert.Equal(t, "local", extractAppKeyHeader("stord_ak_local"))
+
+	// Edge cases
+	assert.Equal(t, "stord_ak_", extractAppKeyHeader("stord_ak_"))
+	assert.Equal(t, "stord_ak", extractAppKeyHeader("stord_ak"))
+}
+
+func TestAppKeyCacheMiss(t *testing.T) {
+	_, keySet, err := generateJwkKeys("unused")
+	assert.NoError(t, err)
+
+	config, redisMock, httpMock := getTestConfig(keySet, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "/cloudEndpoint", r.URL.Path)
+		assert.Equal(t, "Bearer stord_ak_testhdr_secretvalue123", r.Header.Get("Authorization"))
+		assert.Equal(t, "application/json", r.Header.Get("Content-Type"))
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"data":{"token":"ORION_TOKEN"}}`))
+	}))
+	defer httpMock.Close()
+
+	appKey := "stord_ak_testhdr_secretvalue123"
+	cacheKey := "kong:appkey:oms_admin:tenant:test-org:testhdr"
+	redisMock.ExpectGet(cacheKey).RedisNil()
+	redisMock.ExpectSetEx(cacheKey, "ORION_TOKEN", 5*time.Minute).SetVal("1")
+
+	env, err := test.New(t, test.Request{
+		Method: "GET",
+		Url:    "http://example.com/v1/items",
+		Headers: map[string][]string{
+			"authorization": {fmt.Sprintf("Bearer %s", appKey)},
+			"tenant-id":     {"test-org"},
+		},
+	})
+	assert.NoError(t, err)
+
+	env.DoHttps(config)
+	assert.Equal(t, 200, env.ClientRes.Status)
+	assert.Equal(t, "true", env.ServiceReq.Headers.Get("requires-auth"))
+	assert.Equal(t, "Bearer ORION_TOKEN", env.ServiceReq.Headers.Get("Authorization"))
+
+	if err := redisMock.ExpectationsWereMet(); err != nil {
+		t.Error(err)
+	}
+}
+
+func TestAppKeyCacheHit(t *testing.T) {
+	_, keySet, err := generateJwkKeys("unused")
+	assert.NoError(t, err)
+
+	config, redisMock, httpMock := getTestConfig(keySet, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		t.Error("should not call cloud-service on cache hit")
+	}))
+	defer httpMock.Close()
+
+	appKey := "stord_ak_testhdr_secretvalue123"
+	cacheKey := "kong:appkey:oms_admin:tenant:test-org:testhdr"
+	redisMock.ExpectGet(cacheKey).SetVal("CACHED_ORION_TOKEN")
+
+	env, err := test.New(t, test.Request{
+		Method: "GET",
+		Url:    "http://example.com/v1/items",
+		Headers: map[string][]string{
+			"authorization": {fmt.Sprintf("Bearer %s", appKey)},
+			"tenant-id":     {"test-org"},
+		},
+	})
+	assert.NoError(t, err)
+
+	env.DoHttps(config)
+	assert.Equal(t, 200, env.ClientRes.Status)
+	assert.Equal(t, "true", env.ServiceReq.Headers.Get("requires-auth"))
+	assert.Equal(t, "Bearer CACHED_ORION_TOKEN", env.ServiceReq.Headers.Get("Authorization"))
+
+	if err := redisMock.ExpectationsWereMet(); err != nil {
+		t.Error(err)
+	}
+}
+
+func TestAppKeyWithNetworkId(t *testing.T) {
+	_, keySet, err := generateJwkKeys("unused")
+	assert.NoError(t, err)
+
+	config, redisMock, httpMock := getTestConfig(keySet, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"data":{"token":"NETWORK_TOKEN"}}`))
+	}))
+	defer httpMock.Close()
+
+	appKey := "stord_ak_nethdr_secretvalue456"
+	cacheKey := "kong:appkey:oms_admin:network:net-123:nethdr"
+	redisMock.ExpectGet(cacheKey).RedisNil()
+	redisMock.ExpectSetEx(cacheKey, "NETWORK_TOKEN", 5*time.Minute).SetVal("1")
+
+	env, err := test.New(t, test.Request{
+		Method: "GET",
+		Url:    "http://example.com/v1/items",
+		Headers: map[string][]string{
+			"authorization": {fmt.Sprintf("Bearer %s", appKey)},
+			"tenant-id":     {"test-org"},
+			"x-network-id":  {"net-123"},
+		},
+	})
+	assert.NoError(t, err)
+
+	env.DoHttps(config)
+	assert.Equal(t, 200, env.ClientRes.Status)
+	assert.Equal(t, "true", env.ServiceReq.Headers.Get("requires-auth"))
+	assert.Equal(t, "Bearer NETWORK_TOKEN", env.ServiceReq.Headers.Get("Authorization"))
+
+	if err := redisMock.ExpectationsWereMet(); err != nil {
+		t.Error(err)
+	}
+}
+
+func TestAppKeyWithCustomCloudApp(t *testing.T) {
+	_, keySet, err := generateJwkKeys("unused")
+	assert.NoError(t, err)
+
+	config, redisMock, httpMock := getTestConfig(keySet, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"data":{"token":"PARCEL_TOKEN"}}`))
+	}))
+	defer httpMock.Close()
+
+	appKey := "stord_ak_parcelhdr_secretvalue789"
+	cacheKey := "kong:appkey:parcel:tenant:test-org:parcelhdr"
+	redisMock.ExpectGet(cacheKey).RedisNil()
+	redisMock.ExpectSetEx(cacheKey, "PARCEL_TOKEN", 5*time.Minute).SetVal("1")
+
+	env, err := test.New(t, test.Request{
+		Method: "GET",
+		Url:    "http://example.com/v1/items",
+		Headers: map[string][]string{
+			"authorization": {fmt.Sprintf("Bearer %s", appKey)},
+			"tenant-id":     {"test-org"},
+			"x-cloud-app":   {"parcel"},
+		},
+	})
+	assert.NoError(t, err)
+
+	env.DoHttps(config)
+	assert.Equal(t, 200, env.ClientRes.Status)
+	assert.Equal(t, "true", env.ServiceReq.Headers.Get("requires-auth"))
+	assert.Equal(t, "Bearer PARCEL_TOKEN", env.ServiceReq.Headers.Get("Authorization"))
+
+	if err := redisMock.ExpectationsWereMet(); err != nil {
+		t.Error(err)
+	}
+}
+
+func TestAppKeyExchangeFailure(t *testing.T) {
+	_, keySet, err := generateJwkKeys("unused")
+	assert.NoError(t, err)
+
+	config, redisMock, httpMock := getTestConfig(keySet, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusForbidden)
+		w.Write([]byte(`{"error":"invalid app key"}`))
+	}))
+	defer httpMock.Close()
+
+	appKey := "stord_ak_badhdr_invalidsecret"
+	cacheKey := "kong:appkey:oms_admin:tenant:test-org:badhdr"
+	redisMock.ExpectGet(cacheKey).RedisNil()
+
+	env, err := test.New(t, test.Request{
+		Method: "GET",
+		Url:    "http://example.com/v1/items",
+		Headers: map[string][]string{
+			"authorization": {fmt.Sprintf("Bearer %s", appKey)},
+			"tenant-id":     {"test-org"},
+		},
+	})
+	assert.NoError(t, err)
+
+	env.DoHttps(config)
+	assert.Equal(t, 401, env.ClientRes.Status)
+
+	if err := redisMock.ExpectationsWereMet(); err != nil {
+		t.Error(err)
+	}
+}
+
+func TestAppKeyEmptyTokenResponse(t *testing.T) {
+	_, keySet, err := generateJwkKeys("unused")
+	assert.NoError(t, err)
+
+	config, redisMock, httpMock := getTestConfig(keySet, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"data":{"token":""}}`))
+	}))
+	defer httpMock.Close()
+
+	appKey := "stord_ak_emptyhdr_secretvalue000"
+	cacheKey := "kong:appkey:oms_admin:tenant:test-org:emptyhdr"
+	redisMock.ExpectGet(cacheKey).RedisNil()
+
+	env, err := test.New(t, test.Request{
+		Method: "GET",
+		Url:    "http://example.com/v1/items",
+		Headers: map[string][]string{
+			"authorization": {fmt.Sprintf("Bearer %s", appKey)},
+			"tenant-id":     {"test-org"},
+		},
+	})
+	assert.NoError(t, err)
+
+	env.DoHttps(config)
+	assert.Equal(t, 401, env.ClientRes.Status)
+
+	if err := redisMock.ExpectationsWereMet(); err != nil {
+		t.Error(err)
+	}
+}
+
+func TestAppKeyLocalDevKey(t *testing.T) {
+	_, keySet, err := generateJwkKeys("unused")
+	assert.NoError(t, err)
+
+	config, redisMock, httpMock := getTestConfig(keySet, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"data":{"token":"SHORT_TOKEN"}}`))
+	}))
+	defer httpMock.Close()
+
+	appKey := "stord_ak_ai_admin"
+	cacheKey := "kong:appkey:oms_admin:tenant:test-org:ai"
+	redisMock.ExpectGet(cacheKey).RedisNil()
+	redisMock.ExpectSetEx(cacheKey, "SHORT_TOKEN", 5*time.Minute).SetVal("1")
+
+	env, err := test.New(t, test.Request{
+		Method: "GET",
+		Url:    "http://example.com/v1/items",
+		Headers: map[string][]string{
+			"authorization": {fmt.Sprintf("Bearer %s", appKey)},
+			"tenant-id":     {"test-org"},
+		},
+	})
+	assert.NoError(t, err)
+
+	env.DoHttps(config)
+	assert.Equal(t, 200, env.ClientRes.Status)
+	assert.Equal(t, "Bearer SHORT_TOKEN", env.ServiceReq.Headers.Get("Authorization"))
+
+	if err := redisMock.ExpectationsWereMet(); err != nil {
+		t.Error(err)
+	}
+}
