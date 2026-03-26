@@ -29,6 +29,8 @@ const BEARER_PREFIX string = "Bearer "
 const REQUEST_TIMESTAMP_HEADER string = "request-timestamp"
 const REQUIRES_AUTH_HEADER string = "requires-auth"
 const CLOUD_SIGNATURE_HEADER string = "x-cloud-signature"
+const CLOUD_IDENTITY_HEADER string = "x-cloud-identity"
+const CLOUD_ROLES_HEADER string = "x-cloud-roles"
 const PROCESSING_PERIOD int = 1
 
 type CloudServiceRequest struct {
@@ -110,6 +112,19 @@ func New() interface{} {
 func (conf *Config) Access(kong *pdk.PDK) {
 	kong.Log.Debug("begin access")
 
+	// Strip x-cloud-identity and x-cloud-roles from incoming requests to prevent spoofing.
+	// These headers may only be set by Kong via the /global/ auth flow.
+	if err := kong.ServiceRequest.ClearHeader(CLOUD_IDENTITY_HEADER); err != nil {
+		kong.Log.Err("error: failed to clear header ", CLOUD_IDENTITY_HEADER, ": ", err)
+		kong.Response.Exit(500, []byte("Internal Server Error"), nil)
+		return
+	}
+	if err := kong.ServiceRequest.ClearHeader(CLOUD_ROLES_HEADER); err != nil {
+		kong.Log.Err("error: failed to clear header ", CLOUD_ROLES_HEADER, ": ", err)
+		kong.Response.Exit(500, []byte("Internal Server Error"), nil)
+		return
+	}
+
 	path, _ := kong.Request.GetPath()
 
 	skipAuthPaths := []string{
@@ -190,6 +205,12 @@ func (conf *Config) Access(kong *pdk.PDK) {
 			return
 		}
 
+		return
+	}
+
+	// Handle /global/ prefix with simplified auth flow
+	if strings.HasPrefix(path, "/global/") {
+		conf.handleGlobalAuth(kong)
 		return
 	}
 
@@ -326,18 +347,7 @@ func (conf *Config) fetchCloudPublicKeys() (jwk.Set, error) {
 		}
 	}
 
-	// Extract base URL from CloudEndpoint
-	// CloudEndpoint might be like "https://api.cloud.stord.com/v1/auth/token"
-	// We need just "https://api.cloud.stord.com" for JWKS
-	baseURL := conf.CloudEndpoint
-	if idx := strings.Index(baseURL, "/v1/"); idx != -1 {
-		baseURL = baseURL[:idx]
-	} else if idx := strings.LastIndex(baseURL, "/"); idx != -1 && idx > 8 { // After https://
-		// If there's a path but not /v1/, remove the last path segment
-		baseURL = baseURL[:idx]
-	}
-
-	jwksURL := baseURL + "/.well-known/jwks.json"
+	jwksURL := conf.cloudBaseURL() + "/.well-known/jwks.json"
 
 	resp, err := http.Get(jwksURL)
 	if err != nil {
@@ -529,6 +539,196 @@ func extractSessionID(token jwt.Token) string {
 		}
 	}
 	return "unknown"
+}
+
+// cloudBaseURL extracts the base URL from the configured CloudEndpoint.
+// e.g. "https://api.cloud.stord.com/v1/auth/token" -> "https://api.cloud.stord.com"
+func (conf *Config) cloudBaseURL() string {
+	baseURL := conf.CloudEndpoint
+	if idx := strings.Index(baseURL, "/v1/"); idx != -1 {
+		baseURL = baseURL[:idx]
+	} else if idx := strings.LastIndex(baseURL, "/"); idx != -1 && idx > 8 {
+		baseURL = baseURL[:idx]
+	}
+	return baseURL
+}
+
+// handleGlobalAuth implements the simplified auth flow for /global/ prefix routes.
+// It calls /v1/me and /v1/me/roles on the cloud service, sets x-cloud-identity and
+// x-cloud-roles headers with the filtered response data, and clears the Authorization header.
+func (conf *Config) handleGlobalAuth(kong *pdk.PDK) {
+	token, err := getAuth0Token(kong)
+	if err != nil {
+		kong.Log.Warn("warning: ", err.Error())
+		kong.Response.Exit(401, []byte("Unauthorized"), nil)
+		return
+	}
+
+	rawToken := string(token)
+	baseURL := conf.cloudBaseURL()
+
+	// Fetch /v1/me
+	meData, err := conf.fetchCloudMe(baseURL, rawToken)
+	if err != nil {
+		kong.Log.Warn("warning: failed to fetch /v1/me - ", err.Error())
+		kong.Response.Exit(401, []byte("Unauthorized"), nil)
+		return
+	}
+
+	// Fetch /v1/me/roles
+	rolesData, err := conf.fetchCloudMeRoles(baseURL, rawToken)
+	if err != nil {
+		kong.Log.Warn("warning: failed to fetch /v1/me/roles - ", err.Error())
+		kong.Response.Exit(401, []byte("Unauthorized"), nil)
+		return
+	}
+
+	// Remove "organizations" from me data
+	delete(meData, "organizations")
+
+	identityJSON, err := json.Marshal(meData)
+	if err != nil {
+		kong.Log.Err("error: failed to marshal identity: ", err.Error())
+		kong.Response.Exit(500, []byte("Internal Server Error"), nil)
+		return
+	}
+
+	rolesJSON, err := json.Marshal(rolesData)
+	if err != nil {
+		kong.Log.Err("error: failed to marshal roles: ", err.Error())
+		kong.Response.Exit(500, []byte("Internal Server Error"), nil)
+		return
+	}
+
+	if err := kong.ServiceRequest.SetHeader(CLOUD_IDENTITY_HEADER, string(identityJSON)); err != nil {
+		kong.Log.Err("error: ", err.Error(), " unable to set x-cloud-identity header")
+		kong.Response.Exit(500, []byte(err.Error()), nil)
+		return
+	}
+
+	if err := kong.ServiceRequest.SetHeader(CLOUD_ROLES_HEADER, string(rolesJSON)); err != nil {
+		kong.Log.Err("error: ", err.Error(), " unable to set x-cloud-roles header")
+		kong.Response.Exit(500, []byte(err.Error()), nil)
+		return
+	}
+
+	if err := kong.ServiceRequest.ClearHeader(REQUEST_AUTHORIZATION_HEADER); err != nil {
+		kong.Log.Err("error: ", err.Error(), " unable to clear authorization header")
+		kong.Response.Exit(500, []byte("Internal Server Error"), nil)
+		return
+	}
+
+	// requires-auth is intentionally not set for global routes
+}
+
+// fetchCloudMe calls GET /v1/me on the cloud service and returns response.data as a map.
+func (conf *Config) fetchCloudMe(baseURL string, token string) (map[string]interface{}, error) {
+	req, err := http.NewRequest("GET", baseURL+"/v1/me", nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", "Bearer "+token)
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("cloud /v1/me returned status %d: %s", resp.StatusCode, string(body))
+	}
+
+	var envelope struct {
+		Data map[string]interface{} `json:"data"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&envelope); err != nil {
+		return nil, fmt.Errorf("failed to decode /v1/me response: %w", err)
+	}
+
+	return envelope.Data, nil
+}
+
+// fetchCloudMeRoles calls GET /v1/me/roles on the cloud service and returns the
+// filtered roles array containing only the fields needed by downstream services.
+func (conf *Config) fetchCloudMeRoles(baseURL string, token string) ([]map[string]interface{}, error) {
+	req, err := http.NewRequest("GET", baseURL+"/v1/me/roles", nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Authorization", "Bearer "+token)
+
+	q := req.URL.Query()
+	for _, alias := range []string{"oms", "oms_admin"} {
+		q.Add("filter[app_aliases][]", alias)
+	}
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("cloud /v1/me/roles returned status %d: %s", resp.StatusCode, string(body))
+	}
+
+	var envelope struct {
+		Data []map[string]interface{} `json:"data"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&envelope); err != nil {
+		return nil, fmt.Errorf("failed to decode /v1/me/roles response: %w", err)
+	}
+
+	return filterRoles(envelope.Data), nil
+}
+
+// filterRoles reduces each role entry to only the fields needed by downstream services:
+// app.alias, organization.{alias,id,name}, realm.{name,resource_path} (if non-null), and role.
+func filterRoles(roles []map[string]interface{}) []map[string]interface{} {
+	filtered := make([]map[string]interface{}, 0, len(roles))
+	for _, role := range roles {
+		entry := map[string]interface{}{}
+
+		// app -> keep only alias
+		if app, ok := role["app"].(map[string]interface{}); ok {
+			entry["app"] = map[string]interface{}{
+				"alias": app["alias"],
+			}
+		}
+
+		// organization -> keep alias, id, name
+		if org, ok := role["organization"].(map[string]interface{}); ok {
+			entry["organization"] = map[string]interface{}{
+				"alias": org["alias"],
+				"id":    org["id"],
+				"name":  org["name"],
+			}
+		}
+
+		// realm -> keep name and resource_path if non-null
+		if realm, ok := role["realm"]; ok && realm != nil {
+			if realmMap, ok := realm.(map[string]interface{}); ok {
+				entry["realm"] = map[string]interface{}{
+					"name":          realmMap["name"],
+					"resource_path": realmMap["resource_path"],
+				}
+			} else {
+				entry["realm"] = nil
+			}
+		} else {
+			entry["realm"] = nil
+		}
+
+		// role
+		entry["role"] = role["role"]
+
+		filtered = append(filtered, entry)
+	}
+	return filtered
 }
 
 // isAppKey checks if the token is a cloud-service app key (stord_ak_ prefix)
