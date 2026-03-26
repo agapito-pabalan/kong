@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.119.0](https://github.com/stordco/kong/compare/v1.118.0...v1.119.0) (2026-03-26)
+
+
+### Features
+
+* [PLT-28] service grants plumbing ([#632](https://github.com/stordco/kong/issues/632)) ([e5a48ee](https://github.com/stordco/kong/commit/e5a48ee70ac996d5841b4cc0d51411872fc83dbb))
+* **auth:** Add /global/* authorization handling ([#635](https://github.com/stordco/kong/issues/635)) ([0649934](https://github.com/stordco/kong/commit/06499341caffa6f5f859270530eeaadced737d1a))
+
 ## [1.118.0](https://github.com/stordco/kong/compare/v1.117.4...v1.118.0) (2026-03-11)
 
 
