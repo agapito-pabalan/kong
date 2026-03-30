@@ -17,3 +17,4 @@
 .idea
 .vscode
 kong.values.yml
+.claude/settings.local.json

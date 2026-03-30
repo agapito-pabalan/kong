@@ -11,6 +11,13 @@ on:
       - reopened
       - synchronize
 
+concurrency:
+  group: pr-${{ github.head_ref || github.ref }}
+  cancel-in-progress: ${{ github.ref_name != 'main' }}
+
+permissions:
+  pull-requests: read
+
 jobs:
   title:
     if: github.event_name == 'pull_request'
@@ -18,11 +25,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
       - name: Check
-        uses: stordco/actions-pr-title@v1.0.0
+        uses: stordco/actions-pr-title@173b9bf1fb825f6acf05a499ec3674911d257ac6 # v1.0.0
         with:
           regex: '^(feat!|fix!|fix|feat|chore|(fix|feat|chore)\(\w.*\)):\s(\[\w{1,8}-\d{1,8}\]|.*).*'
           hint: |

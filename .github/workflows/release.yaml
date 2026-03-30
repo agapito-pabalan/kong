@@ -7,17 +7,31 @@ on:
     branches:
       - main
 
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
 jobs:
   Please:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Generate Token
+        id: release-token
+        uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3.0.0
+        with:
+          app-id: ${{ secrets.RELEASE_APP_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
       - id: release
         name: Release
-        uses: googleapis/release-please-action@v3
+        uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4.4.0
         with:
-          command: manifest
           config-file: .release-please-config.json
           manifest-file: .release-please-manifest.json
-          release-type: simple
-          token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          token: ${{ steps.release-token.outputs.token }}

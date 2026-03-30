@@ -11,6 +11,10 @@ on:
 
 concurrency:
   group: Staging
+  cancel-in-progress: false
+
+permissions:
+  contents: read
 
 jobs:
   Docker:
@@ -26,18 +30,27 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Generate Token
+        id: reader-token
+        uses: actions/create-github-app-token@f8d387b68d61c58ab83c6c016672934102569859 # v3.0.0
+        with:
+          app-id: ${{ secrets.READER_APP_ID }}
+          private-key: ${{ secrets.READER_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          permission-contents: read
 
       - id: gcp
         name: Login (GCP)
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
         with:
           token_format: access_token
           service_account: github@stord-ci.iam.gserviceaccount.com
           workload_identity_provider: ${{ secrets.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
 
       - name: Login (GCR)
-        uses: docker/login-action@v3
+        uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2 # v4.0.0
         with:
           registry: gcr.io
           username: oauth2accesstoken
@@ -45,9 +58,9 @@ jobs:
 
       - id: build
         name: Build
-        uses: stordco/actions-elixir/docker-build@v1
+        uses: stordco/actions-elixir/docker-build@be59b549dab62e1a9513db037a657ee17e151d41 # v1.5.2
         with:
-          github-token: ${{ secrets.GH_PERSONAL_ACCESS_TOKEN }}
+          github-token: ${{ steps.reader-token.outputs.token }}
           images: gcr.io/stord-ci/kong
           push: true
 
@@ -68,40 +81,43 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Set Helm Release Name and Chart Values
         id: helm-metadata
+        env:
+          HELM_RELEASE_NAME: ${{ matrix.helm_release_name }}
+          HELM_CHART_VALUES: ${{ matrix.helm_chart_values }}
+          PROJECT: ${{ matrix.project }}
         run: |
-          if [ -z "${{ matrix.helm_release_name }}" ]; then
+          if [ -z "$HELM_RELEASE_NAME" ]; then
             RELEASE_NAME=kong
             echo "helm-release-name=$RELEASE_NAME" >> "$GITHUB_OUTPUT"
           else
-            echo "helm-release-name=${{ matrix.helm_release_name }}" >> "$GITHUB_OUTPUT"
+            echo "helm-release-name=$HELM_RELEASE_NAME" >> "$GITHUB_OUTPUT"
           fi
 
-          if [ -z "${{ matrix.helm_chart_values }}" ]; then
-            HELM_CHART_VALUES=${{ matrix.project }}
-            echo "helm-chart-values=$HELM_CHART_VALUES" >> "$GITHUB_OUTPUT"
+          if [ -z "$HELM_CHART_VALUES" ]; then
+            echo "helm-chart-values=$PROJECT" >> "$GITHUB_OUTPUT"
           else
-            echo "helm-chart-values=${{ matrix.helm_chart_values }}" >> "$GITHUB_OUTPUT"
+            echo "helm-chart-values=$HELM_CHART_VALUES" >> "$GITHUB_OUTPUT"
           fi
 
       - id: gcp
         name: Login (GCP)
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
         with:
           token_format: access_token
           service_account: ${{ format('github@{0}.iam.gserviceaccount.com', matrix.project) }}
           workload_identity_provider: ${{ secrets.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
 
       - name: Install (Gcloud)
-        uses: google-github-actions/setup-gcloud@v2
+        uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1
         with:
           install_components: "gke-gcloud-auth-plugin"
 
       - name: Login (Kubernetes Cluster)
-        uses: google-github-actions/get-gke-credentials@v2
+        uses: google-github-actions/get-gke-credentials@3da1e46a907576cefaa90c484278bb5b259dd395 # v3.0.0
         with:
           cluster_name: ${{ matrix.cluster }}
           location: ${{ matrix.region }}
@@ -112,7 +128,7 @@ jobs:
           echo ${{ secrets.GITHUB_TOKEN }} | helm registry login ghcr.io -u stordco --password-stdin
 
       - name: Helm Upgrade (${{ steps.helm-metadata.outputs.helm-release-name }})
-        uses: stordco/actions-helm@v0.1
+        uses: stordco/actions-helm@d3ec651c65c1acbb5a98b8e40edfadfb5f37f4d2 # v0.1.6
         with:
           args: >-
             --atomic
