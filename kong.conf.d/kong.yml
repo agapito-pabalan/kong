@@ -287,6 +287,8 @@ services:
           - /bff/v2/networks/([^\/]+)/delete_reservations
           - /bff/v2/networks/([^\/]+)/aggregated_cogs
           - /bff/v2/networks/([^\/]+)/sku_cogs
+          - /bff/v2/networks/([^\/]+)/inventory_value_on_hand
+          - /bff/v2/networks/([^\/]+)/inventory_value_over_time
           - /bff/v2/support/zero_inventory_balance_by_sku
           - /bff/v2/support/zero_inventory_balance_by_id
           - /bff/v2/support/delete_zero_inventory_balance_by_sku
