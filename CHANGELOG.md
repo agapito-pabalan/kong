@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.120.0](https://github.com/stordco/kong/compare/v1.119.0...v1.120.0) (2026-04-14)
+
+
+### Features
+
+* [OFM-8859] adds routes for inventory value over time and value on hand ([#642](https://github.com/stordco/kong/issues/642)) ([b5f2723](https://github.com/stordco/kong/commit/b5f2723685ca7b35cc9c85357f35611d01a0ec07))
+* [OFM-8865] Add route for aggregated COGS inventory endpoint ([#640](https://github.com/stordco/kong/issues/640)) ([a1b6645](https://github.com/stordco/kong/commit/a1b6645859fa52ff02c1de945a6c0486d8e57cfa))
+* Add Kong route for public v2 close purchase order endpoint ([#641](https://github.com/stordco/kong/issues/641)) ([6c2d779](https://github.com/stordco/kong/commit/6c2d779e65ad97b8317595a29507be26bfce7ca6))
+* Expose endpoints to enhanced WMS visibility epic ([#643](https://github.com/stordco/kong/issues/643)) ([a092c6d](https://github.com/stordco/kong/commit/a092c6d18de734c94423a5dccd7dbafae7f6b62f))
+
+
+### Miscellaneous
+
+* **deps:** Bump github.com/redis/go-redis/v9 from 9.7.1 to 9.7.3 in /plugins/auth ([#638](https://github.com/stordco/kong/issues/638)) ([300cbc5](https://github.com/stordco/kong/commit/300cbc5ce78ba5ef7f8e79a78f9ff4d93a7c8d60))
+* Simplify ci workflow ([#639](https://github.com/stordco/kong/issues/639)) ([fa133b3](https://github.com/stordco/kong/commit/fa133b3a80b88132013673d2b2c6655f2b1187ef))
+* Update workflows ([#636](https://github.com/stordco/kong/issues/636)) ([eb455fa](https://github.com/stordco/kong/commit/eb455fa7e87eced820136a59f056014b1313639d))
+
 ## [1.119.0](https://github.com/stordco/kong/compare/v1.118.0...v1.119.0) (2026-03-26)
 
 
