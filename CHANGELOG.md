@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.121.1](https://github.com/stordco/kong/compare/v1.121.0...v1.121.1) (2026-04-21)
+
+
+### Bug Fixes
+
+* Pin actions-elixir to v1.5.4 and add Twingate to deployment workflows ([#646](https://github.com/stordco/kong/issues/646)) ([7372cf9](https://github.com/stordco/kong/commit/7372cf9574c460a75dec5170c80e6404f660e21b))
+
 ## [1.121.0](https://github.com/stordco/kong/compare/v1.120.0...v1.121.0) (2026-04-21)
 
 
