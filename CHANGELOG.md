@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.121.0](https://github.com/stordco/kong/compare/v1.120.0...v1.121.0) (2026-04-21)
+
+
+### Features
+
+* [OFM-9351] add Kong route for bulk auto-reconcile endpoint ([#644](https://github.com/stordco/kong/issues/644)) ([292f731](https://github.com/stordco/kong/commit/292f731c7eab2e8256b0c73bf89b592a1ad275ee))
+
 ## [1.120.0](https://github.com/stordco/kong/compare/v1.119.0...v1.120.0) (2026-04-14)
 
 
