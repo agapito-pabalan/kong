@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.121.2](https://github.com/stordco/kong/compare/v1.121.1...v1.121.2) (2026-04-21)
+
+
+### Bug Fixes
+
+* Bump actions-helm to v0.1.7 for SHA-pinned get_namespace ([#648](https://github.com/stordco/kong/issues/648)) ([38b52d7](https://github.com/stordco/kong/commit/38b52d712975e64c89f565ad1bcd86accb3b6910))
+
 ## [1.121.1](https://github.com/stordco/kong/compare/v1.121.0...v1.121.1) (2026-04-21)
 
 
