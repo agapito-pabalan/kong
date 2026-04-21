@@ -295,7 +295,7 @@ jobs:
           echo ${{ secrets.GITHUB_TOKEN }} | helm registry login ghcr.io -u stordco --password-stdin
 
       - name: Helm Upgrade
-        uses: stordco/actions-helm@d3ec651c65c1acbb5a98b8e40edfadfb5f37f4d2 # v0.1.6
+        uses: stordco/actions-helm@890d7c6d764509bed9565625d5ce3523d4804a80 # v0.1.7
         with:
           args: >-
             --atomic
