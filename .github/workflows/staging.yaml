@@ -8,6 +8,12 @@ on:
       - main
       - code-freeze/**
   workflow_dispatch:
+    inputs:
+      twingate_disabled:
+        default: false
+        description: "Disable Twingate connection"
+        required: false
+        type: boolean
 
 concurrency:
   group: Staging
@@ -58,7 +64,7 @@ jobs:
 
       - id: build
         name: Build
-        uses: stordco/actions-elixir/docker-build@be59b549dab62e1a9513db037a657ee17e151d41 # v1.5.2
+        uses: stordco/actions-elixir/docker-build@e125c9eecde83437728201927fd1d7516cb6cee7 # v1.5.4
         with:
           github-token: ${{ steps.reader-token.outputs.token }}
           images: gcr.io/stord-ci/kong
@@ -110,6 +116,12 @@ jobs:
           token_format: access_token
           service_account: ${{ format('github@{0}.iam.gserviceaccount.com', matrix.project) }}
           workload_identity_provider: ${{ secrets.GOOGLE_WORKLOAD_IDENTITY_PROVIDER }}
+
+      - name: Connect (Twingate)
+        if: ${{ vars.TWINGATE_ENABLED != 'false' && !inputs.twingate_disabled }}
+        uses: Twingate/github-action@f1e69fc5af67b737d8597b759e5c607f567e77f2 # v1.8
+        with:
+          service-key: ${{ secrets.TWINGATE_SERVICE_KEY }}
 
       - name: Install (Gcloud)
         uses: google-github-actions/setup-gcloud@aa5489c8933f4cc7a4f7d45035b3b1440c9c10db # v3.0.1

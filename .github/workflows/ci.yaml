@@ -30,4 +30,4 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Build
-        uses: stordco/actions-elixir/docker-build@be59b549dab62e1a9513db037a657ee17e151d41 # v1.5.2
+        uses: stordco/actions-elixir/docker-build@e125c9eecde83437728201927fd1d7516cb6cee7 # v1.5.4
