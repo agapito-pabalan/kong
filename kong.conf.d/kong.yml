@@ -256,6 +256,10 @@ services:
         strip_path: false
         paths:
           - /v2/public_images$
+      - name: documents_service_internal_v2_documents
+        strip_path: false
+        paths:
+          - /internal/v2/documents$
   - name: inventory
     url: $INVENTORY_SERVICE_URL
     routes:
