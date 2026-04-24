@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.122.0](https://github.com/stordco/kong/compare/v1.121.2...v1.122.0) (2026-04-23)
+
+
+### Features
+
+* [OFM-9096] Expose /internal/v2/documents endpoint through Kong ([#650](https://github.com/stordco/kong/issues/650)) ([985f704](https://github.com/stordco/kong/commit/985f7042e6abc37c1ba1a48d0c37a1ef5558da30))
+
 ## [1.121.2](https://github.com/stordco/kong/compare/v1.121.1...v1.121.2) (2026-04-21)
 
 
