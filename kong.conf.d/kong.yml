@@ -264,7 +264,7 @@ services:
       - name: documents_service_public_v1_orders_documents
         strip_path: false
         paths:
-          - /public/v1/orders/([^\/]+)/documents$
+          - /public_portal/v1/orders/([^\/]+)/documents$
   - name: inventory
     url: $INVENTORY_SERVICE_URL
     routes:
