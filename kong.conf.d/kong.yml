@@ -261,6 +261,10 @@ services:
         strip_path: false
         paths:
           - /internal/v2/documents$
+      - name: documents_service_public_v1_orders_documents
+        strip_path: false
+        paths:
+          - /public/v1/orders/([^\/]+)/documents$
   - name: inventory
     url: $INVENTORY_SERVICE_URL
     routes:
