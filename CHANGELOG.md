@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.123.0](https://github.com/stordco/kong/compare/v1.122.0...v1.123.0) (2026-04-28)
+
+
+### Features
+
+* Add documents_service public document upload route ([#652](https://github.com/stordco/kong/issues/652)) ([0a948a9](https://github.com/stordco/kong/commit/0a948a9cd726de4abf1c98109f5a2e0f7ba35af0))
+* Add free_shipping_config route ([#634](https://github.com/stordco/kong/issues/634)) ([1f83816](https://github.com/stordco/kong/commit/1f83816465d4a591ee3689b1dcff077a3a9e89a1))
+
+
+### Bug Fixes
+
+* Prefix documents service public portal route with /public_portal ([#654](https://github.com/stordco/kong/issues/654)) ([bf2838e](https://github.com/stordco/kong/commit/bf2838efe363c46ea622a0936a96f7c119fdba4c))
+
 ## [1.122.0](https://github.com/stordco/kong/compare/v1.121.2...v1.122.0) (2026-04-23)
 
 
