@@ -15,7 +15,7 @@ RUN go mod download
 COPY /plugins/auth/auth.go .
 RUN go build -o /go-plugins/auth /go-plugins/auth.go
 
-FROM kong:3.7.1 AS release
+FROM kong:3.9.1 AS release
 
 USER root
 
