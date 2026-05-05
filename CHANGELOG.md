@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.124.0](https://github.com/stordco/kong/compare/v1.123.0...v1.124.0) (2026-05-04)
+
+
+### Features
+
+* [SRE-1795] - Kong upgrade to 3.9.1 ([#655](https://github.com/stordco/kong/issues/655)) ([0377775](https://github.com/stordco/kong/commit/037777584ac56cc8f9a7adeab80e6fb6bba3eb2a))
+
 ## [1.123.0](https://github.com/stordco/kong/compare/v1.122.0...v1.123.0) (2026-04-28)
 
 
