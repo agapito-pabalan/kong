@@ -141,6 +141,10 @@ services:
           - /orders_service/docs/api
           - /orders_service_v1/docs/api_spec
           - /orders_service_v1/docs/api
+      - name: orders_admin_claims_v1
+        strip_path: false
+        paths:
+          - /bff/admin/v1/claims
       - name: orders_network_documents
         strip_path: false
         paths:
