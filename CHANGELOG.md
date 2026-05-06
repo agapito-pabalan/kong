@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.125.0](https://github.com/stordco/kong/compare/v1.124.0...v1.125.0) (2026-05-06)
+
+
+### Features
+
+* [PROT-230] add Kong route for /bff/admin/v1/claims/* admin disposition endpoints ([#657](https://github.com/stordco/kong/issues/657)) ([f6bbf69](https://github.com/stordco/kong/commit/f6bbf6925b98f3d42ffe7810f3ee75aa7f8b9a95))
+
 ## [1.124.0](https://github.com/stordco/kong/compare/v1.123.0...v1.124.0) (2026-05-04)
 
 
