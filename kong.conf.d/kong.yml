@@ -173,7 +173,6 @@ services:
           - /shopify_extensions/v2/shipment_protection_cost
           - /shopify_extensions/v2/consumer_delivery_date_session/increment/([^\/]+)/([^\/]+)$
           - /shopify_extensions/v2/estimated_delivery_date/delivery_options$
-          - /shopify_extensions/v2/free_shipping_config$
       - name: orders_parcel_v1
         strip_path: false
         paths:
