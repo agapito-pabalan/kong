@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.126.0](https://github.com/stordco/kong/compare/v1.125.0...v1.126.0) (2026-05-22)
+
+
+### Features
+
+* [OFM-9673] - Add the path for the public_portal returns/fees endpoint ([#661](https://github.com/stordco/kong/issues/661)) ([c0f2516](https://github.com/stordco/kong/commit/c0f25168d662304675ec8a6b8d6151979a61ac08))
+
+
+### Bug Fixes
+
+* **cx-1829:** Remove free_shipping_config route from orders_shopify_extensions_v1 ([#659](https://github.com/stordco/kong/issues/659)) ([3823634](https://github.com/stordco/kong/commit/38236346725eae00c376f301b84ecff06de8b0c7))
+
 ## [1.125.0](https://github.com/stordco/kong/compare/v1.124.0...v1.125.0) (2026-05-06)
 
 
