@@ -193,6 +193,7 @@ services:
           - /public_portal/v1/consumer_experience/orders/([^\/]+)/config$
           - /public_portal/v1/consumer_experience/orders/([^\/]+)/returns$
           - /public_portal/v1/consumer_experience/orders/([^\/]+)/returns/eligibility$
+          - /public_portal/v1/consumer_experience/orders/([^\/]+)/returns/fees$
           - /public_portal/v1/consumer_experience/returns/webhooks/twoboxes$
           - /v1/consumer_experience/estimated_delivery_date$
           - /v1/consumer_experience/([^\/]+)/delivery_options$
