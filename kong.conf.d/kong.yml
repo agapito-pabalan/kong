@@ -184,45 +184,8 @@ services:
       - name: consumer_experience_v1
         strip_path: false
         paths:
-          - /public_portal/v1/consumer_experience/orders/([^\/]+)$
-          - /public_portal/v1/consumer_experience/orders/([^\/]+)/shipments$
-          - /public_portal/v1/consumer_experience/orders/([^\/]+)/shipments/([^\/]+)$
-          - /public_portal/v1/consumer_experience/orders/([^\/]+)/authenticate$
-          - /public_portal/v1/consumer_experience/orders/([^\/]+)/document_upload$
-          - /public_portal/v1/consumer_experience/orders/([^\/]+)/claims$
-          - /public_portal/v1/consumer_experience/orders/([^\/]+)/config$
-          - /public_portal/v1/consumer_experience/orders/([^\/]+)/returns$
-          - /public_portal/v1/consumer_experience/orders/([^\/]+)/returns/eligibility$
-          - /public_portal/v1/consumer_experience/orders/([^\/]+)/returns/fees$
-          - /public_portal/v1/consumer_experience/returns/webhooks/twoboxes$
-          - /v1/consumer_experience/estimated_delivery_date$
-          - /v1/consumer_experience/([^\/]+)/delivery_options$
-          - /v1/consumer_experience/([^\/]+)/delivery_options/([^\/]+)$
-          - /v1/consumer_experience/([^\/]+)/configurations$
-          - /v1/consumer_experience/([^\/]+)/configurations/([^\/]+)$
-          - /v1/consumer_experience/([^\/]+)/brandings$
-          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)$
-          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/alert_types$
-          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/alert_types/([^\/]+)$
-          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/alert_types/([^\/]+)/alert_channels$
-          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/alert_types/([^\/]+)/alert_channels/([^\/]+)$
-          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/alert_types/([^\/]+)/templates
-          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/alert_types/([^\/]+)/templates/([^\/]+)$
-          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/alert_types/([^\/]+)/templates/([^\/]+)/versions$
-          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/alert_types/([^\/]+)/templates/([^\/]+)/default$
-          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/alert_types/([^\/]+)/templates/([^\/]+)/revision/([^\/]+)$
-          # TODO: just add publish to revision/id/publish with a put, then add revert and control the template through the revisions
-          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/alert_types/([^\/]+)/templates/([^\/]+)/latest_revision$
-          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/alert_types/([^\/]+)/templates/([^\/]+)/latest_revision/publish$
-          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/tracking_portals$
-          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/tracking_portals/([^\/]+)$
-          - /v1/consumer_experience/([^\/]+)/brandings/([^\/]+)/tracking_portals/([^\/]+)/([^\/]+)$
-          - /v1/consumer_experience/([^\/]+)/shipment_protection
-          - /v1/consumer_experience/([^\/]+)/storefronts
-          - /v1/consumer_experience/([^\/]+)/storefronts/([^\/]+)/default_delivery_option_set
-          - /v1/consumer_experience/([^\/]+)/orders
-          - /v1/consumer_experience/([^\/]+)/returns
-          - /v1/consumer_experience/([^\/]+)/two_boxes
+          - /public_portal/v1/consumer_experience
+          - /v1/consumer_experience
   - name: facility-activity-service
     url: $FACILITY_ACTIVITY_SERVICE_URL
     routes:
