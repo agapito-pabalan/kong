@@ -1,0 +1,23 @@
+schema-version: v2.1
+dd-service: kong
+team: oms
+description: Custom Kong API gateway with the Stord User Management plugin (Go). Central ingress for the Orion platform — validates Auth0 JWTs and exchanges them for short-lived internal Stord JWTs, then routes requests to the appropriate backend service.
+tier: tier-1
+lifecycle: production
+contacts:
+  - name: Support Slack
+    type: slack
+    contact: https://stord-team.slack.com/archives/C04HCMVC8P7
+links:
+  - name: Kong API Overview
+    type: dashboard
+    url: https://app.datadoghq.com/dashboard/30743
+  - name: Top Entry Points through Kong
+    type: dashboard
+    url: https://app.datadoghq.com/dashboard/fbg-nwa-6yg/top-entry-points-through-kong
+  - name: On-Call Runbooks
+    type: runbook
+    url: https://stord.atlassian.net/wiki/spaces/OG/pages/4677894154/On-Call+Runbooks
+  - name: Source Code
+    type: repo
+    url: https://github.com/stordco/kong
