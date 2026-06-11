@@ -252,6 +252,7 @@ services:
       - name: inventory-bff-v1
         strip_path: false
         paths:
+          - /bff/v1/admin/inventory_adjustment_reasons
           - /bff/v1/inventory_advice
           - /bff/v1/inventory
           - /bff/v1/qualifiers/facilities/([^\/]+)/items/([^\/]+)$
