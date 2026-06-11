@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.127.0](https://github.com/stordco/kong/compare/v1.126.0...v1.127.0) (2026-06-11)
+
+
+### Features
+
+* [OFM-9495] add inventory BFF admin reasons route ([#665](https://github.com/stordco/kong/issues/665)) ([749ca00](https://github.com/stordco/kong/commit/749ca00c1a196d1465f29eb2ae48531cba15feb3))
+
+
+### Miscellaneous
+
+* [CX-1903] add cx sku availability ([#662](https://github.com/stordco/kong/issues/662)) ([47769fc](https://github.com/stordco/kong/commit/47769fc3c55639ee426f57b5441d2fb98b3ca3b6))
+* Add Datadog service catalog entry ([#664](https://github.com/stordco/kong/issues/664)) ([a2aa730](https://github.com/stordco/kong/commit/a2aa7306e2878e3fe7bffe2d10aef566050e19fc))
+
 ## [1.126.0](https://github.com/stordco/kong/compare/v1.125.0...v1.126.0) (2026-05-22)
 
 
